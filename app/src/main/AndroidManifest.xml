@@ -14,6 +14,15 @@
         android:theme="@style/Theme.Ducatus"
         tools:targetApi="31">
         <activity
+            android:name=".Transportation"
+            android:exported="true" />
+        <activity
+            android:name=".Housing"
+            android:exported="true" />
+        <activity
+            android:name=".FoodAndDrinks"
+            android:exported="true" />
+        <activity
             android:name=".FinancialExpenses"
             android:exported="true" />
         <activity
