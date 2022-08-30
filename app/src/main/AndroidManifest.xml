@@ -75,6 +75,89 @@
             android:name=".AboutDucatus"
             android:exported="true" />
         <activity
+            android:name=".LoanMainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".TipsDetailVideo"
+            android:exported="true" />
+        <activity
+            android:name=".TipsDetailArticle"
+            android:exported="true" />
+        <activity
+            android:name=".TipsMainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".GoalMainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".GoalDetailPassed"
+            android:exported="true" />
+        <activity
+            android:name=".GoalDetailCompleted"
+            android:exported="true" />
+        <activity
+            android:name=".GoalDetail"
+            android:exported="true" />
+        <activity
+            android:name=".ChallengesMainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ChallengesActivityMissed"
+            android:exported="true" />
+        <activity
+            android:name=".AddLoanActivity"
+            android:exported="true" />
+        <activity
+            android:name=".BorrowMoney"
+            android:exported="true" />
+        <activity
+            android:name=".ChallengesDetail1"
+            android:exported="true" />
+        <activity
+            android:name=".ChallengesDetail2"
+            android:exported="true" />
+        <activity
+            android:name=".ChallengesTotalEarned"
+            android:exported="true" />
+        <activity
+            android:name=".EditLoanDetail"
+            android:exported="true" />
+        <activity
+            android:name=".EditLoanDetailBorrowMoney"
+            android:exported="true" />
+        <activity
+            android:name=".EditLoanDetailGiveMoney"
+            android:exported="true" />
+        <activity
+            android:name=".FullyPaidLoanDetail"
+            android:exported="true" />
+        <activity
+            android:name=".GiveMoney"
+            android:exported="true" />
+        <activity
+            android:name=".LoanDetail"
+            android:exported="true" />
+        <activity
+            android:name=".LoanDetail2"
+            android:exported="true" />
+        <activity
+            android:name=".NewGoal"
+            android:exported="true"
+            android:theme="@style/floatingText.Ducatus" />
+        <activity
+            android:name=".OverdueLoanDetail"
+            android:exported="true" />
+        <activity
+            android:name=".UnpaidLoanDetail"
+            android:exported="true" />
+        <activity
+            android:name=".NewGoal1"
+            android:exported="true" />
+        <activity
+            android:name=".EditGoal"
+            android:exported="true"
+            android:theme="@style/floatingText.Ducatus" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

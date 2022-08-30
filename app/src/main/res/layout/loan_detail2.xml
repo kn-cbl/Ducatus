@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoanMainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/loandetail_toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_bg"
+        android:clickable="true"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Loan Detail"
+        app:titleTextColor="@color/white">
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_loanDetails1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/linearLayout_loanDetails2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/editLoanDetail_loanDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="16dp"
+                android:text="EDIT"
+                android:gravity="right"
+                android:textColor="#007FFF"
+                android:letterSpacing="0.1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_loanDetails1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/stroke"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/loanIcon_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/loanicon_bg"
+            android:gravity="center"
+            android:text="A"
+            android:textAlignment="center"
+            android:textSize="35dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewLoan_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@+id/loanIcon_loanDetails"
+            android:text="Arturo Roman"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewLoanDesc_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewLoan_loanDetails"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/loanIcon_loanDetails"
+            android:text="Arturo owes me"
+            android:textColor="#7A7A7A"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="139dp" />
+
+        <TextView
+            android:id="@+id/loanAmount_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
+            android:text="Next Payment"
+            android:textColor="#7A7A7A"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/loanDueDate_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@+id/textViewLoan_loanDetails"
+            android:layout_alignParentRight="true"
+            android:text="Due on August 15"
+            android:textColor="#7A7A7A"
+            tools:layout_editor_absoluteX="162dp"
+            tools:layout_editor_absoluteY="139dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_loanDetails2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/linearLayout_loanDetails3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/total_loan"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:id="@+id/linearLayout_loanDetails4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/totalLoan_loanDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="Total Loan of Arturo:"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout_loanDetails5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/unpaidLoanAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="₱2,000.00"
+                    android:textColor="#FF0000"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_loanDetails6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/strokebottom">
+
+        <TextView
+            android:id="@+id/loanHistory_loanDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="HISTORY"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:dividerHeight="0.5dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_loanDetails7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="5dp">
+
+        <ListView
+            android:id="@+id/nameListView_loanDetails"
+            android:layout_width="match_parent"
+            android:layout_height="317dp"
+            android:divider="#808080"
+            android:dividerHeight="0.5dp"
+            tools:listitem="@layout/history_loanlist" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_loanDetails8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_margin="10dp">
+
+        <Button
+            android:id="@+id/btn_givemoney_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_red_bg"
+            android:text="GIVE MONEY"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:id="@+id/btn_receivemoney_loanDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_green_bg"
+            android:text="RECEIVE MONEY"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
+</LinearLayout>

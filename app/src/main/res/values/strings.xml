@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Ducatus</string>
+
+    <string name="goalColor_hint"><b>Goal Color</b></string>
+    <string name="icon_hint"><b>Icon</b></string>
+    <string name="targetAmount_hint"><b>Target Amount</b></string>
+    <string name="savedAlready_hint"><b>Saved Already</b></string>
+    <string name="desiredDate_hint"><b>Desired Date</b></string>
+    <string name="title_activity_tips_detail_video">TipsDetailVideo</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
 </resources>

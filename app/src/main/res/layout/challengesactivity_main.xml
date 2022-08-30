@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChallengesMainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/challengesToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_bg"
+        android:clickable="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_menu"
+        app:title="Challenges"
+        app:titleTextColor="@color/white">
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/textView_currentChallenges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:text="CURRENT CHALLENGES"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/challengesToolbar" />
+
+    <GridLayout
+        android:id="@+id/gridLayout_currentChallenges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        app:layout_constraintTop_toBottomOf="@id/textView_currentChallenges" >
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_currentChallenges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/cardview_bg"
+            app:cardCornerRadius="15dp"
+            android:layout_column="0"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="10dp">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout_currentChallenges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textViewAmount_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="₱3,000 Savings in 30 Days"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/percentProgress_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="75%"
+                    android:textColor="@color/green_cyan_text"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_currentChallenges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textViewAmount_currentChallenges"
+                    android:background="@drawable/linestroke_gray">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/earned_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_currentChallenges"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Earned"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/remaining_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_currentChallenges"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="16dp"
+                    android:text="Remaining"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/goal_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_currentChallenges"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Goal"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/earnedAmount_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_currentChallenges"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginStart="16dp"
+                    android:text="₱640"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/remainingAmount_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_currentChallenges"
+                    android:layout_centerInParent="true"
+                    android:text="₱2,240"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/goalAmount_currentChallenges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_currentChallenges"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:text="₱3,000"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar_currentChallenges"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/goalAmount_currentChallenges"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="16dp"
+                    android:progressDrawable="@drawable/custom_progress_greenbg" />
+
+                <TextView
+                    android:id="@+id/textView_continue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/progressBar_currentChallenges"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="CONTINUE"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_color"/>
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/textView_newChallenges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:text="NEW CHALLENGES"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout_currentChallenges" />
+
+    <GridLayout
+        android:id="@+id/gridLayout_newChallenges1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        app:layout_constraintTop_toBottomOf="@id/textView_newChallenges" >
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_newChallenges1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/cardview_bg"
+            app:cardCornerRadius="15dp"
+            android:layout_column="0"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="10dp">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout_newChallenges1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textViewAmount_newChallenges1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="₱1,000 Savings in 30 Days"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/percentProgress_newChallenges1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="75%"
+                    android:textColor="@color/green_cyan_text"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_newChallenges1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textViewAmount_newChallenges1"
+                    android:background="@drawable/linestroke_gray">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/textView_getStarted1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_newChallenges1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="GET STARTED"
+                    android:textColor="@color/blue_color"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_newChallenges2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/cardview_bg"
+            app:cardCornerRadius="15dp"
+            android:layout_column="0"
+            android:layout_row="2"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="10dp">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout_newChallenges2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textViewAmount_newChallenges2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="₱50,000 Savings in 3 Months"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/percentProgress_newChallenges2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="75%"
+                    android:textColor="@color/green_cyan_text"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_newChallenges2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textViewAmount_newChallenges2"
+                    android:background="@drawable/linestroke_gray">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/textView_getStarted2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_newChallenges2"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="GET STARTED"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_color"/>
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

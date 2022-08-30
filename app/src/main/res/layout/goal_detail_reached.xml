@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GoalDetailReached">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/goalDetail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_bg"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/delete_menu"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Goal Detail"
+        app:titleTextColor="@color/white">
+    </androidx.appcompat.widget.Toolbar>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_goalDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/goalDetail_toolbar">
+
+        <ImageView
+            android:id="@+id/img_goalDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/green_circle_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_sample_img_goal" />
+
+        <TextView
+            android:id="@+id/textView_goalDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@id/img_goalDetail"
+            android:text="Boracay"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/targetDate_goalDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_goalDetail"
+            android:layout_marginStart="16dp"
+            android:layout_toRightOf="@id/img_goalDetail"
+            android:text="Reached: Jul 16, 2022"
+            android:textColor="@color/light_gray_text" />
+
+        <ProgressBar
+            android:id="@+id/goalDetail_progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="340dp"
+            android:layout_height="260dp"
+            android:layout_below="@id/img_goalDetail"
+            android:layout_centerInParent="true"
+            android:indeterminateOnly="false"
+            android:progressDrawable="@drawable/circle_progressbar"
+            tools:progress="100" />
+
+        <TextView
+            android:id="@+id/textView_goalPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/goalDetail_progressBar"
+            android:layout_alignTop="@+id/goalDetail_progressBar"
+            android:layout_alignEnd="@+id/goalDetail_progressBar"
+            android:layout_alignBottom="@+id/goalDetail_progressBar"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:letterSpacing="0.05"
+            android:textColor="@color/green_text"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            tools:text="100%" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_goalDetail1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/text_input"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout_goalDetail"
+        tools:layout_editor_absoluteX="10dp">
+
+        <TextView
+            android:id="@+id/textView_totalSavedAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Total Saved Amount"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView_savedAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="₱30,000"
+            android:letterSpacing="0.05"
+            android:textSize="16sp"
+            android:textColor="@color/gray_text" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

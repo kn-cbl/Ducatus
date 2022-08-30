@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewGoal1">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/newGoal1_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_bg"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/check_menu"
+        app:navigationIcon="@drawable/ic_close"
+        app:title="New Goal"
+        app:titleTextColor="@color/white">
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/savingFor_newGoal1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="WHAT ARE YOU SAVING FOR?"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:layout_marginTop="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newGoal1_toolbar" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/text_input"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/savingFor_newGoal1"
+        tools:layout_editor_absoluteX="10dp">
+
+        <TextView
+            android:id="@+id/Name_editGoal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Name"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextName_editGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Add Name"
+            android:inputType="textPersonName"
+            android:paddingStart="8dp"
+            android:textColorHint="#7A7A7A"
+            android:textSize="16sp"
+            tools:text="@tools:sample/full_names" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout1_newGoal1"
+        tools:layout_editor_absoluteX="10dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_input">
+
+            <TextView
+                android:id="@+id/Color_newGoal1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:text="Color"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerColor_newGoal1"
+                android:layout_width="160dp"
+                android:layout_height="15dp"
+                android:layout_below="@id/Color_newGoal1"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_green_bg"
+                android:spinnerMode="dialog"
+                android:textAlignment="center" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Color_newGoal1"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:layout_toRightOf="@id/spinnerColor_newGoal1"
+                android:src="@drawable/ic_dropdown" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/text_input">
+
+            <TextView
+                android:id="@+id/Icon_newGoal1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:text="Icon"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerIcon_newGoal1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Icon_newGoal1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_phone"
+                android:spinnerMode="dialog"
+                android:textAlignment="center" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Icon_newGoal1"
+                android:layout_marginStart="85dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="5dp"
+                android:layout_toRightOf="@id/spinnerIcon_newGoal1"
+                android:src="@drawable/ic_dropdown" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/text_input"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2_newGoal1">
+
+        <TextView
+            android:id="@+id/targetAmount_newGoal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Target Amount"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/edittargetAmount_newGoal1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="200,000.00"
+            android:textSize="16sp"
+            android:textColorHint="#7A7A7A"
+            android:inputType="number"
+            android:paddingStart="8dp"
+            android:drawableEnd="@drawable/ic_dropdown"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/text_input"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout3_newGoal1">
+
+        <TextView
+            android:id="@+id/savedAlready_newGoal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Saved Already"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/textSavedAlready_newGoal1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="150,000.00"
+            android:textSize="16sp"
+            android:textColorHint="#7A7A7A"
+            android:inputType="number"
+            android:paddingStart="8dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/text_input"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4_newGoal1">
+
+        <TextView
+            android:id="@+id/textDesiredDate_newGGoal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Desired Date"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editDate_newGGoal1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="MM/DD/YYYY"
+            android:inputType="date"
+            android:paddingStart="8dp"
+            android:textColorHint="#7A7A7A"
+            android:textSize="16sp"
+            tools:text="@tools:sample/date/mmddyy" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout6_newGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/text_input"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5_newGoal1">
+
+        <TextView
+            android:id="@+id/editNotes_newGoal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Notes"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextNotes_newGoal1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Add Notes"
+            android:inputType="textImeMultiLine"
+            android:paddingStart="8dp"
+            android:textColorHint="#7A7A7A"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

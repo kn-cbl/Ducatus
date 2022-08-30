@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".TipsVideosFragment"
+    android:background="@color/frame_bg">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:rowCount="3"
+            android:columnCount="2">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video1"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video1"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video1"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video1"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video1"
+                        android:layout_toRightOf="@id/image_artist1"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName1"
+                        android:layout_toRightOf="@id/image_artist1"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video2"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video2"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video2"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video2"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video2"
+                        android:layout_toRightOf="@id/image_artist2"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName2"
+                        android:layout_toRightOf="@id/image_artist2"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video3"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video3"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video3"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video3"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video3"
+                        android:layout_toRightOf="@id/image_artist3"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName3"
+                        android:layout_toRightOf="@id/image_artist3"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video4"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video4"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video4"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video4"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video4"
+                        android:layout_toRightOf="@id/image_artist4"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName4"
+                        android:layout_toRightOf="@id/image_artist4"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video5"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video5"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video5"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video5"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video5"
+                        android:layout_toRightOf="@id/image_artist5"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName5"
+                        android:layout_toRightOf="@id/image_artist5"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/image_video6"
+                        android:layout_width="170dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/shape_rectangle" />
+
+                    <TextView
+                        android:id="@+id/textView_video6"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_video6"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:padding="8dp"
+                        android:text="Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/image_artist6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_video6"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_author" />
+
+                    <TextView
+                        android:id="@+id/textView_artistName6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/textView_video6"
+                        android:layout_toRightOf="@id/image_artist6"
+                        android:textSize="12sp"
+                        android:text="Martin Berrote" />
+
+                    <TextView
+                        android:id="@+id/textView_publishVideoDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/textView_artistName6"
+                        android:layout_toRightOf="@id/image_artist6"
+                        android:text="Aug 2, 2022"
+                        android:textSize="10sp" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+        </GridLayout>
+
+    </ScrollView>
+
+
+</FrameLayout>

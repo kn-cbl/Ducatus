@@ -10,4 +10,30 @@
 
 
     <color name="mtrl_textinput_default_box_stroke_color">#389583</color>
+
+    //For loans, challenges, goals, tips
+
+    //bg colors
+    <color name="toolbar_bg">#206967</color>
+    <color name="cardview_bg">#F8F8F8</color>
+    <color name="frame_bg">#E7E7E7</color>
+    <color name="progressbar_bg">#D9D9D9</color>
+    <color name="green_bg">#0FA958</color>
+
+    //btn colors
+    <color name="btn_givemoney">#F76C6E</color>
+    <color name="btn_borrowmoney">#2DB57B</color>
+
+    //text colors
+    <color name="red_text">#FF0000</color>
+    <color name="gray_text">#545454</color>
+    <color name="green_text">#2DB57B</color>
+    <color name="light_gray_text">#7A7A7A</color>
+    <color name="green_cyan_text">#389583</color>
+    <color name="green_dark_text">#0FA958</color>
+
+    //additional colors
+    <color name="green_color">#2DB57B</color>
+    <color name="purple_color">#9804DE</color>
+    <color name="blue_color">#007FFF</color>
 </resources>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoanMainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/addLoan_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_bg"
+        android:clickable="true"
+        app:menu="@menu/check_menu"
+        app:navigationIcon="@drawable/ic_close"
+        app:title="Add Loan"
+        app:titleTextColor="@color/white">
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/text_input"
+        android:layout_margin="10dp"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/addloanName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/editTextName_addLoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Add Name"
+            android:textSize="16sp"
+            android:textColorHint="#7A7A7A"
+            android:inputType="textPersonName"
+            android:paddingStart="8dp"
+            tools:text="@tools:sample/full_names" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/text_input"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/addloanDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:text="Date"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editTextDate_addLoan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="MM/DD/YYYY"
+                android:textSize="16sp"
+                android:textColorHint="#7A7A7A"
+                android:paddingStart="8dp"
+                android:inputType="date"
+                tools:text="@tools:sample/date/mmddyy"
+                android:background="@android:color/transparent"
+                android:focusable="false"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/text_input"
+            android:layout_margin="10dp"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/addloanTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:text="Time"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editTextTime_addLoan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="00:00:00"
+                android:textSize="16sp"
+                android:textColorHint="#7A7A7A"
+                android:paddingStart="8dp"
+                android:inputType="time"
+                tools:text="@tools:sample/date/hhmmss"
+                android:background="@android:color/transparent"
+                android:focusable="false"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/text_input"
+        android:layout_margin="10dp"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/addloanAmount_addLoan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Amount"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/editTextNumber_addLoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="0"
+            android:textSize="16sp"
+            android:textColorHint="#7A7A7A"
+            android:inputType="number"
+            android:paddingStart="8dp"
+            android:drawableEnd="@drawable/ic_dropdown"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/text_input"
+        android:layout_margin="10dp"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/addloanAmount2_addLoan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:text="Notes"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/editTextNotes_addLoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Add Notes"
+            android:textSize="16sp"
+            android:textColorHint="#7A7A7A"
+            android:inputType="textImeMultiLine"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_margin="10dp">
+
+        <Button
+            android:id="@+id/btn_give_addLoan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_red_bg"
+            android:text="GIVE MONEY"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:id="@+id/btn_borrow_addLoan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_green_bg"
+            android:text="BORROW MONEY"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
+
+</LinearLayout>
+
+

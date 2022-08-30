@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".GoalPausedFragment"
+    android:background="@color/frame_bg">
+
+    <GridLayout
+        android:id="@+id/gridLayout_goalPaused"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="3">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_goalPaused1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/cardview_bg"
+            app:cardCornerRadius="15dp"
+            android:layout_column="0"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="10dp">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout_goalPaused1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/sample_img_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/green_circle_bg"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_house" />
+
+                <TextView
+                    android:id="@+id/textView_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_toRightOf="@id/sample_img_goalPaused1"
+                    android:text="New House"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/targetDate_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textView_goalPaused1"
+                    android:layout_marginStart="16dp"
+                    android:layout_toRightOf="@id/sample_img_goalPaused1"
+                    android:text="Target date on Jul 28, 2020"
+                    android:textColor="@color/light_gray_text" />
+
+                <TextView
+                    android:id="@+id/percentProgress_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="75%"
+                    android:textColor="@color/green_cyan_text"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/date_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/percentProgress_goalPaused1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:text="Mar 15"
+                    android:textColor="@color/light_gray_text" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_goalPaused1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/targetDate_goalPaused1"
+                    android:background="@drawable/linestroke_gray">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/earned_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_goalPaused1"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Earned"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/remaining_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_goalPaused1"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="16dp"
+                    android:text="Remaining"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/goal_goal1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout_goalPaused1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Goal"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/earnedAmount_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_goalPaused1"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginStart="16dp"
+                    android:text="₱150,000"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/remainingAmount_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_goalPaused1"
+                    android:layout_centerInParent="true"
+                    android:text="₱50,000"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/goalAmount_goalPaused1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earned_goalPaused1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
+                    android:text="₱1,000,000"
+                    android:textColor="@color/green_dark_text"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar_goalPaused1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/earnedAmount_goalPaused1"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="16dp"
+                    android:progressDrawable="@drawable/custom_progress_greenbg" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+
+    </GridLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_goalPaused"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:backgroundTint="#007FFF"
+        android:clickable="true"
+        android:src="@drawable/ic_add"
+        android:tint="@color/white"
+        android:visibility="visible"
+        app:fabCustomSize="60dp"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_constraintBottom_toBottomOf="@+id/gridLayout"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</FrameLayout>
