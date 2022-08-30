@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Notifications">
+
+    <!--<ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/notificationstext"
+        android:scaleType="fitXY" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="167dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
+            app:title="Notifications"
+            app:titleTextColor="@color/white" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="24dp">
+
+            <TextView
+                android:id="@+id/textView31"
+                android:layout_width="147dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="216dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Ducatus Reminder"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView37"
+                android:layout_width="267dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="94dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Notify the user depending on the time they"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="54dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="313dp"
+                android:layout_marginTop="27dp"
+                android:layout_marginEnd="-4dp" />
+
+            <TextView
+                android:id="@+id/textView38"
+                android:layout_width="274dp"
+                android:layout_height="17dp"
+                android:layout_below="@+id/textView37"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="87dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="had set. This will remind them to write down"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textView59"
+                android:layout_width="282dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView38"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="80dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="expenses for the day."
+                android:textColor="#808080"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="20dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="24dp">
+
+            <Switch
+                android:id="@+id/switch2"
+                android:layout_width="54dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="313dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="-4dp" />
+
+            <TextView
+                android:id="@+id/textView60"
+                android:layout_width="141dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="222dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Budget Reminder"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView61"
+                android:layout_width="297dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView60"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="64dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Enable Budget Reminder to help user control"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textView62"
+                android:layout_width="146dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView61"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="215dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="overspending"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="20dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="24dp">
+
+            <TextView
+                android:id="@+id/textView63"
+                android:layout_width="205dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="152dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Bills and Payment Reminder"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView64"
+                android:layout_width="267dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="94dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Enable Bills and Payment Reminder about"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <Switch
+                android:id="@+id/switch3"
+                android:layout_width="54dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="313dp"
+                android:layout_marginTop="27dp"
+                android:layout_marginEnd="-4dp" />
+
+            <TextView
+                android:id="@+id/textView65"
+                android:layout_width="274dp"
+                android:layout_height="17dp"
+                android:layout_below="@+id/textView64"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="87dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="upcoming due dates and subscription"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textView66"
+                android:layout_width="282dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView65"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="80dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="payments"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider5"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="20dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="24dp">
+
+            <Switch
+                android:id="@+id/switch5"
+                android:layout_width="54dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="313dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="-4dp" />
+
+            <TextView
+                android:id="@+id/textView67"
+                android:layout_width="208dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="149dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Debts and Loan Reminder"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView68"
+                android:layout_width="297dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView67"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="64dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Enable Debts and Loan Reminder about"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textView69"
+                android:layout_width="278dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView68"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="79dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="upcoming debt and loan due dates"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider6"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

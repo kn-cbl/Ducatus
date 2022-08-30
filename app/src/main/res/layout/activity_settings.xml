@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Settings">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#F8F8F8"
+        tools:layout_editor_absoluteX="18dp"
+        tools:layout_editor_absoluteY="48dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
+            app:title="Settings"
+            app:titleTextColor="@color/white" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="25dp">
+
+            <ImageView
+                android:id="@+id/imageView11"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                app:srcCompat="@drawable/user_settings" />
+
+            <TextView
+                android:id="@+id/textView34"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView11"
+                android:fontFamily="@font/inter_medium"
+                android:text="User Profile"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView35"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView11"
+                android:fontFamily="@font/inter_medium"
+                android:text="Change Profile Photo, Email, or Mobile Number"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="18dp">
+
+            <ImageView
+                android:id="@+id/imageView12"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                app:srcCompat="@drawable/lock" />
+
+            <TextView
+                android:id="@+id/textView36"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView12"
+                android:fontFamily="@font/inter_medium"
+                android:text="Password"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView39"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView12"
+                android:fontFamily="@font/inter_medium"
+                android:text="Change your old password"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="18dp"/>
+
+        <TextView
+            android:id="@+id/textView40"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="General Settings"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="7dp"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="14sp"
+            android:textColor="#545454"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imageView13"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                app:srcCompat="@drawable/accounts" />
+
+            <TextView
+                android:id="@+id/textView41"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView13"
+                android:fontFamily="@font/inter_medium"
+                android:text="Accounts"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView42"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView13"
+                android:fontFamily="@font/inter_medium"
+                android:text="Manage user accounts, change color and "
+                android:textSize="12sp"
+                android:textColor="#808080"/>
+
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="296dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView42"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="41dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="descriptions"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imageView14"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                app:srcCompat="@drawable/category" />
+
+            <TextView
+                android:id="@+id/textView44"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView14"
+                android:fontFamily="@font/inter_medium"
+                android:text="Categories"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView45"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView14"
+                android:fontFamily="@font/inter_medium"
+                android:text="Edit category names, change icons and color, and"
+                android:textSize="12sp"
+                android:textColor="#808080"/>
+
+            <TextView
+                android:id="@+id/textView46"
+                android:layout_width="296dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView45"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="41dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="create new category and subcategories"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="26dp"/>
+
+        <TextView
+            android:id="@+id/textView47"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Other Settings"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="14sp"
+            android:textColor="#545454"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                app:srcCompat="@drawable/notif" />
+
+            <TextView
+                android:id="@+id/textView48"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView15"
+                android:fontFamily="@font/inter_medium"
+                android:text="Notifications"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView15"
+                android:fontFamily="@font/inter_medium"
+                android:text="Configure notifications according to ways you want"
+                android:textSize="12sp"
+                android:textColor="#808080"/>
+
+            <TextView
+                android:id="@+id/textView50"
+                android:layout_width="296dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView49"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="41dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="to receive them"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="24dp">
+
+            <ImageView
+                android:id="@+id/imageView16"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="-5dp"
+                app:srcCompat="@drawable/privacy" />
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="91dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="230dp"
+                android:layout_toEndOf="@+id/imageView16"
+                android:fontFamily="@font/inter_medium"
+                android:text="Privacy"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView52"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView16"
+                android:fontFamily="@font/inter_medium"
+                android:text="Review and manage your personal data and privacy"
+                android:textSize="12sp"
+                android:textColor="#808080"/>
+
+            <TextView
+                android:id="@+id/textView53"
+                android:layout_width="296dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView52"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="41dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="settings"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="25dp">
+
+            <ImageView
+                android:id="@+id/imageView17"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="-5dp"
+                app:srcCompat="@drawable/about" />
+
+            <TextView
+                android:id="@+id/textView55"
+                android:layout_width="123dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="198dp"
+                android:layout_toEndOf="@+id/imageView17"
+                android:fontFamily="@font/inter_medium"
+                android:text="About Ducatus"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView56"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView17"
+                android:fontFamily="@font/inter_medium"
+                android:text="Learn more about Ducatus"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/imageView18"
+                android:layout_width="33dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="0dp"
+                app:srcCompat="@drawable/logout" />
+
+            <TextView
+                android:id="@+id/textView57"
+                android:layout_width="123dp"
+                android:layout_height="23dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="198dp"
+                android:layout_toEndOf="@+id/imageView18"
+                android:fontFamily="@font/inter_medium"
+                android:text="Logout"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textView58"
+                android:layout_width="300dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="22dp"
+                android:layout_toEndOf="@+id/imageView18"
+                android:fontFamily="@font/inter_medium"
+                android:text="Logout of the application"
+                android:textColor="#808080"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
