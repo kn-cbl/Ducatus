@@ -14,6 +14,9 @@
         android:theme="@style/Theme.Ducatus"
         tools:targetApi="31">
         <activity
+            android:name=".LifeAndEntertainment"
+            android:exported="false" />
+        <activity
             android:name=".Transportation"
             android:exported="true" />
         <activity
