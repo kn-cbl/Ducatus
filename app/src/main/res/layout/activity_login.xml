@@ -13,11 +13,23 @@
         android:scaleType="fitXY"
         app:srcCompat="@drawable/login" />
 
+    <ProgressBar
+        android:id="@+id/pbLogin"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
+        android:indeterminateDrawable="@drawable/progress_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView22"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/blinker_semibold"
+        android:fontFamily="@font/inter_semibold"
         android:text="Don't have an account?"
         android:textAlignment="textEnd"
         android:textColor="#545454"
@@ -30,10 +42,10 @@
         app:layout_constraintVertical_bias="0.94" />
 
     <TextView
-        android:id="@+id/textView23"
+        android:id="@+id/tvSignupLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/blinker_semibold"
+        android:fontFamily="@font/inter_semibold"
         android:text="Sign Up"
         android:textColor="#389583"
         android:textSize="13sp"
@@ -74,7 +86,7 @@
             android:textSize="20sp" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName2"
+            android:id="@+id/etLoginEmailUsername"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
@@ -92,23 +104,24 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/textView16"
+            android:id="@+id/tvLoginErrorEmailUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="35dp"
-            android:fontFamily="@font/blinker_regular"
-            android:text="TextView"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="invisible"
+            android:text="Please enter email or username"
             android:textColor="#FF0000"
             android:textSize="13sp" />
 
         <EditText
-            android:id="@+id/editTextTextPassword2"
+            android:id="@+id/etLoginPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/signin_input"
             android:drawableEnd="@drawable/ic_outline_visibility_24"
@@ -123,14 +136,15 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/textView17"
+            android:id="@+id/tvLoginErrorPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="35dp"
-            android:fontFamily="@font/blinker_regular"
-            android:text="TextView"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="invisible"
+            android:text="Please enter password"
             android:textColor="#FF0000"
             android:textSize="13sp" />
 
@@ -138,40 +152,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="30dp">
 
             <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="wrap_content"
+                android:id="@+id/cbLoginRemember"
+                android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginLeft="0dp"
+                android:layout_marginStart="0dp"
                 android:layout_marginTop="-6dp"
                 android:buttonTint="#BFBFBF"
                 android:scaleX="1"
                 android:scaleY="0.9"
                 android:textAlignment="textStart" />
 
-            0            <TextView
-            android:id="@+id/textView20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="197dp"
-            android:layout_toEndOf="@+id/checkBox"
-            android:fontFamily="@font/inter_semibold"
-            android:text="Remember Me"
-            android:textColor="#545454"
-            android:textSize="12sp" />
-
             <TextView
-                android:id="@+id/textView18"
+                android:id="@+id/textView20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_toEndOf="@+id/cbLoginRemember"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Remember Me"
+                android:textColor="#545454"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="224dp"
                 android:layout_marginEnd="4dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Forgot Password?"
@@ -182,7 +191,7 @@
         </RelativeLayout>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
@@ -205,36 +214,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/line"
-                android:layout_marginTop="40dp"/>
+                android:layout_marginTop="30dp"/>
 
             <TextView
                 android:id="@+id/textView21"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="55dp"
+                android:layout_marginTop="45dp"
                 android:fontFamily="@font/blinker_semibold"
                 android:text="Or"
                 android:textAlignment="center"
                 android:textColor="#818284" />
         </FrameLayout>
 
-        <Button
-            android:id="@+id/button5"
+        <FrameLayout
+            android:id="@+id/flLoginGoogle"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="30dp"
             android:layout_marginRight="30dp"
-            android:background="@drawable/nofill"
-            android:drawableStart="@drawable/google_wrap"
-            android:drawablePadding="-75dp"
-            android:fontFamily="@font/inter_semibold"
-            android:paddingLeft="80dp"
-            android:text="Continue with Google"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="#545454"
-            android:textSize="13sp"/>
+            android:background="@drawable/nofill">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="10dp"
+                android:text="Continue with Google"
+                android:textAllCaps="false"
+                android:textColor="#545454"
+                android:textSize="13sp"
+                android:fontFamily="@font/inter_semibold"
+                app:drawableStartCompat="@drawable/google_wrap" />
+        </FrameLayout>
 
     </LinearLayout>
 

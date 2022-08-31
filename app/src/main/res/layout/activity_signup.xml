@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Signup">
 
     <ImageView
         android:id="@+id/imageView"
@@ -13,11 +13,23 @@
         app:srcCompat="@drawable/signin"
         android:scaleType="fitXY" />
 
+    <ProgressBar
+        android:id="@+id/pbSignup"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="100dp"
+        android:visibility="invisible"
+        android:indeterminateDrawable="@drawable/progress_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/blinker_semibold"
+        android:fontFamily="@font/inter_semibold"
         android:text="Already have an account?"
         android:textAlignment="textEnd"
         android:textColor="#545454"
@@ -30,10 +42,10 @@
         app:layout_constraintVertical_bias="0.93" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/tvLoginLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/blinker_semibold"
+        android:fontFamily="@font/inter_semibold"
         android:text="Log In"
         android:textColor="#389583"
         android:textSize="13sp"
@@ -68,19 +80,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
-            android:fontFamily="@font/blinker_regular"
+            android:fontFamily="@font/inter_regular"
             android:letterSpacing="0.04"
             android:text="Sign in to your account"
             android:textAlignment="center"
             android:textColor="#545454"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/etSignupEmail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="51dp"
+            android:layout_marginTop="40dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/signin_input"
             android:ems="10"
@@ -94,23 +106,24 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tvSignupErrorEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="35dp"
-            android:fontFamily="@font/blinker_regular"
-            android:text="TextView"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="invisible"
+            android:text="Please enter email"
             android:textColor="#FF0000"
             android:textSize="13sp" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/etSignupUsername"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/signin_input"
             android:ems="10"
@@ -124,23 +137,24 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tvSignupErrorUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="35dp"
-            android:fontFamily="@font/blinker_regular"
-            android:text="TextView"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="invisible"
+            android:text="Please enter username"
             android:textColor="#FF0000"
             android:textSize="13sp" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/etSignupPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/signin_input"
             android:drawableEnd="@drawable/ic_outline_visibility_24"
@@ -155,23 +169,24 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tvSignupErrorPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="35dp"
-            android:fontFamily="@font/blinker_regular"
-            android:text="TextView"
+            android:fontFamily="@font/inter_regular"
+            android:visibility="invisible"
+            android:text="Please enter password"
             android:textColor="#FF0000"
             android:textSize="13sp" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btnSignup"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/green_button"
             android:fontFamily="@font/inter_bold"
@@ -190,36 +205,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/line"
-                android:layout_marginTop="27dp"/>
+                android:layout_marginTop="20dp"/>
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="43dp"
-                android:fontFamily="@font/blinker_semibold"
+                android:layout_marginTop="33dp"
+                android:fontFamily="@font/inter_semibold"
                 android:text="Or"
                 android:textAlignment="center"
                 android:textColor="#818284" />
         </FrameLayout>
 
-        <Button
-            android:id="@+id/button3"
+        <FrameLayout
+            android:id="@+id/flSignupGoogle"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
-            android:background="@drawable/nofill"
-            android:drawableStart="@drawable/google_wrap"
-            android:drawablePadding="-75dp"
-            android:fontFamily="@font/inter_semibold"
-            android:paddingLeft="80dp"
-            android:text="Continue with Google"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="#545454"
-            android:textSize="13sp" />
+            android:background="@drawable/nofill">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="10dp"
+                android:text="Continue with Google"
+                android:textAllCaps="false"
+                android:textColor="#545454"
+                android:textSize="13sp"
+                android:fontFamily="@font/inter_semibold"
+                app:drawableStartCompat="@drawable/google_wrap" />
+        </FrameLayout>
 
     </LinearLayout>
 

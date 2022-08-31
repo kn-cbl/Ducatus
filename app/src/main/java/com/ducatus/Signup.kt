@@ -1,15 +1,11 @@
 package com.ducatus
 
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -26,9 +22,11 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_signup.*
 
-class Login : AppCompatActivity() {
+class Signup : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var gso: GoogleSignInOptions
@@ -36,7 +34,7 @@ class Login : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_signup)
 
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
@@ -44,19 +42,15 @@ class Login : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
-        tvForgotPassword.setOnClickListener {
-            forgotPasswordLink()
+        tvLoginLink.setOnClickListener {
+            loginLink()
         }
 
-        tvSignupLink.setOnClickListener {
-            signupLink()
-        }
-
-        btnLogin.setOnClickListener {
+        btnSignup.setOnClickListener {
             validateCredentials()
         }
 
-        flLoginGoogle.setOnClickListener {
+        flSignupGoogle.setOnClickListener {
             signInWithGoogle()
         }
     }
@@ -66,90 +60,107 @@ class Login : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun forgotPasswordLink() {
-        startActivity(Intent(this, ResetPasswordEmail::class.java))
+    private fun loginLink() {
+        startActivity(Intent(this, Login::class.java))
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun signupLink() {
-        intent = Intent(this, Signup::class.java)
-        startActivity(intent)
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-    }
-
+    // User Manual Sign In
     private fun validateCredentials() {
-        pbLogin.visibility = View.VISIBLE
+        pbSignup.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-        val emailUsername = etLoginEmailUsername.text.toString().trim {it <= ' '}
-        val password = etLoginPassword.text.toString().trim {it <= ' '}
+        val username = etSignupUsername.text.toString().trim {it <= ' '}
+        val email = etSignupEmail.text.toString().trim {it <= ' '}
+        val password = etSignupPassword.text.toString().trim {it <= ' '}
 
         when {
-            TextUtils.isEmpty(emailUsername) -> {
-                pbLogin.visibility = View.INVISIBLE
+            TextUtils.isEmpty(username) -> {
+                pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvLoginErrorEmailUsername.visibility = View.VISIBLE
+                tvSignupErrorUsername.visibility = View.VISIBLE
+            }
+
+            TextUtils.isEmpty(email) -> {
+                pbSignup.visibility = View.INVISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                tvSignupErrorEmail.visibility = View.VISIBLE
             }
 
             TextUtils.isEmpty(password) -> {
-                pbLogin.visibility = View.INVISIBLE
+                pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvLoginErrorPassword.visibility = View.VISIBLE
+                tvSignupErrorPassword.visibility = View.VISIBLE
             }
+
             else -> {
-                tvLoginErrorEmailUsername.visibility = View.INVISIBLE
-                tvLoginErrorPassword.visibility = View.INVISIBLE
+                tvSignupErrorUsername.visibility = View.INVISIBLE
+                tvSignupErrorEmail.visibility = View.INVISIBLE
+                tvSignupErrorPassword.visibility = View.INVISIBLE
 
-                if (!emailUsername.contains("@")) {
-                    database = Firebase.database
-                    databaseReference = database.getReference("users")
+                database = Firebase.database
+                databaseReference = database.getReference("users")
 
-                    databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            for(child in snapshot.children) {
-                                if(emailUsername == child.child("username").value.toString()) {
-                                    login(child.child("email").value.toString(), password)
-                                }
+                databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        var usernameExists = false
+
+                        for (child in snapshot.children) {
+                            if(username == child.child("username").value.toString()) {
+                                usernameExists = true
+                                break
                             }
                         }
-                        override fun onCancelled(error: DatabaseError) {
-                            pbLogin.visibility = View.INVISIBLE
-                            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                            Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_LONG).show()
+
+                        if (!usernameExists) {
+                            createUser(username, email, password)
                         }
-                    })
-                }
-                else {
-                    login(emailUsername, password)
-                }
+                        else {
+                            pbSignup.visibility = View.INVISIBLE
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                            Log.e("databaseReference", "username already exists")
+                            Toast.makeText(applicationContext, "Username already exists", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        pbSignup.visibility = View.INVISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                        Log.e("databaseReference", error.toString())
+                        Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_LONG).show()
+                    }
+                })
             }
         }
     }
 
-    private fun login(email: String, password: String) {
+    private fun createUser(username: String, email: String, password: String) {
         auth = Firebase.auth
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser: FirebaseUser = task.result!!.user!!
-                    isEmailVerified(firebaseUser)
-                }
-                else {
-                    pbLogin.visibility = View.INVISIBLE
+                    storeDataToRTDB(firebaseUser.uid, email, password, username)
+
+                    pbSignup.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                    Log.e("login", task.exception!!.message.toString())
+                    val intent = Intent(this, VerifyEmail::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    finish()
+                }
+                else {
+                    pbSignup.visibility = View.INVISIBLE
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                    Log.e("createUser", task.exception!!.message.toString())
                     Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_LONG).show()
                 }
             }
-    }
-
-    private fun storeDataToRTDB(uid: String, email: String, username: String) {
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-
-        val user = User(uid, email, username, null)
-        databaseReference.child(uid).setValue(user)
     }
 
     // Google Sign In
@@ -177,7 +188,7 @@ class Login : AppCompatActivity() {
 
                 userExists(account)
 
-                pbLogin.visibility = View.INVISIBLE
+                pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 val intent = Intent(this, Homescreen::class.java)
@@ -193,32 +204,23 @@ class Login : AppCompatActivity() {
         }
     }
 
+    // Check if signed in user has data in database
     private fun userExists(account: GoogleSignInAccount) {
         auth = Firebase.auth
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(account.email.toString())
             .addOnCompleteListener { task ->
-                if(task.result.signInMethods?.isEmpty()!!) {
-                    storeDataToRTDB(account.id.toString(), account.email.toString(), account.displayName.toString())
+                if (task.result.signInMethods?.isEmpty()!!) {
+                    storeDataToRTDB(account.id.toString(), account.email.toString(), null, account.displayName.toString())
                 }
             }
     }
 
-    private fun isEmailVerified(firebaseUser: FirebaseUser) {
-        pbLogin.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    private fun storeDataToRTDB(uid: String, email: String, password: String?, username: String) {
+        crypto = Crypto()
+        database = Firebase.database
+        databaseReference = database.getReference("users")
 
-        if (firebaseUser.isEmailVerified) {
-            val intent = Intent(this, Homescreen::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("loginMethod", 1)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-        else {
-            val intent = Intent(this, VerifyEmail::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
+        val user = User(uid, email, crypto.encrypt(password!!), username)
+        databaseReference.child(uid).setValue(user)
     }
 }
