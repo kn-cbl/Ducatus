@@ -64,13 +64,10 @@
             android:name=".OtpMobileNumber"
             android:exported="true" />
         <activity
-            android:name=".OtpEmail"
+            android:name=".VerifyOTP"
             android:exported="true" />
         <activity
             android:name=".Notifications"
-            android:exported="true" />
-        <activity
-            android:name=".Login"
             android:exported="true" />
         <activity
             android:name=".EditProfile"
@@ -80,7 +77,7 @@
             android:name=".CreateNewPassword"
             android:exported="true" />
         <activity
-            android:name=".ConfirmEmail"
+            android:name=".VerifyEmail"
             android:exported="true" />
         <activity
             android:name=".AccountSettingsAddAccount"
@@ -176,7 +173,10 @@
             android:exported="true"
             android:theme="@style/floatingText.Ducatus" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Signup"
+            android:exported="true" />
+        <activity
+            android:name=".Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -184,6 +184,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
