@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -50,6 +48,7 @@ class VerifyEmail : AppCompatActivity() {
         firebaseUser.sendEmailVerification().addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.e("sendEmailVerification", task.exception!!.message.toString())
+                tvVerifyEmailError.text = task.exception!!.message
             }
         }
     }
@@ -64,8 +63,9 @@ class VerifyEmail : AppCompatActivity() {
             else {
                 pbVerifyEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
                 Log.e("reloadUser", task.exception!!.message.toString())
-                Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_LONG).show()
+                tvVerifyEmailError.text = task.exception!!.message
             }
         }
     }

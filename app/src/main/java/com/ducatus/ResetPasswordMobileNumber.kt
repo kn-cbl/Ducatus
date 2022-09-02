@@ -1,6 +1,7 @@
 package com.ducatus
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,10 +11,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_reset_password_mobile_number.*
+import java.util.regex.Pattern
 
 class ResetPasswordMobileNumber : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase

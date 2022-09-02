@@ -7,8 +7,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.view.isVisible
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -21,7 +19,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_signup.*
 
 class Signup : AppCompatActivity() {
@@ -67,8 +64,10 @@ class Signup : AppCompatActivity() {
 
     // User Manual Sign In
     private fun validateCredentials() {
-        pbSignup.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        tvSignupErrorAuth.text = ""
+        tvSignupErrorUsername.visibility = View.INVISIBLE
+        tvSignupErrorEmail.visibility = View.INVISIBLE
+        tvSignupErrorPassword.visibility = View.INVISIBLE
 
         val username = etSignupUsername.text.toString().trim {it <= ' '}
         val email = etSignupEmail.text.toString().trim {it <= ' '}
@@ -94,9 +93,8 @@ class Signup : AppCompatActivity() {
             }
 
             else -> {
-                tvSignupErrorUsername.visibility = View.INVISIBLE
-                tvSignupErrorEmail.visibility = View.INVISIBLE
-                tvSignupErrorPassword.visibility = View.INVISIBLE
+                pbSignup.visibility = View.VISIBLE
+                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 database = Firebase.database
                 databaseReference = database.getReference("users")
@@ -120,7 +118,7 @@ class Signup : AppCompatActivity() {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                             Log.e("databaseReference", "username already exists")
-                            Toast.makeText(applicationContext, "Username already exists", Toast.LENGTH_SHORT).show()
+                            tvSignupErrorAuth.text = "Username already exists"
                         }
                     }
 
@@ -129,7 +127,7 @@ class Signup : AppCompatActivity() {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                         Log.e("databaseReference", error.toString())
-                        Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_LONG).show()
+                        tvSignupErrorAuth.text = error.message
                     }
                 })
             }
@@ -158,7 +156,7 @@ class Signup : AppCompatActivity() {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     Log.e("createUser", task.exception!!.message.toString())
-                    Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_LONG).show()
+                    tvSignupErrorAuth.text = task.exception!!.message
                 }
             }
     }
@@ -183,7 +181,7 @@ class Signup : AppCompatActivity() {
         try {
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             if (account != null) {
-                pbLogin.visibility = View.VISIBLE
+                pbSignup.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 userExists(account)

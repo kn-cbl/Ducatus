@@ -7,7 +7,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -53,8 +52,8 @@ class ResetPasswordEmail : AppCompatActivity() {
     }
 
     private fun resetPassword() {
-        pbResetPasswordEmail.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        tvResetPasswordEmailErrorAuth.text = ""
+        tvResetPasswordEmailError.visibility = View.INVISIBLE
 
         val email = etResetPasswordEmail.text.toString().trim {it <= ' '}
 
@@ -66,12 +65,13 @@ class ResetPasswordEmail : AppCompatActivity() {
             }
 
             else -> {
-                tvResetPasswordEmailError.visibility = View.INVISIBLE
+                pbResetPasswordEmail.visibility = View.VISIBLE
+                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 auth = Firebase.auth
                 FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
-                    .addOnCompleteListener { task ->
-                        if(!task.result.signInMethods?.isEmpty()!!) {
+                    .addOnSuccessListener { task ->
+                        if(!task.signInMethods?.isEmpty()!!) {
                             appExecutors = AppExecutors()
                             sendEmail(email)
                         }
@@ -80,8 +80,15 @@ class ResetPasswordEmail : AppCompatActivity() {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                             Log.e("authEmail", "user does not exist")
-                            Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
+                            tvResetPasswordEmailErrorAuth.text = "User does not exist"
                         }
+                    }
+                    .addOnFailureListener {
+                        pbResetPasswordEmail.visibility = View.INVISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                        Log.e("authEmail", "user does not exist")
+                        tvResetPasswordEmailErrorAuth.text = "User does not exist"
                     }
             }
         }
@@ -117,9 +124,8 @@ class ResetPasswordEmail : AppCompatActivity() {
                     pbResetPasswordEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                    val intent = Intent(this, VerifyOTP::class.java)
+                    val intent = Intent(this, VerifyOTPEmail::class.java)
                     intent.putExtra("code", otp)
-                    intent.putExtra("method", 1)
                     intent.putExtra("email", email)
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -130,7 +136,7 @@ class ResetPasswordEmail : AppCompatActivity() {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 Log.e("sendEmailError", e.toString())
-                Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
+                tvResetPasswordEmailErrorAuth.text = e.message
             }
         }
     }

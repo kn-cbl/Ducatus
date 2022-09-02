@@ -15,8 +15,8 @@
 
     <ProgressBar
         android:id="@+id/pbVerifyEmail"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="150dp"
         android:indeterminateDrawable="@drawable/progress_bg"
         android:visibility="invisible"
@@ -25,6 +25,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tvVerifyEmailError"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/inter_regular"
+        android:text=""
+        android:textColor="#FF5E52"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnResendEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/btnResendEmail"
         android:layout_width="240dp"
@@ -32,7 +47,7 @@
         android:layout_marginBottom="70dp"
         android:background="@drawable/gold_button"
         android:fontFamily="@font/inter_medium"
-        android:text="Re-send Email Verification"
+        android:text="Resend Email Verification"
         android:textAllCaps="false"
         android:textColor="#E6D0AC"
         android:textSize="13sp"
@@ -53,18 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:fontFamily="@font/librebodoni_bold"
-            android:text="Confirm"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="40sp" />
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-8dp"
-            android:fontFamily="@font/librebodoni_bold"
-            android:text="your Email"
+            android:text="Confirm\nyour Email"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="40sp" />
@@ -74,33 +78,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="23dp"
-            android:fontFamily="@font/inter_medium"
-            android:text="Please check your inbox for the"
+            android:fontFamily="@font/inter_regular"
+            android:text="Please check your inbox for the\nemail verification. Click the link in the\nemail to confirm your email address."
             android:textAlignment="center"
             android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-3dp"
-            android:fontFamily="@font/inter_medium"
-            android:text="email verification. Click the link in the"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-4dp"
-            android:fontFamily="@font/inter_medium"
-            android:text="email to confirm your email address."
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
