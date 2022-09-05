@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Income">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
+            app:title="Income"
+            app:titleTextColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageView22"
+                    android:layout_width="132dp"
+                    android:layout_height="130dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="135dp"
+                    android:layout_marginTop="28dp"
+                    app:srcCompat="@drawable/income" />
+
+                <ImageView
+                    android:id="@+id/imageView38"
+                    android:layout_width="31dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginTop="77dp"
+                    android:layout_marginEnd="33dp"
+                    android:layout_toEndOf="@+id/imageView22"
+                    app:srcCompat="@drawable/ic_baseline_mode_24" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/divider14"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="20dp"
+                android:background="?android:attr/listDivider" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageView41"
+                    android:layout_width="31dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="33dp"
+                    app:srcCompat="@drawable/ic_baseline_mode_24" />
+
+                <TextView
+                    android:id="@+id/textView100"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="Name"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView101"
+                    android:layout_width="329dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="35dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Income"
+                    android:textColor="#000000"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/divider15"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="13dp"
+                android:background="?android:attr/listDivider" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageView42"
+                    android:layout_width="31dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="33dp"
+                    app:srcCompat="@drawable/ic_baseline_mode_24" />
+
+                <TextView
+                    android:id="@+id/textView102"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="Category Nature"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView103"
+                    android:layout_width="329dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="35dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Want"
+                    android:textColor="#000000"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/divider16"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="13dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/textView104"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#D6D6D6"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="SUBCATEGORIES" />
+
+            <View
+                android:id="@+id/divider17"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="0dp"
+                android:background="?android:attr/listDivider" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView27"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/checks" />
+
+                        <TextView
+                            android:id="@+id/textView85"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView27"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Checks, coupons"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider18"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView28"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/childsupport" />
+
+                        <TextView
+                            android:id="@+id/textView86"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView28"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Child Support"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider19"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView29"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/dues" />
+
+                        <TextView
+                            android:id="@+id/textView87"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView29"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Dues and grants"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider20"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView30"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/gifts" />
+
+                        <TextView
+                            android:id="@+id/textView88"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView30"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Gifts"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider21"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView31"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/interests" />
+
+                        <TextView
+                            android:id="@+id/textView89"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView31"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Interests, dividends"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider22"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView32"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/lending" />
+
+                        <TextView
+                            android:id="@+id/textView90"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView32"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Lending, renting"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider23"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView33"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/lotterygambling" />
+
+                        <TextView
+                            android:id="@+id/textView91"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView33"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Lottery, gambling"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider24"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView34"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/refunds" />
+
+                        <TextView
+                            android:id="@+id/textView92"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView34"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Refunds (tax, purchase)"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider25"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView35"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/rentalincome" />
+
+                        <TextView
+                            android:id="@+id/textView93"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView35"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Rental income"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider26"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView36"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/sale" />
+
+                        <TextView
+                            android:id="@+id/textView94"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView36"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Pets, Sale"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider27"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView37"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/wage" />
+
+                        <TextView
+                            android:id="@+id/textView95"
+                            android:layout_width="254dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="69dp"
+                            android:layout_toEndOf="@+id/imageView37"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="Wage, invoices"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider28"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="5dp"
+                        android:background="?android:attr/listDivider" />
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
