@@ -6,18 +6,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import com.ducatus.databinding.ActivityVerifyEmailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_verify_email.*
 
 class VerifyEmail : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityVerifyEmailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verify_email)
+
+        binding = ActivityVerifyEmailBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
@@ -26,7 +31,7 @@ class VerifyEmail : AppCompatActivity() {
             sendEmail(firebaseUser)
         }
 
-        btnResendEmail.setOnClickListener {
+        binding.btnResendEmail.setOnClickListener {
             if (firebaseUser != null) {
                 resendEmail(firebaseUser)
             }
@@ -48,11 +53,12 @@ class VerifyEmail : AppCompatActivity() {
         firebaseUser.sendEmailVerification().addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.e("sendEmailVerification", task.exception!!.message.toString())
-                tvVerifyEmailError.text = task.exception!!.message
+                binding.tvVerifyEmailError.text = task.exception!!.message
             }
         }
     }
 
+    // reload email verified status of user
     private fun reloadUser() {
         var firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         firebaseUser?.reload()?.addOnCompleteListener { task ->
@@ -61,24 +67,24 @@ class VerifyEmail : AppCompatActivity() {
                 isEmailVerified(firebaseUser!!)
             }
             else {
-                pbVerifyEmail.visibility = View.INVISIBLE
+                binding.pbVerifyEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 Log.e("reloadUser", task.exception!!.message.toString())
-                tvVerifyEmailError.text = task.exception!!.message
+                binding.tvVerifyEmailError.text = task.exception!!.message
             }
         }
     }
 
     private fun resendEmail(firebaseUser: FirebaseUser) {
-        pbVerifyEmail.visibility = View.VISIBLE
+        binding.pbVerifyEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         sendEmail(firebaseUser)
     }
 
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         if (firebaseUser.isEmailVerified) {
-            pbVerifyEmail.visibility = View.INVISIBLE
+            binding.pbVerifyEmail.visibility = View.INVISIBLE
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
             val intent = Intent(this, Homescreen::class.java)

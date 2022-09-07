@@ -9,18 +9,19 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.databinding.ActivityVerifyOtpEmailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_verify_otp_email.*
 import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class VerifyOTPEmail : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityVerifyOtpEmailBinding
     private lateinit var appExecutors: AppExecutors
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
@@ -32,20 +33,22 @@ class VerifyOTPEmail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verify_otp_email)
 
-        tvVerifyOTPUserEmail.text = intent.getStringExtra("email").toString()
+        binding = ActivityVerifyOtpEmailBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.tvVerifyOTPUserEmail.text = intent.getStringExtra("email").toString()
         generatedOTP = intent.getStringExtra("code").toString()
 
-        inputObserver()
-
-        imgBtnVerifyOTPEmailBack.setOnClickListener {
+        binding.imgBtnVerifyOTPEmailBack.setOnClickListener {
             onBackPressed()
         }
 
-        btnVerifyOTPEmail.setOnClickListener {
+        binding.btnVerifyOTPEmail.setOnClickListener {
             verifyCode(generatedOTP)
         }
 
-        tvResendOTPEmail.setOnClickListener {
+        binding.tvResendOTPEmail.setOnClickListener {
             resendOTP()
         }
     }
@@ -55,55 +58,28 @@ class VerifyOTPEmail : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    // Observe user input and pass to next edit text
-    private fun inputObserver() {
-        val editText: Array<EditText> = arrayOf(etOTPEmail1, etOTPEmail2, etOTPEmail3, etOTPEmail4)
-
-        etOTPEmail1.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[1].requestFocus()
-        }
-
-        etOTPEmail2.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[2].requestFocus()
-            else if (text.isEmpty()) editText[0].requestFocus()
-        }
-
-        etOTPEmail3.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[3].requestFocus()
-            else if (text.isEmpty()) editText[1].requestFocus()
-        }
-
-        etOTPEmail4.doOnTextChanged { text, start, count, after ->
-            if (text!!.isEmpty()) editText[2].requestFocus()
-        }
-    }
-
     private fun verifyCode(generatedOTP: String) {
-        tvVerifyOTPEmailError.text = ""
-        pbVerifyOTPEmail.visibility = View.VISIBLE
+        binding.tvVerifyOTPEmailError.text = ""
+        binding.pbVerifyOTPEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-        val otp1 = etOTPEmail1.text.toString().trim {it <= ' '}
-        val otp2 = etOTPEmail2.text.toString().trim {it <= ' '}
-        val otp3 = etOTPEmail3.text.toString().trim {it <= ' '}
-        val otp4 = etOTPEmail4.text.toString().trim {it <= ' '}
+        val code = binding.etOTPEmail.text.toString().trim {it <= ' '}
 
         when {
-            otp1.isEmpty() || otp2.isEmpty() || otp3.isEmpty() || otp4.isEmpty() -> {
-                pbVerifyOTPEmail.visibility = View.INVISIBLE
+            code.isEmpty() -> {
+                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvVerifyOTPEmailError.text = "Invalid code, please try again"
+                binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
             }
 
             else -> {
-                val code = otp1 + otp2 + otp3 + otp4
                 if(code == generatedOTP) {
                     readData()
                 }
                 else {
-                    pbVerifyOTPEmail.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    tvVerifyOTPEmailError.text = "Invalid code, please try again"
+                    binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
                 }
             }
         }
@@ -128,17 +104,17 @@ class VerifyOTPEmail : AppCompatActivity() {
                     login(email, password)
                 }
                 else {
-                    pbVerifyOTPEmail.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                pbVerifyOTPEmail.visibility = View.INVISIBLE
+                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                Log.e("databaseReference", error.message)
-                tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                Log.e("databaseError", error.message)
+                binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
             }
         })
     }
@@ -156,11 +132,11 @@ class VerifyOTPEmail : AppCompatActivity() {
                     finish()
                 }
                 else {
-                    pbVerifyOTPEmail.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     Log.e("authError", "Auth failed")
-                    tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
                 }
             }
     }
@@ -171,7 +147,7 @@ class VerifyOTPEmail : AppCompatActivity() {
     }
 
     private fun sendEmail(email: String){
-        pbVerifyOTPEmail.visibility = View.VISIBLE
+        binding.pbVerifyOTPEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
         appExecutors.diskIO().execute {
@@ -202,18 +178,17 @@ class VerifyOTPEmail : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    pbVerifyOTPEmail.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
                     Toast.makeText(this, "Successfully resent verification code", Toast.LENGTH_SHORT).show()
                 }
             }
             catch (e: MessagingException) {
-                pbVerifyOTPEmail.visibility = View.INVISIBLE
+                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 Log.e("sendEmailError", e.toString())
-                tvVerifyOTPEmailError.text = e.message
+                binding.tvVerifyOTPEmailError.text = e.message
             }
         }
     }

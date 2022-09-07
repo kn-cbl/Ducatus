@@ -7,10 +7,10 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import com.ducatus.databinding.ActivityResetPasswordEmailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_reset_password_email.*
 import javax.mail.Message
 import javax.mail.MessagingException
 import javax.mail.PasswordAuthentication
@@ -21,6 +21,7 @@ import javax.mail.internet.MimeMessage
 
 class ResetPasswordEmail : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityResetPasswordEmailBinding
     private lateinit var appExecutors: AppExecutors
     private lateinit var mailConfig: MailConfig
 
@@ -28,16 +29,23 @@ class ResetPasswordEmail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password_email)
 
-        tvResetPasswordMobileLink.setOnClickListener {
+        binding = ActivityResetPasswordEmailBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        generateOTP()
+
+        binding.tvResetPasswordMobileLink.setOnClickListener {
             resetMobileLink()
         }
 
-        imgBtnResetPasswordEmailBack.setOnClickListener {
-            onBackPressed()
+        binding.imgBtnResetPasswordEmailBack.setOnClickListener {
+            startActivity(Intent(this, Login::class.java))
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
-        btnResetPasswordEmail.setOnClickListener {
-            resetPassword()
+        binding.btnResetPasswordEmail.setOnClickListener {
+            // validate credentials -> send email with generated otp
+            validateCredentials()
         }
     }
 
@@ -51,21 +59,21 @@ class ResetPasswordEmail : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun resetPassword() {
-        tvResetPasswordEmailErrorAuth.text = ""
-        tvResetPasswordEmailError.visibility = View.INVISIBLE
+    private fun validateCredentials() {
+        binding.tvResetPasswordEmailErrorAuth.text = ""
+        binding.tvResetPasswordEmailError.visibility = View.INVISIBLE
 
-        val email = etResetPasswordEmail.text.toString().trim {it <= ' '}
+        val email = binding.etResetPasswordEmail.text.toString().trim {it <= ' '}
 
         when {
             TextUtils.isEmpty(email) -> {
-                pbResetPasswordEmail.visibility = View.INVISIBLE
+                binding.pbResetPasswordEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvResetPasswordEmailError.visibility = View.VISIBLE
+                binding.tvResetPasswordEmailError.visibility = View.VISIBLE
             }
 
             else -> {
-                pbResetPasswordEmail.visibility = View.VISIBLE
+                binding.pbResetPasswordEmail.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 auth = Firebase.auth
@@ -76,19 +84,15 @@ class ResetPasswordEmail : AppCompatActivity() {
                             sendEmail(email)
                         }
                         else {
-                            pbResetPasswordEmail.visibility = View.INVISIBLE
+                            binding.pbResetPasswordEmail.visibility = View.INVISIBLE
                             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                            Log.e("authEmail", "user does not exist")
-                            tvResetPasswordEmailErrorAuth.text = "User does not exist"
+                            binding.tvResetPasswordEmailErrorAuth.text = "User does not exist"
                         }
                     }
                     .addOnFailureListener {
-                        pbResetPasswordEmail.visibility = View.INVISIBLE
+                        binding.pbResetPasswordEmail.visibility = View.INVISIBLE
                         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                        Log.e("authEmail", "user does not exist")
-                        tvResetPasswordEmailErrorAuth.text = "User does not exist"
+                        binding.tvResetPasswordEmailErrorAuth.text = "User does not exist"
                     }
             }
         }
@@ -116,12 +120,12 @@ class ResetPasswordEmail : AppCompatActivity() {
                 val mm = MimeMessage(session)
                 mm.setFrom(InternetAddress(mailConfig.senderEmail))
                 mm.addRecipient(Message.RecipientType.TO, InternetAddress(email))
-                mm.subject = "Test Email"
-                mm.setText("OTP: $otp")
+                mm.subject = "Ducatus Verification Code"
+                mm.setText("$otp is your verification code.")
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    pbResetPasswordEmail.visibility = View.INVISIBLE
+                    binding.pbResetPasswordEmail.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     val intent = Intent(this, VerifyOTPEmail::class.java)
@@ -132,17 +136,17 @@ class ResetPasswordEmail : AppCompatActivity() {
                 }
             }
             catch (e: MessagingException) {
-                pbResetPasswordEmail.visibility = View.INVISIBLE
+                binding.pbResetPasswordEmail.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 Log.e("sendEmailError", e.toString())
-                tvResetPasswordEmailErrorAuth.text = e.message
+                binding.tvResetPasswordEmailErrorAuth.text = e.message
             }
         }
     }
 
     private fun generateOTP(): String {
-        val randomPin = (Math.random() * 9000).toInt() + 1000
+        val randomPin = (Math.random() * 900000).toInt() + 1000
         return randomPin.toString()
     }
 }

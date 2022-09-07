@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import com.ducatus.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,10 +20,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_login.*
 
 class Login : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityLoginBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var gso: GoogleSignInOptions
@@ -38,19 +39,24 @@ class Login : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
-        tvForgotPassword.setOnClickListener {
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.tvForgotPassword.setOnClickListener {
             forgotPasswordLink()
         }
 
-        tvSignupLink.setOnClickListener {
+        binding.tvSignupLink.setOnClickListener {
             signupLink()
         }
 
-        btnLogin.setOnClickListener {
+        binding.btnLogin.setOnClickListener {
+            // validate credentials -> login -> check if user is email verified
             validateCredentials()
         }
 
-        flLoginGoogle.setOnClickListener {
+        binding.flLoginGoogle.setOnClickListener {
             signInWithGoogle()
         }
     }
@@ -72,29 +78,26 @@ class Login : AppCompatActivity() {
     }
 
     private fun validateCredentials() {
-        tvLoginErrorAuth.text = ""
-        tvLoginErrorEmailUsername.visibility = View.INVISIBLE
-        tvLoginErrorPassword.visibility = View.INVISIBLE
+        binding.tvLoginErrorAuth.text = ""
+        binding.tvLoginErrorEmailUsername.visibility = View.INVISIBLE
+        binding.tvLoginErrorPassword.visibility = View.INVISIBLE
 
-        val emailUsername = etLoginEmailUsername.text.toString().trim {it <= ' '}
-        val password = etLoginPassword.text.toString().trim {it <= ' '}
+        val emailUsername = binding.etLoginEmailUsername.text.toString().trim {it <= ' '}
+        val password = binding.etLoginPassword.text.toString().trim {it <= ' '}
 
         when {
             TextUtils.isEmpty(emailUsername) -> {
-                pbLogin.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvLoginErrorEmailUsername.visibility = View.VISIBLE
+                binding.tvLoginErrorEmailUsername.visibility = View.VISIBLE
             }
 
             TextUtils.isEmpty(password) -> {
-                pbLogin.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvLoginErrorPassword.visibility = View.VISIBLE
+                binding.tvLoginErrorPassword.visibility = View.VISIBLE
             }
             else -> {
-                pbLogin.visibility = View.VISIBLE
+                binding.pbLogin.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
+                // check if input is an email or username
                 if (!emailUsername.contains("@")) {
                     database = Firebase.database
                     databaseReference = database.getReference("users")
@@ -114,15 +117,17 @@ class Login : AppCompatActivity() {
                                 login(email, password)
                             }
                             else {
-                                pbLogin.visibility = View.INVISIBLE
+                                binding.pbLogin.visibility = View.INVISIBLE
                                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                                tvLoginErrorAuth.text = "User does not exist"
+                                binding.tvLoginErrorAuth.text = "User does not exist"
                             }
                         }
                         override fun onCancelled(error: DatabaseError) {
-                            pbLogin.visibility = View.INVISIBLE
+                            binding.pbLogin.visibility = View.INVISIBLE
                             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                            tvLoginErrorAuth.text = error.message
+
+                            Log.e("databaseError", error.message)
+                            binding.tvLoginErrorAuth.text = error.message
                         }
                     })
                 }
@@ -142,11 +147,11 @@ class Login : AppCompatActivity() {
                     isEmailVerified(firebaseUser)
                 }
                 else {
-                    pbLogin.visibility = View.INVISIBLE
+                    binding.pbLogin.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     Log.e("login", task.exception!!.message.toString())
-                    tvLoginErrorAuth.text = task.exception!!.message
+                    binding.tvLoginErrorAuth.text = task.exception!!.message
                 }
             }
     }
@@ -179,12 +184,12 @@ class Login : AppCompatActivity() {
         try {
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             if (account != null) {
-                pbLogin.visibility = View.VISIBLE
+                binding.pbLogin.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 userExists(account)
 
-                pbLogin.visibility = View.INVISIBLE
+                binding.pbLogin.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 val intent = Intent(this, Homescreen::class.java)
@@ -211,7 +216,7 @@ class Login : AppCompatActivity() {
     }
 
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
-        pbLogin.visibility = View.INVISIBLE
+        binding.pbLogin.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
         if (firebaseUser.isEmailVerified) {

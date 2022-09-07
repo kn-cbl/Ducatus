@@ -4,15 +4,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.ducatus.databinding.ActivityHomescreenBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.activity_homescreen.*
 
 class Homescreen : AppCompatActivity() {
+    private lateinit var binding: ActivityHomescreenBinding
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
     private var loginMethod: Int = 0
@@ -21,13 +22,17 @@ class Homescreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homescreen)
 
+        binding = ActivityHomescreenBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         loginMethod = intent.getIntExtra("loginMethod", 0)
         if (loginMethod == 1) {
             val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
             if(firebaseUser != null) {
-                tv1.text = firebaseUser.uid
-                tv2.text = firebaseUser.displayName
-                tv3.text = firebaseUser.email
+                binding.tv1.text = firebaseUser.uid
+                binding.tv2.text = firebaseUser.displayName
+                binding.tv3.text = firebaseUser.email
             }
         }
         else if (loginMethod == 2) {
@@ -38,12 +43,12 @@ class Homescreen : AppCompatActivity() {
             gsc = GoogleSignIn.getClient(this, gso)
 
             val account = GoogleSignIn.getLastSignedInAccount(this)!!
-            tv1.text = account.id
-            tv2.text = account.displayName
-            tv3.text = account.email
+            binding.tv1.text = account.id
+            binding.tv2.text = account.displayName
+            binding.tv3.text = account.email
         }
 
-        btnLogout.setOnClickListener {
+        binding.btnLogout.setOnClickListener {
             if (loginMethod == 1) {
                 logout()
             }

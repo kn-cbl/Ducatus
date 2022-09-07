@@ -108,73 +108,87 @@
                     android:textColor="#FF0000"
                     android:textSize="12sp" />
 
-                <LinearLayout
+                <EditText
+                    android:id="@+id/etOTPMobile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="35dp"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="20dp"
+                    android:inputType="number"
+                    android:fontFamily="@font/inter_regular"
+                    android:textSize="25sp"
+                    android:textColor="#505050"
+                    android:padding="10dp"
+                    android:textAlignment="center"/>
 
-                    <EditText
-                        android:id="@+id/etOTPMobile1"
-                        android:layout_width="183dp"
-                        android:layout_height="51dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/otp_input"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:fontFamily="@font/inter_semibold"
-                        android:textSize="25sp"
-                        android:textColor="#000000"
-                        android:padding="10dp"
-                        android:textAlignment="center" />
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:layout_marginLeft="35dp"-->
+<!--                    android:layout_marginRight="35dp"-->
+<!--                    android:layout_marginTop="20dp">-->
 
-                    <EditText
-                        android:id="@+id/etOTPMobile2"
-                        android:layout_width="183dp"
-                        android:layout_height="51dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/otp_input"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:layout_marginLeft="10dp"
-                        android:fontFamily="@font/inter_semibold"
-                        android:textSize="25sp"
-                        android:textColor="#000000"
-                        android:padding="10dp"
-                        android:textAlignment="center"/>
+<!--                    <EditText-->
+<!--                        android:id="@+id/etOTPMobile1"-->
+<!--                        android:layout_width="183dp"-->
+<!--                        android:layout_height="51dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/otp_input"-->
+<!--                        android:ems="10"-->
+<!--                        android:inputType="textPersonName"-->
+<!--                        android:fontFamily="@font/inter_semibold"-->
+<!--                        android:textSize="25sp"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:textAlignment="center" />-->
 
-                    <EditText
-                        android:id="@+id/etOTPMobile3"
-                        android:layout_width="183dp"
-                        android:layout_height="51dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/otp_input"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:layout_marginLeft="10dp"
-                        android:fontFamily="@font/inter_semibold"
-                        android:textSize="25sp"
-                        android:textColor="#000000"
-                        android:padding="10dp"
-                        android:textAlignment="center"/>
+<!--                    <EditText-->
+<!--                        android:id="@+id/etOTPMobile2"-->
+<!--                        android:layout_width="183dp"-->
+<!--                        android:layout_height="51dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/otp_input"-->
+<!--                        android:ems="10"-->
+<!--                        android:inputType="textPersonName"-->
+<!--                        android:layout_marginLeft="10dp"-->
+<!--                        android:fontFamily="@font/inter_semibold"-->
+<!--                        android:textSize="25sp"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:textAlignment="center"/>-->
 
-                    <EditText
-                        android:id="@+id/etOTPMobile4"
-                        android:layout_width="183dp"
-                        android:layout_height="51dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/otp_input"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:layout_marginLeft="10dp"
-                        android:fontFamily="@font/inter_semibold"
-                        android:textSize="25sp"
-                        android:textColor="#000000"
-                        android:padding="10dp"
-                        android:textAlignment="center"/>
-                </LinearLayout>
+<!--                    <EditText-->
+<!--                        android:id="@+id/etOTPMobile3"-->
+<!--                        android:layout_width="183dp"-->
+<!--                        android:layout_height="51dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/otp_input"-->
+<!--                        android:ems="10"-->
+<!--                        android:inputType="textPersonName"-->
+<!--                        android:layout_marginLeft="10dp"-->
+<!--                        android:fontFamily="@font/inter_semibold"-->
+<!--                        android:textSize="25sp"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:textAlignment="center"/>-->
+
+<!--                    <EditText-->
+<!--                        android:id="@+id/etOTPMobile4"-->
+<!--                        android:layout_width="183dp"-->
+<!--                        android:layout_height="51dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/otp_input"-->
+<!--                        android:ems="10"-->
+<!--                        android:inputType="textPersonName"-->
+<!--                        android:layout_marginLeft="10dp"-->
+<!--                        android:fontFamily="@font/inter_semibold"-->
+<!--                        android:textSize="25sp"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:textAlignment="center"/>-->
+<!--                </LinearLayout>-->
 
                 <Button
                     android:id="@+id/btnVerifyOTPMobile"
@@ -196,10 +210,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:fontFamily="@font/inter_semibold"
-                    android:text="Resend Verification Code"
+                    android:fontFamily="@font/inter_regular"
+                    android:enabled="false"
+                    android:text="Resend in 60"
                     android:textAlignment="center"
-                    android:textColor="#545454"
+                    android:textColor="@color/gray_text"
                     android:textSize="14sp" />
 
             </LinearLayout>

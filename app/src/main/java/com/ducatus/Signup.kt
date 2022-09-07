@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import com.ducatus.databinding.ActivitySignupBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,10 +20,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_signup.*
 
 class Signup : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivitySignupBinding
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
@@ -39,15 +40,20 @@ class Signup : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
-        tvLoginLink.setOnClickListener {
+        binding = ActivitySignupBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.tvLoginLink.setOnClickListener {
             loginLink()
         }
 
-        btnSignup.setOnClickListener {
+        binding.btnSignup.setOnClickListener {
+            // validate credentials -> check if user data exists -> create user
             validateCredentials()
         }
 
-        flSignupGoogle.setOnClickListener {
+        binding.flSignupGoogle.setOnClickListener {
             signInWithGoogle()
         }
     }
@@ -64,36 +70,36 @@ class Signup : AppCompatActivity() {
 
     // User Manual Sign In
     private fun validateCredentials() {
-        tvSignupErrorAuth.text = ""
-        tvSignupErrorUsername.visibility = View.INVISIBLE
-        tvSignupErrorEmail.visibility = View.INVISIBLE
-        tvSignupErrorPassword.visibility = View.INVISIBLE
+        binding.tvSignupErrorAuth.text = ""
+        binding.tvSignupErrorUsername.visibility = View.INVISIBLE
+        binding.tvSignupErrorEmail.visibility = View.INVISIBLE
+        binding.tvSignupErrorPassword.visibility = View.INVISIBLE
 
-        val username = etSignupUsername.text.toString().trim {it <= ' '}
-        val email = etSignupEmail.text.toString().trim {it <= ' '}
-        val password = etSignupPassword.text.toString().trim {it <= ' '}
+        val username = binding.etSignupUsername.text.toString().trim {it <= ' '}
+        val email = binding.etSignupEmail.text.toString().trim {it <= ' '}
+        val password = binding.etSignupPassword.text.toString().trim {it <= ' '}
 
         when {
             TextUtils.isEmpty(username) -> {
-                pbSignup.visibility = View.INVISIBLE
+                binding.pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvSignupErrorUsername.visibility = View.VISIBLE
+                binding.tvSignupErrorUsername.visibility = View.VISIBLE
             }
 
             TextUtils.isEmpty(email) -> {
-                pbSignup.visibility = View.INVISIBLE
+                binding.pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvSignupErrorEmail.visibility = View.VISIBLE
+                binding.tvSignupErrorEmail.visibility = View.VISIBLE
             }
 
             TextUtils.isEmpty(password) -> {
-                pbSignup.visibility = View.INVISIBLE
+                binding.pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvSignupErrorPassword.visibility = View.VISIBLE
+                binding.tvSignupErrorPassword.visibility = View.VISIBLE
             }
 
             else -> {
-                pbSignup.visibility = View.VISIBLE
+                binding.pbSignup.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 database = Firebase.database
@@ -114,20 +120,18 @@ class Signup : AppCompatActivity() {
                             createUser(username, email, password)
                         }
                         else {
-                            pbSignup.visibility = View.INVISIBLE
+                            binding.pbSignup.visibility = View.INVISIBLE
                             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                            Log.e("databaseReference", "username already exists")
-                            tvSignupErrorAuth.text = "Username already exists"
+                            binding.tvSignupErrorAuth.text = "Username already exists"
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        pbSignup.visibility = View.INVISIBLE
+                        binding.pbSignup.visibility = View.INVISIBLE
                         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                         Log.e("databaseReference", error.toString())
-                        tvSignupErrorAuth.text = error.message
+                        binding.tvSignupErrorAuth.text = error.message
                     }
                 })
             }
@@ -142,7 +146,7 @@ class Signup : AppCompatActivity() {
                     val firebaseUser: FirebaseUser = task.result!!.user!!
                     storeDataToRTDB(firebaseUser.uid, email, password, username)
 
-                    pbSignup.visibility = View.INVISIBLE
+                    binding.pbSignup.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     val intent = Intent(this, VerifyEmail::class.java)
@@ -152,11 +156,11 @@ class Signup : AppCompatActivity() {
                     finish()
                 }
                 else {
-                    pbSignup.visibility = View.INVISIBLE
+                    binding.pbSignup.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     Log.e("createUser", task.exception!!.message.toString())
-                    tvSignupErrorAuth.text = task.exception!!.message
+                    binding.tvSignupErrorAuth.text = task.exception!!.message
                 }
             }
     }
@@ -181,12 +185,13 @@ class Signup : AppCompatActivity() {
         try {
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             if (account != null) {
-                pbSignup.visibility = View.VISIBLE
+                binding.pbSignup.visibility = View.VISIBLE
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
+                // if user data already exists, do not store to database
                 userExists(account)
 
-                pbSignup.visibility = View.INVISIBLE
+                binding.pbSignup.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 val intent = Intent(this, Homescreen::class.java)
@@ -202,7 +207,7 @@ class Signup : AppCompatActivity() {
         }
     }
 
-    // Check if signed in user has data in database
+    // check if signed in user has existing data in database
     private fun userExists(account: GoogleSignInAccount) {
         auth = Firebase.auth
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(account.email.toString())

@@ -1,51 +1,60 @@
 package com.ducatus
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.telephony.SmsManager
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
 import android.widget.Toast
-import androidx.core.widget.doOnTextChanged
-import com.google.firebase.auth.FirebaseAuth
+import androidx.core.content.ContextCompat
+import com.ducatus.databinding.ActivityVerifyOtpMobileNumberBinding
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_verify_otp_mobile_number.*
+import java.util.concurrent.TimeUnit
 import javax.mail.*
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
 
 class VerifyOTPMobileNumber : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityVerifyOtpMobileNumberBinding
+    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private var generatedOTP: String = ""
+    private lateinit var options: PhoneAuthOptions
+    private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
+    private lateinit var storedVerificationId: String
+    private var status: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verify_otp_mobile_number)
 
-        tvVerifyOTPUserMobile.text = intent.getStringExtra("mobileNumber").toString()
-        generatedOTP = intent.getStringExtra("code").toString()
+        binding = ActivityVerifyOtpMobileNumberBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        inputObserver()
+        val mobileNumber = intent.getStringExtra("mobileNumber").toString()
+        binding.tvVerifyOTPUserMobile.text = "0$mobileNumber"
+        sendVerificationCode(mobileNumber)
 
-        imgBtnVerifyOTPMobileBack.setOnClickListener {
+        binding.imgBtnVerifyOTPMobileBack.setOnClickListener {
             onBackPressed()
         }
 
-        btnVerifyOTPMobile.setOnClickListener {
-            verifyCode(generatedOTP)
+        binding.btnVerifyOTPMobile.setOnClickListener {
+            verifyCode()
         }
 
-        tvResendOTPMobile.setOnClickListener {
-            resendOTP()
+        binding.tvResendOTPMobile.setOnClickListener {
+            resendVerificationCode(mobileNumber, resendToken)
         }
     }
 
@@ -54,57 +63,145 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun inputObserver() {
-        val editText: Array<EditText> = arrayOf(etOTPMobile1, etOTPMobile2, etOTPMobile3, etOTPMobile4)
-
-        etOTPMobile1.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[1].requestFocus()
-        }
-
-        etOTPMobile2.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[2].requestFocus()
-            else if (text.isEmpty()) editText[0].requestFocus()
-        }
-
-        etOTPMobile3.doOnTextChanged { text, start, count, after ->
-            if (text!!.length == 1) editText[3].requestFocus()
-            else if (text.isEmpty()) editText[1].requestFocus()
-        }
-
-        etOTPMobile4.doOnTextChanged { text, start, count, after ->
-            if (text!!.isEmpty()) editText[2].requestFocus()
-        }
-    }
-
-    private fun verifyCode(generatedOTP: String) {
-        tvVerifyOTPMobileError.text = ""
-        pbVerifyOTPMobile.visibility = View.VISIBLE
+    private fun verifyCode() {
+        binding.tvVerifyOTPMobileError.text = ""
+        binding.pbVerifyOTPMobile.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-        val otp1 = etOTPMobile1.text.toString().trim {it <= ' '}
-        val otp2 = etOTPMobile2.text.toString().trim {it <= ' '}
-        val otp3 = etOTPMobile3.text.toString().trim {it <= ' '}
-        val otp4 = etOTPMobile4.text.toString().trim {it <= ' '}
+        val code = binding.etOTPMobile.text.toString().trim {it <= ' '}
 
         when {
-            otp1.isEmpty() || otp2.isEmpty() || otp3.isEmpty() || otp4.isEmpty() -> {
-                pbVerifyOTPMobile.visibility = View.INVISIBLE
+            code.isEmpty() -> {
+                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                tvVerifyOTPMobileError.text = "Invalid code, please try again"
+                binding.tvVerifyOTPMobileError.text = "Please enter verification code"
             }
 
             else -> {
-                val code = otp1 + otp2 + otp3 + otp4
-                if(code == generatedOTP) {
-                    readData()
+                val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, code)
+
+                auth.signInWithCredential(credential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val intent = Intent(this, ResetPassword::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                        finish()
+                    }
+                    else {
+                        binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                        binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
+                    }
                 }
-                else {
-                    pbVerifyOTPMobile.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    tvVerifyOTPMobileError.text = "Invalid code, please try again"
-                }
+//                if(code == smsCode) {
+//                    readData()
+//                }
+//                else {
+//                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+//                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+//                    binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
+//                }
             }
         }
+    }
+
+    private fun sendVerificationCode(mobileNumber: String) {
+        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            // Refer to Firebase documentation
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                Log.d("complete", "onVerificationCompleted:$credential")
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                // This callback is invoked in an invalid request for verification is made,
+                // for instance if the the phone number format is not valid.
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
+                binding.tvResendOTPMobile.text = "Resend verification code"
+                binding.tvResendOTPMobile.isEnabled = true
+                status = false
+
+                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                Log.w("failed", "onVerificationFailed", e)
+
+                //(650) 555-1212
+                if (e is FirebaseAuthInvalidCredentialsException) {
+                    // Invalid request
+                    Log.e("error", "Invalid credentials")
+                }
+                else if (e is FirebaseTooManyRequestsException) {
+                    // The SMS quota for the project has been exceeded
+                    binding.tvVerifyOTPMobileError.text = "Too many requests, please try again"
+                    Log.e("error", "Too many requests, please try again")
+                }
+            }
+
+            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                // The SMS verification code has been sent to the provided phone number, we
+                // now need to ask the user to enter the code and then construct a credential
+                // by combining the code with a verification ID.
+                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                Log.d("verifyId", "onCodeSent:$verificationId")
+                Log.d("token", "onCodeSent:$token")
+
+                // Save verification ID and resending token so we can use them later
+                storedVerificationId = verificationId
+                resendToken = token
+                status = true
+
+                startTimer()
+            }
+        }
+
+        auth = Firebase.auth
+        options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber("+63$mobileNumber")
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(this)
+            .setCallbacks(callbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    private fun resendVerificationCode(mobileNumber: String, resendToken: PhoneAuthProvider.ForceResendingToken) {
+        binding.tvVerifyOTPMobileError.text = ""
+        binding.pbVerifyOTPMobile.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+        if(status) {
+            options = PhoneAuthOptions.newBuilder(auth)
+                .setPhoneNumber("+63$mobileNumber")
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(this)
+                .setCallbacks(callbacks)
+                .setForceResendingToken(resendToken)
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        }
+        else {
+            sendVerificationCode(mobileNumber)
+        }
+    }
+
+    private fun startTimer() {
+        object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                binding.tvResendOTPMobile.text = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendOTPMobile.isEnabled = false
+            }
+            override fun onFinish() {
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
+                binding.tvResendOTPMobile.text = "Resend verification code"
+                binding.tvResendOTPMobile.isEnabled = true
+            }
+        }.start()
     }
 
     private fun readData() {
@@ -128,17 +225,17 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                         login(email, password)
                 }
                 else {
-                    pbVerifyOTPMobile.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                pbVerifyOTPMobile.visibility = View.INVISIBLE
+                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                Log.e("databaseReference", error.message)
-                tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
+                Log.e("databaseError", error.message)
+                binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
             }
         })
     }
@@ -156,28 +253,11 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                     finish()
                 }
                 else {
-                    pbVerifyOTPMobile.visibility = View.INVISIBLE
+                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
                     window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                    Log.e("authError", "Auth failed")
-                    tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
                 }
             }
-    }
-
-    private fun resendOTP() {
-        val mobileNumber = intent.getStringExtra("mobileNumber").toString()
-        sendSMS(mobileNumber)
-    }
-
-    private fun sendSMS(mobileNumber: String) {
-        val otp = generateOTP()
-        val smsManager: SmsManager = SmsManager.getDefault()
-        smsManager.sendTextMessage(mobileNumber, null, "OTP: $otp", null, null)
-    }
-
-    private fun generateOTP(): String {
-        val randomPin = (Math.random() * 9000).toInt() + 1000
-        return randomPin.toString()
     }
 }

@@ -1,24 +1,20 @@
 package com.ducatus
 
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.ducatus.databinding.ActivityResetPasswordMobileNumberBinding
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_reset_password_mobile_number.*
-import java.util.regex.Pattern
 
 class ResetPasswordMobileNumber : AppCompatActivity() {
+    private lateinit var binding: ActivityResetPasswordMobileNumberBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
@@ -26,16 +22,22 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password_mobile_number)
 
-        tvResetPasswordEmailLink.setOnClickListener {
+        binding = ActivityResetPasswordMobileNumberBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.tvResetPasswordEmailLink.setOnClickListener {
             resetEmailLink()
         }
 
-        imgBtnResetPasswordMobileNumberBack.setOnClickListener {
-            onBackPressed()
+        binding.imgBtnResetPasswordMobileNumberBack.setOnClickListener {
+            startActivity(Intent(this, Login::class.java))
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
-        btnResetPasswordMobileNumber.setOnClickListener {
-            resetPassword()
+        binding.btnResetPasswordMobileNumber.setOnClickListener {
+            // validate credentials -> check if mobile number exists
+            validateCredentials()
         }
     }
 
@@ -49,15 +51,19 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun resetPassword() {
-        val mobileNumber = etResetPasswordMobileNumber.text.toString().trim {it <= ' '}
+    private fun validateCredentials() {
+        binding.tvResetPasswordMobileErrorAuth.text = ""
+        binding.tvResetPasswordMobileNumberError.visibility = View.INVISIBLE
+        val mobileNumber = binding.etResetPasswordMobileNumber.text.toString().trim {it <= ' '}
 
         when {
             TextUtils.isEmpty(mobileNumber) -> {
-                Toast.makeText(this, "Please enter mobile number", Toast.LENGTH_SHORT).show()
+                binding.tvResetPasswordMobileNumberError.visibility = View.VISIBLE
             }
 
             else -> {
+                binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
+                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 mobileNumberExists(mobileNumber)
             }
         }
@@ -78,33 +84,26 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
                     }
                 }
 
+                binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
                 if (mobileNumberExists) {
-                    if (ContextCompat.checkSelfPermission(applicationContext, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-                        sendSMS(mobileNumber)
-                        Toast.makeText(applicationContext, "Sent", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
-                        ActivityCompat.requestPermissions(this@ResetPasswordMobileNumber, arrayOf(android.Manifest.permission.SEND_SMS), 100)
-                    }
+                    val intent = Intent(applicationContext, VerifyOTPMobileNumber::class.java)
+                    intent.putExtra("mobileNumber", mobileNumber)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 }
                 else {
-                    Toast.makeText(applicationContext, "User does not exist", Toast.LENGTH_SHORT).show()
+                    binding.tvResetPasswordMobileErrorAuth.text = "User does not exist"
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_LONG).show()
+                binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                Log.e("databaseError", error.message)
+                Toast.makeText(applicationContext, error.message, Toast.LENGTH_LONG).show()
             }
         })
-    }
-
-    private fun sendSMS(mobileNumber: String) {
-        val otp = generateOTP()
-        val smsManager: SmsManager = SmsManager.getDefault()
-        smsManager.sendTextMessage(mobileNumber, null, "OTP: $otp", null, null)
-    }
-
-    private fun generateOTP(): String {
-        val randomPin = (Math.random() * 9000).toInt() + 1000
-        return randomPin.toString()
     }
 }
