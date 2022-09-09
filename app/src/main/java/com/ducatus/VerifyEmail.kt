@@ -40,7 +40,6 @@ class VerifyEmail : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         reloadUser()
     }
 
@@ -60,6 +59,7 @@ class VerifyEmail : AppCompatActivity() {
 
     // reload email verified status of user
     private fun reloadUser() {
+        disableWindow()
         var firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         firebaseUser?.reload()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -67,9 +67,7 @@ class VerifyEmail : AppCompatActivity() {
                 isEmailVerified(firebaseUser!!)
             }
             else {
-                binding.pbVerifyEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                enableWindow()
                 Log.e("reloadUser", task.exception!!.message.toString())
                 binding.tvVerifyEmailError.text = task.exception!!.message
             }
@@ -77,22 +75,30 @@ class VerifyEmail : AppCompatActivity() {
     }
 
     private fun resendEmail(firebaseUser: FirebaseUser) {
-        binding.pbVerifyEmail.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        disableWindow()
         sendEmail(firebaseUser)
     }
 
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         if (firebaseUser.isEmailVerified) {
-            binding.pbVerifyEmail.visibility = View.INVISIBLE
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
             val intent = Intent(this, Homescreen::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("loginMethod", 1)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
         }
+        else {
+            enableWindow()
+        }
+    }
+
+    private fun enableWindow() {
+        binding.pbVerifyEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.pbVerifyEmail.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

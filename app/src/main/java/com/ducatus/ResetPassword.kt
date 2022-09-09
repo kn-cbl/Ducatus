@@ -45,29 +45,16 @@ class ResetPassword : AppCompatActivity() {
         val newPassword = binding.etResetPasswordNew.text.toString().trim {it <= ' '}
         val confirmPassword = binding.etResetPasswordConfirm.text.toString().trim {it <= ' '}
 
-        when {
-            TextUtils.isEmpty(newPassword) -> {
-                binding.pbResetPassword.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                binding.tvResetPasswordNewError.text = "Please enter new password"
-            }
-
-            TextUtils.isEmpty(confirmPassword) -> {
-                binding.pbResetPassword.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                binding.tvResetPasswordConfirmError.text = "Please confirm new password"
-            }
-
-            newPassword != confirmPassword -> {
-                binding.pbResetPassword.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        if (TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
+            if (TextUtils.isEmpty(newPassword)) binding.tvResetPasswordNewError.text = "Please enter new password"
+            if (TextUtils.isEmpty(confirmPassword)) binding.tvResetPasswordConfirmError.text = "Please confirm new password"
+        }
+        else {
+            if (newPassword != confirmPassword) {
                 binding.tvResetPasswordError.text = "Passwords do not match"
             }
-
-            else -> {
-                binding.pbResetPassword.visibility = View.VISIBLE
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+            else {
+                disableWindow()
                 resetPassword(newPassword)
             }
         }
@@ -90,9 +77,22 @@ class ResetPassword : AppCompatActivity() {
                 finish()
             }
             else {
+                enableWindow()
                 Log.e("resetPassword", task.exception!!.message.toString())
                 binding.tvResetPasswordError.text = task.exception!!.message
             }
         }
+    }
+
+    private fun enableWindow() {
+        binding.btnResetPassword.setBackgroundResource(R.drawable.green_button)
+        binding.pbResetPassword.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnResetPassword.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbResetPassword.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

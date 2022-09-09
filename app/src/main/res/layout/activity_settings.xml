@@ -15,7 +15,7 @@
         tools:layout_editor_absoluteY="48dp">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/tbSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
@@ -26,36 +26,37 @@
             app:titleTextColor="@color/white" />
 
         <RelativeLayout
+            android:id="@+id/rlUserProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="15dp">
 
             <ImageView
                 android:id="@+id/imageView11"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
-                app:srcCompat="@drawable/user_settings" />
+                app:srcCompat="@drawable/user_settings"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView34"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="230dp"
                 android:layout_toEndOf="@+id/imageView11"
                 android:fontFamily="@font/inter_medium"
-                android:text="User Profile"
+                android:text="@string/user_profile"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView35"
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
@@ -64,43 +65,44 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView11"
                 android:fontFamily="@font/inter_medium"
-                android:text="Change Profile Photo, Email, or Mobile Number"
+                android:text="@string/user_profile_description"
                 android:textColor="#808080"
                 android:textSize="12sp" />
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlChangePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
-            android:layout_marginTop="18dp">
+            android:layout_marginTop="15dp">
 
             <ImageView
                 android:id="@+id/imageView12"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
-                app:srcCompat="@drawable/lock" />
+                app:srcCompat="@drawable/lock"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView36"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="230dp"
                 android:layout_toEndOf="@+id/imageView12"
                 android:fontFamily="@font/inter_medium"
-                android:text="Password"
+                android:text="@string/password"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView39"
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
@@ -109,7 +111,7 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView12"
                 android:fontFamily="@font/inter_medium"
-                android:text="Change your old password"
+                android:text="@string/change_password"
                 android:textColor="#808080"
                 android:textSize="12sp" />
 
@@ -120,15 +122,15 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="?android:attr/listDivider"
-            android:layout_marginTop="18dp"/>
+            android:layout_marginTop="15dp"/>
 
         <TextView
             android:id="@+id/textView40"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="General Settings"
-            android:layout_marginLeft="25dp"
-            android:layout_marginTop="7dp"
+            android:text="@string/general_settings"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/inter_medium"
             android:textSize="14sp"
             android:textColor="#545454"/>
@@ -137,34 +139,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="24dp">
 
             <ImageView
                 android:id="@+id/imageView13"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
-                app:srcCompat="@drawable/accounts" />
+                app:srcCompat="@drawable/accounts"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView41"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="-5dp"
-                android:layout_marginEnd="230dp"
                 android:layout_toEndOf="@+id/imageView13"
                 android:fontFamily="@font/inter_medium"
-                android:text="Accounts"
+                android:text="@string/accounts"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView42"
-                android:layout_width="300dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="8dp"
@@ -172,58 +174,43 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView13"
                 android:fontFamily="@font/inter_medium"
-                android:text="Manage user accounts, change color and "
+                android:text="@string/accounts_description"
                 android:textSize="12sp"
                 android:textColor="#808080"/>
-
-            <TextView
-                android:id="@+id/textView43"
-                android:layout_width="296dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView42"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="41dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="26dp"
-                android:fontFamily="@font/inter_medium"
-                android:text="descriptions"
-                android:textColor="#808080"
-                android:textSize="12sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="24dp">
 
             <ImageView
                 android:id="@+id/imageView14"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
-                app:srcCompat="@drawable/category" />
+                app:srcCompat="@drawable/category"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView44"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="-5dp"
-                android:layout_marginEnd="230dp"
                 android:layout_toEndOf="@+id/imageView14"
                 android:fontFamily="@font/inter_medium"
-                android:text="Categories"
+                android:text="@string/categories"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView45"
-                android:layout_width="300dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="8dp"
@@ -231,24 +218,9 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView14"
                 android:fontFamily="@font/inter_medium"
-                android:text="Edit category names, change icons and color, and"
+                android:text="@string/categories_description"
                 android:textSize="12sp"
                 android:textColor="#808080"/>
-
-            <TextView
-                android:id="@+id/textView46"
-                android:layout_width="296dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView45"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="41dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="26dp"
-                android:fontFamily="@font/inter_medium"
-                android:text="create new category and subcategories"
-                android:textColor="#808080"
-                android:textSize="12sp" />
 
         </RelativeLayout>
 
@@ -257,15 +229,15 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="?android:attr/listDivider"
-            android:layout_marginTop="26dp"/>
+            android:layout_marginTop="20dp"/>
 
         <TextView
             android:id="@+id/textView47"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Other Settings"
-            android:layout_marginLeft="25dp"
-            android:layout_marginTop="8dp"
+            android:text="@string/other_settings"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/inter_medium"
             android:textSize="14sp"
             android:textColor="#545454"/>
@@ -274,67 +246,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="33dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="24dp">
 
             <ImageView
                 android:id="@+id/imageView15"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
-                app:srcCompat="@drawable/notif" />
+                app:srcCompat="@drawable/notif"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView48"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="230dp"
+                android:layout_marginTop="2dp"
                 android:layout_toEndOf="@+id/imageView15"
                 android:fontFamily="@font/inter_medium"
-                android:text="Notifications"
+                android:text="@string/notifications"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView49"
-                android:layout_width="300dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="13dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView15"
                 android:fontFamily="@font/inter_medium"
-                android:text="Configure notifications according to ways you want"
+                android:text="@string/notifications_description"
                 android:textSize="12sp"
                 android:textColor="#808080"/>
-
-            <TextView
-                android:id="@+id/textView50"
-                android:layout_width="296dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView49"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="41dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="26dp"
-                android:fontFamily="@font/inter_medium"
-                android:text="to receive them"
-                android:textColor="#808080"
-                android:textSize="12sp" />
-
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlPrivacy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="24dp">
 
             <ImageView
@@ -342,27 +299,27 @@
                 android:layout_width="33dp"
                 android:layout_height="46dp"
                 android:layout_marginTop="-5dp"
-                app:srcCompat="@drawable/privacy" />
+                app:srcCompat="@drawable/privacy"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView51"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="-5dp"
-                android:layout_marginEnd="230dp"
                 android:layout_toEndOf="@+id/imageView16"
                 android:fontFamily="@font/inter_medium"
-                android:text="Privacy"
+                android:text="@string/privacy"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView52"
-                android:layout_width="300dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="8dp"
@@ -370,59 +327,44 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView16"
                 android:fontFamily="@font/inter_medium"
-                android:text="Review and manage your personal data and privacy"
+                android:text="@string/privacy_description"
                 android:textSize="12sp"
                 android:textColor="#808080"/>
-
-            <TextView
-                android:id="@+id/textView53"
-                android:layout_width="296dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView52"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="41dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="26dp"
-                android:fontFamily="@font/inter_medium"
-                android:text="settings"
-                android:textColor="#808080"
-                android:textSize="12sp" />
-
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlAboutApp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="20dp">
 
             <ImageView
                 android:id="@+id/imageView17"
                 android:layout_width="33dp"
                 android:layout_height="46dp"
                 android:layout_marginTop="-5dp"
-                app:srcCompat="@drawable/about" />
+                app:srcCompat="@drawable/about"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView55"
-                android:layout_width="123dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="198dp"
                 android:layout_toEndOf="@+id/imageView17"
                 android:fontFamily="@font/inter_medium"
-                android:text="About Ducatus"
+                android:text="@string/about_app"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView56"
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
@@ -431,13 +373,13 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView17"
                 android:fontFamily="@font/inter_medium"
-                android:text="Learn more about Ducatus"
+                android:text="@string/about_app_description"
                 android:textColor="#808080"
                 android:textSize="12sp" />
-
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
@@ -449,26 +391,26 @@
                 android:layout_width="33dp"
                 android:layout_height="46dp"
                 android:layout_marginTop="0dp"
-                app:srcCompat="@drawable/logout" />
+                app:srcCompat="@drawable/logout"
+                android:contentDescription="@string/icon_hint" />
 
             <TextView
                 android:id="@+id/textView57"
-                android:layout_width="123dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="198dp"
                 android:layout_toEndOf="@+id/imageView18"
                 android:fontFamily="@font/inter_medium"
-                android:text="Logout"
+                android:text="@string/logout"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/textView58"
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
@@ -477,10 +419,9 @@
                 android:layout_marginEnd="22dp"
                 android:layout_toEndOf="@+id/imageView18"
                 android:fontFamily="@font/inter_medium"
-                android:text="Logout of the application"
+                android:text="@string/logout_description"
                 android:textColor="#808080"
                 android:textSize="12sp" />
-
         </RelativeLayout>
 
     </LinearLayout>

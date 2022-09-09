@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ducatus">
+    package="com.ducatus" >
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ducatus"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".ChangePassword"
+            android:exported="false" />
         <activity
             android:name=".FinancialExpensesSubcategory"
             android:exported="true" />
@@ -68,10 +71,6 @@
         <activity
             android:name=".Privacy"
             android:exported="true" />
-        <activity
-            android:name=".Password"
-            android:exported="true"
-            android:theme="@style/floatingText.Ducatus" />
         <activity
             android:name=".OtpMobileNumber"
             android:exported="true" />
@@ -192,7 +191,7 @@
             android:exported="true" />
         <activity
             android:name=".Login"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

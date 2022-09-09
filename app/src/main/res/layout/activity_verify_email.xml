@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srcCompat="@drawable/confirm_email"
-        android:scaleType="fitXY" />
+        android:scaleType="fitXY"
+        android:contentDescription="@string/background" />
 
     <ProgressBar
         android:id="@+id/pbVerifyEmail"
@@ -47,7 +48,7 @@
         android:layout_marginBottom="70dp"
         android:background="@drawable/gold_button"
         android:fontFamily="@font/inter_medium"
-        android:text="Resend Email Verification"
+        android:text="@string/resend_email_verification"
         android:textAllCaps="false"
         android:textColor="#E6D0AC"
         android:textSize="13sp"
@@ -68,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:fontFamily="@font/librebodoni_bold"
-            android:text="Confirm\nyour Email"
+            android:text="@string/confirm_nyour_email"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="40sp" />
@@ -79,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="23dp"
             android:fontFamily="@font/inter_regular"
-            android:text="Please check your inbox for the\nemail verification. Click the link in the\nemail to confirm your email address."
+            android:text="@string/check_inbox"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="16sp" />

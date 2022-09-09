@@ -33,11 +33,7 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
-
-        gsc = GoogleSignIn.getClient(this, gso)
+        isUserLoggedIn()
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         val view = binding.root
@@ -77,63 +73,80 @@ class Login : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
+    private fun isUserLoggedIn() {
+        auth = Firebase.auth
+        val authUser = FirebaseAuth.getInstance().currentUser
+        if (authUser != null) {
+            val intent = Intent(this, Homescreen::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
+        }
+
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+
+        gsc = GoogleSignIn.getClient(this, gso)
+
+        val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
+        if (googleSignInAccount != null) {
+            val intent = Intent(this, Homescreen::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
+        }
+    }
+
     private fun validateCredentials() {
         binding.tvLoginErrorAuth.text = ""
-        binding.tvLoginErrorEmailUsername.visibility = View.INVISIBLE
-        binding.tvLoginErrorPassword.visibility = View.INVISIBLE
+        binding.tvLoginErrorEmailUsername.text = ""
+        binding.tvLoginErrorPassword.text = ""
 
         val emailUsername = binding.etLoginEmailUsername.text.toString().trim {it <= ' '}
         val password = binding.etLoginPassword.text.toString().trim {it <= ' '}
 
-        when {
-            TextUtils.isEmpty(emailUsername) -> {
-                binding.tvLoginErrorEmailUsername.visibility = View.VISIBLE
-            }
+        if (TextUtils.isEmpty(emailUsername) || TextUtils.isEmpty(password)) {
+            if (TextUtils.isEmpty(emailUsername)) binding.tvLoginErrorEmailUsername.text = "Please enter email / username"
+            if (TextUtils.isEmpty(password)) binding.tvLoginErrorPassword.text = "Please enter password"
+        }
+        else {
+            disableWindow()
 
-            TextUtils.isEmpty(password) -> {
-                binding.tvLoginErrorPassword.visibility = View.VISIBLE
-            }
-            else -> {
-                binding.pbLogin.visibility = View.VISIBLE
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            // check if input is an email or username
+            if (!emailUsername.contains("@")) {
+                database = Firebase.database
+                databaseReference = database.getReference("users")
+                databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        var email: String? = null
 
-                // check if input is an email or username
-                if (!emailUsername.contains("@")) {
-                    database = Firebase.database
-                    databaseReference = database.getReference("users")
-
-                    databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            var email: String? = null
-
-                            for (child in snapshot.children) {
-                                if(emailUsername == child.child("username").value.toString()) {
-                                    email = child.child("email").value.toString()
-                                    break
-                                }
-                            }
-
-                            if (email != null) {
-                                login(email, password)
-                            }
-                            else {
-                                binding.pbLogin.visibility = View.INVISIBLE
-                                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                                binding.tvLoginErrorAuth.text = "User does not exist"
+                        for (child in snapshot.children) {
+                            if(emailUsername == child.child("username").value.toString()) {
+                                email = child.child("email").value.toString()
+                                break
                             }
                         }
-                        override fun onCancelled(error: DatabaseError) {
-                            binding.pbLogin.visibility = View.INVISIBLE
-                            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                            Log.e("databaseError", error.message)
-                            binding.tvLoginErrorAuth.text = error.message
+                        if (email != null) {
+                            login(email, password)
                         }
-                    })
-                }
-                else {
-                    login(emailUsername, password)
-                }
+                        else {
+                            enableWindow()
+                            binding.tvLoginErrorAuth.text = "User does not exist"
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        enableWindow()
+                        Log.e("databaseError", error.message)
+                        binding.tvLoginErrorAuth.text = error.message
+                    }
+                })
+            }
+            else {
+                login(emailUsername, password)
             }
         }
     }
@@ -147,9 +160,7 @@ class Login : AppCompatActivity() {
                     isEmailVerified(firebaseUser)
                 }
                 else {
-                    binding.pbLogin.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                    enableWindow()
                     Log.e("login", task.exception!!.message.toString())
                     binding.tvLoginErrorAuth.text = task.exception!!.message
                 }
@@ -184,17 +195,11 @@ class Login : AppCompatActivity() {
         try {
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             if (account != null) {
-                binding.pbLogin.visibility = View.VISIBLE
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                disableWindow()
                 userExists(account)
-
-                binding.pbLogin.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                 val intent = Intent(this, Homescreen::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                intent.putExtra("loginMethod", 2)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 finish()
@@ -216,13 +221,11 @@ class Login : AppCompatActivity() {
     }
 
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
-        binding.pbLogin.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        disableWindow()
 
         if (firebaseUser.isEmailVerified) {
             val intent = Intent(this, Homescreen::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("loginMethod", 1)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
@@ -231,5 +234,17 @@ class Login : AppCompatActivity() {
             startActivity(Intent(this, VerifyEmail::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
+    }
+
+    private fun enableWindow() {
+        binding.btnLogin.setBackgroundResource(R.drawable.green_button)
+        binding.pbLogin.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnLogin.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbLogin.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

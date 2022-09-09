@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="green_primary">#206967</color>
+    <color name="green_primary_disabled">#165F5D</color>
     <color name="green_secondary">#389583</color>
     <color name="green_tertiary">#FF018786</color>
     <color name="mtrl_textinput_default_box_stroke_color">#389583</color>

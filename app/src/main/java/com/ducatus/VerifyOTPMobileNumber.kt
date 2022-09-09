@@ -1,33 +1,26 @@
 package com.ducatus
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpMobileNumberBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
-import javax.mail.*
 
 class VerifyOTPMobileNumber : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityVerifyOtpMobileNumberBinding
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
-    private lateinit var crypto: Crypto
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var options: PhoneAuthOptions
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var storedVerificationId: String
@@ -50,6 +43,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
         }
 
         binding.btnVerifyOTPMobile.setOnClickListener {
+            // verify code -> sign in user and send to reset password activity
             verifyCode()
         }
 
@@ -65,43 +59,27 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
 
     private fun verifyCode() {
         binding.tvVerifyOTPMobileError.text = ""
-        binding.pbVerifyOTPMobile.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
         val code = binding.etOTPMobile.text.toString().trim {it <= ' '}
 
-        when {
-            code.isEmpty() -> {
-                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                binding.tvVerifyOTPMobileError.text = "Please enter verification code"
-            }
+        if (TextUtils.isEmpty(code)) {
+            binding.tvVerifyOTPMobileError.text = "Please enter verification code"
+        }
+        else {
+            disableWindow()
+            val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, code)
 
-            else -> {
-                val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, code)
-
-                auth.signInWithCredential(credential).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val intent = Intent(this, ResetPassword::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                        finish()
-                    }
-                    else {
-                        binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                        binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
-                    }
+            auth.signInWithCredential(credential).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(this, ResetPassword::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    finish()
                 }
-//                if(code == smsCode) {
-//                    readData()
-//                }
-//                else {
-//                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-//                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-//                    binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
-//                }
+                else {
+                    enableWindow()
+                    binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
+                }
             }
         }
     }
@@ -116,7 +94,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
             override fun onVerificationFailed(e: FirebaseException) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
-                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext, R.color.green_primary))
                 binding.tvResendOTPMobile.text = "Resend verification code"
                 binding.tvResendOTPMobile.isEnabled = true
                 status = false
@@ -126,10 +104,9 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
 
                 Log.w("failed", "onVerificationFailed", e)
 
-                //(650) 555-1212
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
-                    Log.e("error", "Invalid credentials")
+                    Log.e("error", "Invalid request")
                 }
                 else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
@@ -142,8 +119,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                enableWindow()
 
                 Log.d("verifyId", "onCodeSent:$verificationId")
                 Log.d("token", "onCodeSent:$token")
@@ -170,8 +146,6 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
 
     private fun resendVerificationCode(mobileNumber: String, resendToken: PhoneAuthProvider.ForceResendingToken) {
         binding.tvVerifyOTPMobileError.text = ""
-        binding.pbVerifyOTPMobile.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
         if(status) {
             options = PhoneAuthOptions.newBuilder(auth)
@@ -204,60 +178,14 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
         }.start()
     }
 
-    private fun readData() {
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val mobileNumber: String = intent.getStringExtra("mobileNumber").toString()
-                var email: String? = null
-                var password: String? = null
+    private fun enableWindow() {
+        binding.btnVerifyOTPMobile.setBackgroundResource(R.drawable.green_button)
+        binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)    }
 
-                for(child in snapshot.children) {
-                    if(mobileNumber == child.child("mobile_number").value.toString()) {
-                        email = child.child("email").value.toString()
-                        password = child.child("password").value.toString()
-                        break
-                    }
-                }
-
-                if (email != null && password != null) {
-                        login(email, password)
-                }
-                else {
-                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                Log.e("databaseError", error.message)
-                binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
-            }
-        })
-    }
-
-    private fun login(email: String, password: String) {
-        crypto = Crypto()
-        auth = Firebase.auth
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val intent = Intent(this, ResetPassword::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                    finish()
-                }
-                else {
-                    binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                    binding.tvVerifyOTPMobileError.text = "Unknown error occurred, please try again"
-                }
-            }
+    private fun disableWindow() {
+        binding.btnVerifyOTPMobile.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbVerifyOTPMobile.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityResetPasswordEmailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -61,40 +62,30 @@ class ResetPasswordEmail : AppCompatActivity() {
 
     private fun validateCredentials() {
         binding.tvResetPasswordEmailErrorAuth.text = ""
-        binding.tvResetPasswordEmailError.visibility = View.INVISIBLE
+        binding.tvResetPasswordEmailError.text = ""
 
         val email = binding.etResetPasswordEmail.text.toString().trim {it <= ' '}
-
-        when {
-            TextUtils.isEmpty(email) -> {
-                binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                binding.tvResetPasswordEmailError.visibility = View.VISIBLE
-            }
-
-            else -> {
-                binding.pbResetPasswordEmail.visibility = View.VISIBLE
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                auth = Firebase.auth
-                FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
-                    .addOnSuccessListener { task ->
-                        if(!task.signInMethods?.isEmpty()!!) {
-                            appExecutors = AppExecutors()
-                            sendEmail(email)
-                        }
-                        else {
-                            binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-                            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                            binding.tvResetPasswordEmailErrorAuth.text = "User does not exist"
-                        }
+        if (TextUtils.isEmpty(email)) {
+            binding.tvResetPasswordEmailError.text = "Please enter email"
+        }
+        else {
+            disableWindow()
+            auth = Firebase.auth
+            FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
+                .addOnSuccessListener { task ->
+                    if(!task.signInMethods?.isEmpty()!!) {
+                        appExecutors = AppExecutors()
+                        sendEmail(email)
                     }
-                    .addOnFailureListener {
-                        binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                    else {
+                        enableWindow()
                         binding.tvResetPasswordEmailErrorAuth.text = "User does not exist"
                     }
-            }
+                }
+                .addOnFailureListener {
+                    enableWindow()
+                    binding.tvResetPasswordEmailErrorAuth.text = "User does not exist"
+                }
         }
     }
 
@@ -125,9 +116,6 @@ class ResetPasswordEmail : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
                     val intent = Intent(this, VerifyOTPEmail::class.java)
                     intent.putExtra("code", otp)
                     intent.putExtra("email", email)
@@ -136,9 +124,7 @@ class ResetPasswordEmail : AppCompatActivity() {
                 }
             }
             catch (e: MessagingException) {
-                binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                enableWindow()
                 Log.e("sendEmailError", e.toString())
                 binding.tvResetPasswordEmailErrorAuth.text = e.message
             }
@@ -148,5 +134,17 @@ class ResetPasswordEmail : AppCompatActivity() {
     private fun generateOTP(): String {
         val randomPin = (Math.random() * 900000).toInt() + 1000
         return randomPin.toString()
+    }
+
+    private fun enableWindow() {
+        binding.btnResetPasswordEmail.setBackgroundResource(R.drawable.green_button)
+        binding.pbResetPasswordEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnResetPasswordEmail.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbResetPasswordEmail.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

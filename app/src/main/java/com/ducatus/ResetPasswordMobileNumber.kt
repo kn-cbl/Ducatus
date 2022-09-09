@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityResetPasswordMobileNumberBinding
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -36,7 +37,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         }
 
         binding.btnResetPasswordMobileNumber.setOnClickListener {
-            // validate credentials -> check if mobile number exists
+            // validate credentials -> check if mobile number exists -> send verification code activity
             validateCredentials()
         }
     }
@@ -53,19 +54,15 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
 
     private fun validateCredentials() {
         binding.tvResetPasswordMobileErrorAuth.text = ""
-        binding.tvResetPasswordMobileNumberError.visibility = View.INVISIBLE
+        binding.tvResetPasswordMobileNumberError.text = ""
+
         val mobileNumber = binding.etResetPasswordMobileNumber.text.toString().trim {it <= ' '}
-
-        when {
-            TextUtils.isEmpty(mobileNumber) -> {
-                binding.tvResetPasswordMobileNumberError.visibility = View.VISIBLE
-            }
-
-            else -> {
-                binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                mobileNumberExists(mobileNumber)
-            }
+        if (TextUtils.isEmpty(mobileNumber)) {
+            binding.tvResetPasswordMobileNumberError.text = "Please enter mobile number"
+        }
+        else {
+            disableWindow()
+            mobileNumberExists(mobileNumber)
         }
     }
 
@@ -84,8 +81,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
                     }
                 }
 
-                binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                enableWindow()
 
                 if (mobileNumberExists) {
                     val intent = Intent(applicationContext, VerifyOTPMobileNumber::class.java)
@@ -98,12 +94,22 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                enableWindow()
                 Log.e("databaseError", error.message)
                 Toast.makeText(applicationContext, error.message, Toast.LENGTH_LONG).show()
             }
         })
+    }
+
+    private fun enableWindow() {
+        binding.btnResetPasswordMobileNumber.setBackgroundResource(R.drawable.green_button)
+        binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnResetPasswordMobileNumber.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

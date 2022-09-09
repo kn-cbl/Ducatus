@@ -14,14 +14,14 @@
         tools:layout_editor_absoluteY="1dp">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar2"
+            android:id="@+id/tbAboutApp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
-            app:title="About Ducatus"
+            app:title="@string/about_app"
             app:titleTextColor="@color/white"/>
 
         <RelativeLayout
@@ -36,11 +36,12 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="18dp"
-                app:srcCompat="@drawable/ducatus" />
+                app:srcCompat="@drawable/ducatus"
+                android:contentDescription="@string/app_name" />
 
             <TextView
                 android:id="@+id/textView75"
-                android:layout_width="212dp"
+                android:layout_width="wrap_content"
                 android:layout_height="64dp"
                 android:layout_below="@+id/textView74"
                 android:layout_alignParentEnd="true"
@@ -50,22 +51,21 @@
                 android:layout_toEndOf="@+id/imageView19"
                 android:fontFamily="@font/inter_regular"
                 android:justificationMode="inter_word"
-                android:text="A Budgeting and Financing Android Mobile Application with Subscription Management and Loan Monitoring"
+                android:text="@string/app_description"
                 android:textColor="#000000"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/textView74"
-                android:layout_width="128dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="52dp"
-                android:layout_marginEnd="92dp"
                 android:layout_toEndOf="@+id/imageView19"
                 android:fontFamily="@font/inter_semibold"
-                android:text="Ducatus"
+                android:text="@string/app_name"
                 android:textColor="#000000"
                 android:textSize="18sp" />
         </RelativeLayout>
@@ -74,7 +74,7 @@
             android:id="@+id/textView76"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Personal Budget and Finance Manager"
+            android:text="@string/app_title"
             android:fontFamily="@font/inter_semibold"
             android:textColor="#000000"
             android:textSize="15sp"
@@ -86,7 +86,7 @@
             android:id="@+id/textView77"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="It is a mobile application that allows users to set their monthly expenses and their amount, assisting them in their financial transactions to reduce their unnecessary expenses, and set a given budget for a given time."
+            android:text="@string/app_description_2"
             android:fontFamily="@font/inter_regular"
             android:justificationMode="inter_word"
             android:textColor="#000000"

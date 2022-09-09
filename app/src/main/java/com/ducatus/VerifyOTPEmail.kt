@@ -3,12 +3,12 @@ package com.ducatus
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.Toast
-import androidx.core.widget.doOnTextChanged
+import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpEmailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -37,6 +37,8 @@ class VerifyOTPEmail : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        startTimer()
+
         binding.tvVerifyOTPUserEmail.text = intent.getStringExtra("email").toString()
         generatedOTP = intent.getStringExtra("code").toString()
 
@@ -60,27 +62,19 @@ class VerifyOTPEmail : AppCompatActivity() {
 
     private fun verifyCode(generatedOTP: String) {
         binding.tvVerifyOTPEmailError.text = ""
-        binding.pbVerifyOTPEmail.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
         val code = binding.etOTPEmail.text.toString().trim {it <= ' '}
 
-        when {
-            code.isEmpty() -> {
-                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
+        if (TextUtils.isEmpty(code)) {
+            binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
+        }
+        else {
+            disableWindow()
+            if(code == generatedOTP) {
+                readData()
             }
-
-            else -> {
-                if(code == generatedOTP) {
-                    readData()
-                }
-                else {
-                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
-                }
+            else {
+                enableWindow()
+                binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
             }
         }
     }
@@ -104,15 +98,12 @@ class VerifyOTPEmail : AppCompatActivity() {
                     login(email, password)
                 }
                 else {
-                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                    enableWindow()
                     binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                enableWindow()
                 Log.e("databaseError", error.message)
                 binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
             }
@@ -132,9 +123,7 @@ class VerifyOTPEmail : AppCompatActivity() {
                     finish()
                 }
                 else {
-                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                    enableWindow()
                     Log.e("authError", "Auth failed")
                     binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
                 }
@@ -147,8 +136,7 @@ class VerifyOTPEmail : AppCompatActivity() {
     }
 
     private fun sendEmail(email: String){
-        binding.pbVerifyOTPEmail.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        disableWindow()
 
         appExecutors.diskIO().execute {
             mailConfig = MailConfig()
@@ -178,15 +166,12 @@ class VerifyOTPEmail : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                    Toast.makeText(this, "Successfully resent verification code", Toast.LENGTH_SHORT).show()
+                    enableWindow()
+                    startTimer()
                 }
             }
             catch (e: MessagingException) {
-                binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+                enableWindow()
                 Log.e("sendEmailError", e.toString())
                 binding.tvVerifyOTPEmailError.text = e.message
             }
@@ -197,4 +182,32 @@ class VerifyOTPEmail : AppCompatActivity() {
         val randomPin = (Math.random() * 9000).toInt() + 1000
         return randomPin.toString()
     }
+
+    private fun startTimer() {
+        object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                binding.tvResendOTPEmail.text = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendOTPEmail.isEnabled = false
+            }
+            override fun onFinish() {
+                binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
+                binding.tvResendOTPEmail.text = "Resend verification code"
+                binding.tvResendOTPEmail.isEnabled = true
+            }
+        }.start()
+    }
+
+    private fun enableWindow() {
+        binding.btnVerifyOTPEmail.setBackgroundResource(R.drawable.green_button)
+        binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnVerifyOTPEmail.setBackgroundResource(R.drawable.btn_disabled)
+        binding.pbVerifyOTPEmail.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
 }

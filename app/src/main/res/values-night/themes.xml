@@ -10,8 +10,7 @@
         <item name="colorSecondaryVariant">@color/green_tertiary</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:windowTranslucentStatus" >true</item>
-        <item name="android:statusBarColor" >@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 
@@ -25,8 +24,7 @@
         <item name="colorSecondaryVariant">@color/green_tertiary</item>
         <item name="colorOnSecondary">#389583</item>
         <!-- Status bar color. -->
-        <item name="android:windowTranslucentStatus" >true</item>
-        <item name="android:statusBarColor" >@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>
