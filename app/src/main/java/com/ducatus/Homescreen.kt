@@ -19,38 +19,38 @@ class Homescreen : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_homescreen)
 
-        binding = ActivityHomescreenBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        NetworkConnectivityObserver(applicationContext).observe(this) {
+            if (it == NetworkStatus.Available) {
+                isUserLoggedIn()
 
-        isUserLoggedIn()
+                setContentView(R.layout.activity_homescreen)
+                binding = ActivityHomescreenBinding.inflate(layoutInflater)
+                val view = binding.root
+                setContentView(view)
 
-        binding.btnSettings.setOnClickListener {
-            settingsLink()
+                binding.btnSettings.setOnClickListener {
+                    settingsLink()
+                }
+            }
+            else {
+                setContentView(R.layout.activity_about_ducatus)
+            }
         }
     }
 
     private fun isUserLoggedIn() {
         auth = Firebase.auth
-        val authUser = FirebaseAuth.getInstance().currentUser
-        if (authUser == null) {
-            val intent = Intent(this, Login::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
 
         gsc = GoogleSignIn.getClient(this, gso)
 
+        val authUser = FirebaseAuth.getInstance().currentUser
         val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        if (googleSignInAccount == null) {
+
+        if (authUser == null && googleSignInAccount == null) {
             val intent = Intent(this, Login::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

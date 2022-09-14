@@ -35,7 +35,7 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/inter_regular"
         android:text=""
-        android:textColor="#FF5E52"
+        android:textColor="@color/btn_givemoney"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/btnResendEmail"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,12 +46,14 @@
         android:layout_width="240dp"
         android:layout_height="50dp"
         android:layout_marginBottom="70dp"
+        android:letterSpacing="0.04"
         android:background="@drawable/gold_button"
+        app:backgroundTint="@color/gold"
         android:fontFamily="@font/inter_medium"
         android:text="@string/resend_email_verification"
         android:textAllCaps="false"
-        android:textColor="#E6D0AC"
-        android:textSize="13sp"
+        android:textColor="@color/gold"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -71,7 +73,7 @@
             android:fontFamily="@font/librebodoni_bold"
             android:text="@string/confirm_nyour_email"
             android:textAlignment="center"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="40sp" />
 
         <TextView
@@ -82,7 +84,7 @@
             android:fontFamily="@font/inter_regular"
             android:text="@string/check_inbox"
             android:textAlignment="center"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp" />
     </LinearLayout>
 

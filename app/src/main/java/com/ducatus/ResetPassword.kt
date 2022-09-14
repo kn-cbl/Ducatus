@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -32,26 +34,45 @@ class ResetPassword : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        inputObserver()
+
         binding.btnResetPassword.setOnClickListener {
             validatePassword()
         }
     }
 
-    private fun validatePassword() {
-        binding.tvResetPasswordNewError.text = ""
-        binding.tvResetPasswordConfirmError.text = ""
-        binding.tvResetPasswordError.text = ""
+    override fun onDestroy() {
+        super.onDestroy()
+        auth = Firebase.auth
+        auth.signOut()
+    }
 
-        val newPassword = binding.etResetPasswordNew.text.toString().trim {it <= ' '}
-        val confirmPassword = binding.etResetPasswordConfirm.text.toString().trim {it <= ' '}
+    private fun inputObserver() {
+        binding.tfResetPasswordNew.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
+            else  binding.tfResetPasswordNew.error = null
+        }
+        binding.tfResetPasswordConfirm.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
+            else  binding.tfResetPasswordConfirm.error = null
+        }
+    }
+
+    private fun validatePassword() {
+        binding.tvResetPasswordError.text = ""
+        binding.tfResetPasswordNew.error = null
+        binding.tfResetPasswordConfirm.error = null
+
+        val newPassword = binding.tfResetPasswordNew.editText?.text.toString().trim {it <= ' '}
+        val confirmPassword = binding.tfResetPasswordConfirm.editText?.text.toString().trim {it <= ' '}
 
         if (TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
-            if (TextUtils.isEmpty(newPassword)) binding.tvResetPasswordNewError.text = "Please enter new password"
-            if (TextUtils.isEmpty(confirmPassword)) binding.tvResetPasswordConfirmError.text = "Please confirm new password"
+            if (TextUtils.isEmpty(newPassword)) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
+            if (TextUtils.isEmpty(confirmPassword)) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
         }
         else {
             if (newPassword != confirmPassword) {
-                binding.tvResetPasswordError.text = "Passwords do not match"
+                binding.tfResetPasswordConfirm.error = getString(R.string.password_match_error)
             }
             else {
                 disableWindow()
@@ -85,13 +106,13 @@ class ResetPassword : AppCompatActivity() {
     }
 
     private fun enableWindow() {
-        binding.btnResetPassword.setBackgroundResource(R.drawable.green_button)
+        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbResetPassword.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun disableWindow() {
-        binding.btnResetPassword.setBackgroundResource(R.drawable.btn_disabled)
+        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPassword.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }

@@ -16,15 +16,15 @@
         <item name="android:forceDarkAllowed">false</item>
     </style>
 
-    <style name="floatingText.Ducatus" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Material.Ducatus" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green_primary</item>
         <item name="colorPrimaryVariant">@color/green_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#033F63</item>
+        <item name="colorSecondary">@color/blue_cancel</item>
         <item name="colorSecondaryVariant">@color/green_tertiary</item>
-        <item name="colorOnSecondary">#389583</item>
+        <item name="colorOnSecondary">@color/green_secondary</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/black</item>
         <!-- Customize your theme here. -->

@@ -7,6 +7,8 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivitySignupBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -15,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -29,6 +32,7 @@ class Signup : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
+    private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +48,12 @@ class Signup : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        inputObserver()
+
         binding.tvLoginLink.setOnClickListener {
-            loginLink()
+            clearErrors()
+            startActivity(Intent(this, Login::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         binding.btnSignup.setOnClickListener {
@@ -63,59 +71,73 @@ class Signup : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun loginLink() {
-        startActivity(Intent(this, Login::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    private fun inputObserver() {
+        binding.tfSignupEmail.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfSignupEmail.error = getString(R.string.email_empty)
+            else if (!emailRegex.toRegex().matches(text!!)) binding.tfSignupEmail.error = getString(R.string.email_invalid)
+            else binding.tfSignupEmail.error = null
+        }
+        binding.tfSignupUsername.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfSignupUsername.error = getString(R.string.username_empty)
+            else binding.tfSignupUsername.error = null
+        }
+        binding.tfSignupPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfSignupPassword.error = getString(R.string.password_empty)
+            else if (text?.length!! < 8)  binding.tfSignupPassword.error = getString(R.string.password_complexity)
+            else binding.tfSignupPassword.error = null
+        }
     }
 
     // User Manual Sign In
     private fun validateCredentials() {
-        binding.tvSignupErrorAuth.text = ""
-        binding.tvSignupErrorUsername.text = ""
-        binding.tvSignupErrorEmail.text = ""
-        binding.tvSignupErrorPassword.text = ""
+        clearErrors()
 
-        val username = binding.etSignupUsername.text.toString().trim {it <= ' '}
-        val email = binding.etSignupEmail.text.toString().trim {it <= ' '}
-        val password = binding.etSignupPassword.text.toString().trim {it <= ' '}
+        val username = binding.tfSignupUsername.editText?.text.toString().trim {it <= ' '}
+        val email = binding.tfSignupEmail.editText?.text.toString().trim {it <= ' '}
+        val password = binding.tfSignupPassword.editText?.text.toString().trim {it <= ' '}
 
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            if (TextUtils.isEmpty(username)) binding.tvSignupErrorUsername.text = "Please enter username"
-            if (TextUtils.isEmpty(email)) binding.tvSignupErrorEmail.text = "Please enter email"
-            if (TextUtils.isEmpty(password)) binding.tvSignupErrorPassword.text = "Please enter password"
+        if (emailRegex.toRegex().matches(email) && password.length >= 8) {
+            disableWindow()
+            usernameExists(username, email, password)
         }
         else {
-            disableWindow()
-
-            database = Firebase.database
-            databaseReference = database.getReference("users")
-            databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    var usernameExists = false
-
-                    for (child in snapshot.children) {
-                        if(username == child.child("username").value.toString()) {
-                            usernameExists = true
-                            break
-                        }
-                    }
-
-                    if (!usernameExists) {
-                        createUser(username, email, password)
-                    }
-                    else {
-                        enableWindow()
-                        binding.tvSignupErrorAuth.text = "Username already exists"
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    enableWindow()
-                    Log.e("databaseReference", error.toString())
-                    binding.tvSignupErrorAuth.text = error.message
-                }
-            })
+            if (!emailRegex.toRegex().matches(email)) binding.tfSignupEmail.error = getString(R.string.email_invalid)
+            if (password.length < 8) binding.tfSignupPassword.error = getString(R.string.password_complexity)
+            if (TextUtils.isEmpty(username)) binding.tfSignupUsername.error = getString(R.string.username_empty)
+            if (TextUtils.isEmpty(email)) binding.tfSignupEmail.error = getString(R.string.email_empty)
+            if (TextUtils.isEmpty(password)) binding.tfSignupPassword.error = getString(R.string.password_empty)
         }
+    }
+
+    private fun usernameExists(username: String, email: String, password: String) {
+        database = Firebase.database
+        databaseReference = database.getReference("users")
+        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var usernameKey = false
+
+                for (child in snapshot.children) {
+                    if(username == child.child("username").value.toString()) {
+                        usernameKey = true
+                        break
+                    }
+                }
+
+                if (!usernameKey) {
+                    createUser(username, email, password)
+                }
+                else {
+                    enableWindow()
+                    binding.tfSignupUsername.error = getString(R.string.username_exists)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                enableWindow()
+                Log.e("databaseReference", error.toString())
+                binding.tvSignupErrorAuth.text = error.message
+            }
+        })
     }
 
     private fun createUser(username: String, email: String, password: String) {
@@ -124,7 +146,7 @@ class Signup : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser: FirebaseUser = task.result!!.user!!
-                    storeDataToRTDB(firebaseUser.uid, email, password, username)
+                    storeData(firebaseUser.uid, email, password, username)
 
                     val intent = Intent(this, VerifyEmail::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -134,8 +156,14 @@ class Signup : AppCompatActivity() {
                 }
                 else {
                     enableWindow()
-                    Log.e("createUser", task.exception!!.message.toString())
-                    binding.tvSignupErrorAuth.text = task.exception!!.message
+                    Log.e("createUser", task.exception?.localizedMessage.toString())
+                    binding.tvSignupErrorAuth.text = task.exception?.localizedMessage
+//                    try {
+//                        throw task.exception!!
+//                    }
+//                    catch(e: FirebaseAuthInvalidCredentialsException) {
+//                        binding.tvSignupErrorAuth.setText(R.string.email_invalid)
+//                    }
                 }
             }
     }
@@ -172,6 +200,7 @@ class Signup : AppCompatActivity() {
         }
         catch (e: ApiException) {
             Log.e("signup", e.statusCode.toString())
+            binding.tvSignupErrorAuth.text = e.localizedMessage
         }
     }
 
@@ -181,12 +210,12 @@ class Signup : AppCompatActivity() {
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(account.email.toString())
             .addOnCompleteListener { task ->
                 if (task.result.signInMethods?.isEmpty()!!) {
-                    storeDataToRTDB(account.id.toString(), account.email.toString(), null, account.displayName.toString())
+                    storeData(account.id.toString(), account.email.toString(), null, account.displayName.toString())
                 }
             }
     }
 
-    private fun storeDataToRTDB(uid: String, email: String, password: String?, username: String) {
+    private fun storeData(uid: String, email: String, password: String?, username: String) {
         crypto = Crypto()
         database = Firebase.database
         databaseReference = database.getReference("users")
@@ -196,14 +225,21 @@ class Signup : AppCompatActivity() {
     }
 
     private fun enableWindow() {
-        binding.btnSignup.setBackgroundResource(R.drawable.green_button)
+        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbSignup.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun disableWindow() {
-        binding.btnSignup.setBackgroundResource(R.drawable.btn_disabled)
+        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbSignup.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun clearErrors() {
+        binding.tvSignupErrorAuth.text = ""
+        binding.tfSignupUsername.error = null
+        binding.tfSignupEmail.error = null
+        binding.tfSignupPassword.error = null
     }
 }

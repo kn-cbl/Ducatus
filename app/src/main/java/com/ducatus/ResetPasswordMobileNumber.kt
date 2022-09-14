@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordMobileNumberBinding
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -18,6 +19,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
     private lateinit var binding: ActivityResetPasswordMobileNumberBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private var mobileNumberRegex = "^[89][0-9]{9}$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +29,12 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        inputObserver()
+
         binding.tvResetPasswordEmailLink.setOnClickListener {
-            resetEmailLink()
+            clearErrors()
+            startActivity(Intent(this, ResetPasswordEmail::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         binding.imgBtnResetPasswordMobileNumberBack.setOnClickListener {
@@ -47,29 +53,31 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun resetEmailLink() {
-        startActivity(Intent(this, ResetPasswordEmail::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    private fun inputObserver() {
+        binding.tfResetPasswordMobile.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_empty)
+            else if (!mobileNumberRegex.toRegex().matches(text!!)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_invalid)
+            else  binding.tfResetPasswordMobile.error = null
+        }
     }
 
     private fun validateCredentials() {
-        binding.tvResetPasswordMobileErrorAuth.text = ""
-        binding.tvResetPasswordMobileNumberError.text = ""
+        clearErrors()
 
-        val mobileNumber = binding.etResetPasswordMobileNumber.text.toString().trim {it <= ' '}
-        if (TextUtils.isEmpty(mobileNumber)) {
-            binding.tvResetPasswordMobileNumberError.text = "Please enter mobile number"
-        }
-        else {
+        val mobileNumber = binding.tfResetPasswordMobile.editText?.text.toString().trim {it <= ' '}
+        if (mobileNumberRegex.toRegex().matches(mobileNumber)) {
             disableWindow()
             mobileNumberExists(mobileNumber)
+        }
+        else {
+            if (!mobileNumberRegex.toRegex().matches(mobileNumber)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_invalid)
+            if (TextUtils.isEmpty(mobileNumber)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_empty)
         }
     }
 
     private fun mobileNumberExists(mobileNumber: String) {
         database = Firebase.database
         databaseReference = database.getReference("users")
-
         databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var mobileNumberExists = false
@@ -90,7 +98,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 }
                 else {
-                    binding.tvResetPasswordMobileErrorAuth.text = "User does not exist"
+                    binding.tvResetPasswordMobileErrorAuth.setText(R.string.user_does_not_exist)
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -102,14 +110,19 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
     }
 
     private fun enableWindow() {
-        binding.btnResetPasswordMobileNumber.setBackgroundResource(R.drawable.green_button)
+        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun disableWindow() {
-        binding.btnResetPasswordMobileNumber.setBackgroundResource(R.drawable.btn_disabled)
+        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun clearErrors() {
+        binding.tvResetPasswordMobileErrorAuth.text = ""
+        binding.tfResetPasswordMobile.error = null
     }
 }

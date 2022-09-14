@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -9,10 +9,12 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="green_primary">#206967</color>
-    <color name="green_primary_disabled">#165F5D</color>
     <color name="green_secondary">#389583</color>
     <color name="green_tertiary">#FF018786</color>
-    <color name="mtrl_textinput_default_box_stroke_color">#389583</color>
+    <color name="et_shadow">#bfbfbf</color>
+    <color name="text_input_box_stroke_color">#389583</color>
+    <color name="blue_cancel">#033F63</color>
+    <color name="gold">#E6D0AC</color>
 
     <!-- For loans, challenges, goals, tips-->
 
@@ -29,6 +31,7 @@
 
     <!-- text colors-->
     <color name="red_text">#FF0000</color>
+    <color name="red_text_2">#D50000</color>
     <color name="gray_text">#545454</color>
     <color name="green_text">#2DB57B</color>
     <color name="light_gray_text">#7A7A7A</color>

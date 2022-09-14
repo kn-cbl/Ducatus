@@ -65,7 +65,7 @@ class VerifyOTPEmail : AppCompatActivity() {
         val code = binding.etOTPEmail.text.toString().trim {it <= ' '}
 
         if (TextUtils.isEmpty(code)) {
-            binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
+            binding.tvVerifyOTPEmailError.setText(R.string.verification_code_error)
         }
         else {
             disableWindow()
@@ -74,7 +74,7 @@ class VerifyOTPEmail : AppCompatActivity() {
             }
             else {
                 enableWindow()
-                binding.tvVerifyOTPEmailError.text = "Invalid code, please try again"
+                binding.tvVerifyOTPEmailError.setText(R.string.verification_code_error)
             }
         }
     }
@@ -99,13 +99,13 @@ class VerifyOTPEmail : AppCompatActivity() {
                 }
                 else {
                     enableWindow()
-                    binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
                 }
             }
             override fun onCancelled(error: DatabaseError) {
                 enableWindow()
                 Log.e("databaseError", error.message)
-                binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
             }
         })
     }
@@ -125,7 +125,7 @@ class VerifyOTPEmail : AppCompatActivity() {
                 else {
                     enableWindow()
                     Log.e("authError", "Auth failed")
-                    binding.tvVerifyOTPEmailError.text = "Unknown error occurred, please try again"
+                    binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
                 }
             }
     }
@@ -192,20 +192,20 @@ class VerifyOTPEmail : AppCompatActivity() {
             }
             override fun onFinish() {
                 binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
-                binding.tvResendOTPEmail.text = "Resend verification code"
+                binding.tvResendOTPEmail.setText(R.string.resend_verification_code)
                 binding.tvResendOTPEmail.isEnabled = true
             }
         }.start()
     }
 
     private fun enableWindow() {
-        binding.btnVerifyOTPEmail.setBackgroundResource(R.drawable.green_button)
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun disableWindow() {
-        binding.btnVerifyOTPEmail.setBackgroundResource(R.drawable.btn_disabled)
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }

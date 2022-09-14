@@ -3,7 +3,6 @@ package com.ducatus
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Toast
 import com.ducatus.databinding.ActivitySettingsBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -38,7 +37,7 @@ class Settings : AppCompatActivity() {
         }
 
         binding.rlChangePassword.setOnClickListener {
-            startActivity(Intent(this, ChangePassword::class.java))
+            startActivity(Intent(this, UpdatePassword::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 

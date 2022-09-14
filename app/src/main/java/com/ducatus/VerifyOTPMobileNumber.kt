@@ -62,7 +62,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
         val code = binding.etOTPMobile.text.toString().trim {it <= ' '}
 
         if (TextUtils.isEmpty(code)) {
-            binding.tvVerifyOTPMobileError.text = "Please enter verification code"
+            binding.tvVerifyOTPMobileError.setText(R.string.verification_code_empty)
         }
         else {
             disableWindow()
@@ -78,7 +78,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                 }
                 else {
                     enableWindow()
-                    binding.tvVerifyOTPMobileError.text = "Invalid code, please try again"
+                    binding.tvVerifyOTPMobileError.setText(R.string.verification_code_error)
                 }
             }
         }
@@ -95,7 +95,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext, R.color.green_primary))
-                binding.tvResendOTPMobile.text = "Resend verification code"
+                binding.tvResendOTPMobile.setText(R.string.resend_verification_code)
                 binding.tvResendOTPMobile.isEnabled = true
                 status = false
 
@@ -110,7 +110,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
                 }
                 else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    binding.tvVerifyOTPMobileError.text = "Too many requests, please try again"
+                    binding.tvVerifyOTPMobileError.setText(R.string.mobile_auth_request_error)
                     Log.e("error", "Too many requests, please try again")
                 }
             }
@@ -172,19 +172,19 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
             }
             override fun onFinish() {
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
-                binding.tvResendOTPMobile.text = "Resend verification code"
+                binding.tvResendOTPMobile.setText(R.string.resend_verification_code)
                 binding.tvResendOTPMobile.isEnabled = true
             }
         }.start()
     }
 
     private fun enableWindow() {
-        binding.btnVerifyOTPMobile.setBackgroundResource(R.drawable.green_button)
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)    }
 
     private fun disableWindow() {
-        binding.btnVerifyOTPMobile.setBackgroundResource(R.drawable.btn_disabled)
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPMobile.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }

@@ -39,7 +39,7 @@
             android:layout_height="480dp"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
-            app:cardBackgroundColor="#F8F8F8"
+            app:cardBackgroundColor="@color/cardview_bg"
             app:cardCornerRadius="25dp">
 
             <LinearLayout
@@ -51,10 +51,11 @@
                     android:id="@+id/imageView8"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:layout_marginTop="40dp"
-                    app:srcCompat="@drawable/user_one"
                     android:layout_gravity="end"
-                    android:contentDescription="@string/user_profile" />
+                    android:layout_marginTop="40dp"
+                    android:contentDescription="@string/user_profile"
+                    app:srcCompat="@drawable/user_one"
+                    tools:ignore="ImageContrastCheck" />
 
                 <TextView
                     android:id="@+id/textView28"
@@ -64,7 +65,7 @@
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/verification_code"
                     android:textAlignment="center"
-                    android:textColor="#545454"
+                    android:textColor="@color/gray_text"
                     android:textSize="25sp" />
 
                 <TextView
@@ -75,7 +76,7 @@
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/otp_sent"
                     android:textAlignment="center"
-                    android:textColor="#545454"
+                    android:textColor="@color/gray_text"
                     android:textSize="14sp" />
 
                 <TextView
@@ -86,7 +87,7 @@
                     android:fontFamily="@font/inter_semibold"
                     android:text="@string/email"
                     android:textAlignment="center"
-                    android:textColor="#0FA958"
+                    android:textColor="@color/green_secondary"
                     android:textSize="14sp" />
 
                 <ProgressBar
@@ -105,11 +106,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:fontFamily="@font/inter_regular"
-                    android:visibility="visible"
                     android:text=""
                     android:textAlignment="center"
-                    android:textColor="#FF0000"
-                    android:textSize="12sp" />
+                    android:textColor="@color/red_text_2"
+                    android:textSize="12sp"
+                    android:visibility="visible" />
 
                 <EditText
                     android:id="@+id/etOTPEmail"
@@ -118,11 +119,12 @@
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="35dp"
                     android:layout_marginTop="20dp"
-                    android:inputType="number"
-                    android:fontFamily="@font/inter_regular"
-                    android:textSize="25sp"
-                    android:textColor="#000000"
                     android:padding="10dp"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:fontFamily="@font/inter_regular"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
                     android:textAlignment="center"
                     tools:ignore="LabelFor,TextFields"
                     android:autofillHints="" />
@@ -208,14 +210,14 @@
                     android:letterSpacing="0.04"
                     android:text="@string/verify"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp" />
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tvResendOTPEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="30dp"
                     android:fontFamily="@font/inter_regular"
                     android:enabled="false"
                     android:text="@string/resend_in_60"

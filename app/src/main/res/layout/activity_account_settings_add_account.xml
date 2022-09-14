@@ -37,7 +37,7 @@
             app:boxCornerRadiusBottomStart="5dp"
             app:boxCornerRadiusTopEnd="5dp"
             app:boxCornerRadiusTopStart="5dp"
-            app:boxStrokeColor="@color/mtrl_textinput_default_box_stroke_color"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
             app:hintTextColor="@color/teal_200"
             android:textColorHint="@color/teal_200">
 
@@ -65,7 +65,7 @@
             app:boxCornerRadiusBottomStart="5dp"
             app:boxCornerRadiusTopEnd="5dp"
             app:boxCornerRadiusTopStart="5dp"
-            app:boxStrokeColor="@color/mtrl_textinput_default_box_stroke_color"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
             app:hintTextColor="@color/teal_200"
             android:textColorHint="@color/teal_200">
 
@@ -93,7 +93,7 @@
             app:boxCornerRadiusBottomStart="5dp"
             app:boxCornerRadiusTopEnd="5dp"
             app:boxCornerRadiusTopStart="5dp"
-            app:boxStrokeColor="@color/mtrl_textinput_default_box_stroke_color"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
             app:hintTextColor="@color/teal_200"
             android:textColorHint="@color/teal_200">
 

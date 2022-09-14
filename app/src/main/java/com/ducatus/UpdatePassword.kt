@@ -1,0 +1,179 @@
+package com.ducatus
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
+import android.view.View
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
+import com.ducatus.databinding.ActivityUpdatePasswordBinding
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+
+class UpdatePassword : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth
+    private lateinit var alertDialog: AlertDialog
+    private lateinit var builder: AlertDialog.Builder
+    private lateinit var credential: AuthCredential
+    private lateinit var crypto: Crypto
+    private lateinit var database: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var binding: ActivityUpdatePasswordBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_update_password)
+
+        binding = ActivityUpdatePasswordBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        inputObserver()
+
+        binding.tbUpdatePassword.setNavigationOnClickListener {
+            startActivity(Intent(this, Settings::class.java))
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        }
+
+        binding.btnUpdatePassword.setOnClickListener {
+            // validate password -> reauthenticate user -> update password
+            validatePassword()
+        }
+
+        binding.btnUpdatePasswordCancel.setOnClickListener {
+            cancel()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    private fun inputObserver() {
+        val currentPassword = binding.tfUpdatePasswordCurrent
+        val newPassword = binding.tfUpdatePasswordNew
+        val confirmPassword = binding.tfUpdatePasswordConfirm
+
+        currentPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) currentPassword.error = getString(R.string.current_password_empty)
+            else  currentPassword.error = null
+        }
+        newPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) newPassword.error = getString(R.string.new_password_empty)
+            else if (text?.length!! < 8) newPassword.error = getString(R.string.password_complexity)
+            else  newPassword.error = null
+        }
+        confirmPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text?.length == 0) confirmPassword.error = getString(R.string.confirm_password_empty)
+            else if (text.toString() != newPassword.editText?.text.toString()) confirmPassword.error = getString(R.string.password_match_error)
+            else  confirmPassword.error = null
+        }
+    }
+
+    private fun validatePassword() {
+        clearErrors()
+
+        val currentPassword = binding.tfUpdatePasswordCurrent.editText?.text.toString().trim {it <= ' '}
+        val newPassword = binding.tfUpdatePasswordNew.editText?.text.toString().trim {it <= ' '}
+        val confirmPassword = binding.tfUpdatePasswordConfirm.editText?.text.toString().trim {it <= ' '}
+
+        if (!TextUtils.isEmpty(currentPassword) && newPassword.length >= 8 && newPassword == confirmPassword) {
+            confirmUpdate(newPassword, currentPassword)
+        }
+        else {
+            if (newPassword.length < 8) binding.tfUpdatePasswordNew.error = getString(R.string.password_complexity)
+            if (newPassword != confirmPassword) binding.tfUpdatePasswordConfirm.error = getString(R.string.password_match_error)
+            if (TextUtils.isEmpty(currentPassword)) binding.tfUpdatePasswordCurrent.error = getString(R.string.current_password_empty)
+            if (TextUtils.isEmpty(newPassword)) binding.tfUpdatePasswordNew.error = getString(R.string.new_password_empty)
+            if (TextUtils.isEmpty(confirmPassword)) binding.tfUpdatePasswordConfirm.error = getString(R.string.confirm_password_empty)
+        }
+    }
+
+    private fun confirmUpdate(newPassword: String, currentPassword: String) {
+        builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.update_password)
+        builder.setMessage(R.string.update_password_confirm)
+        builder.setIcon(R.drawable.lock)
+        builder.setPositiveButton("Update") { _, _ -> reauthenticateUser(newPassword, currentPassword) }
+        builder.setNegativeButton("No") { _, _ -> }
+
+        alertDialog = builder.create()
+        alertDialog.show()
+    }
+
+    private fun reauthenticateUser(newPassword: String, currentPassword: String) {
+        disableWindow()
+
+        auth = Firebase.auth
+        val user = FirebaseAuth.getInstance().currentUser
+        credential = EmailAuthProvider.getCredential(user!!.email.toString(), currentPassword)
+        user.reauthenticate(credential).addOnCompleteListener { authTask ->
+            if (authTask.isSuccessful) {
+                updatePassword(user, newPassword)
+            }
+            else {
+                enableWindow()
+                Log.d("updatePassword", authTask.exception!!.message.toString())
+                binding.tvUpdatePasswordErrorAuth.text = authTask.exception!!.message
+            }
+        }
+    }
+
+    private fun updatePassword(user: FirebaseUser, newPassword: String) {
+        user.updatePassword(newPassword).addOnCompleteListener { updateTask ->
+            if (updateTask.isSuccessful) {
+                crypto = Crypto()
+                database = Firebase.database
+                databaseReference = database.getReference("users/" + user.uid + "/password")
+                databaseReference.setValue(crypto.encrypt(newPassword).toString())
+
+                enableWindow()
+                Toast.makeText(this, "Successfully changed password", Toast.LENGTH_SHORT).show()
+            } else {
+                enableWindow()
+                Log.d("updatePassword", updateTask.exception!!.message.toString())
+                binding.tvUpdatePasswordErrorAuth.text = updateTask.exception!!.message
+            }
+        }
+    }
+
+    private fun cancel() {
+        startActivity(Intent(this, Settings::class.java))
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    private fun enableWindow() {
+        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.btnUpdatePasswordCancel.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.blue_cancel)
+        binding.pbUpdatePassword.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun disableWindow() {
+        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
+        binding.btnUpdatePasswordCancel.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
+        binding.pbUpdatePassword.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun clearErrors() {
+        binding.tvUpdatePasswordErrorAuth.text = ""
+        binding.tfUpdatePasswordCurrent.error = null
+        binding.tfUpdatePasswordNew.error = null
+        binding.tfUpdatePasswordConfirm.error = null
+    }
+}
