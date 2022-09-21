@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.ducatus.databinding.ActivityPrivacyBinding
 
-class Privacy : AppCompatActivity() {
+class PrivacyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPrivacyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,8 +17,7 @@ class Privacy : AppCompatActivity() {
         setContentView(view)
 
         binding.tbPrivacy.setNavigationOnClickListener {
-            startActivity(Intent(this, Settings::class.java))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            onBackPressed()
         }
     }
 

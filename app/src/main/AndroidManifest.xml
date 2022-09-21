@@ -5,6 +5,9 @@
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
         android:allowBackup="true"
@@ -15,9 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Material.Ducatus"
-        tools:targetApi="31" >
+        tools:targetApi="31">
         <activity
-            android:name=".UpdatePassword"
+            android:name=".UpdatePasswordActivity"
             android:exported="true" />
         <activity
             android:name=".FinancialExpensesSubcategory"
@@ -29,7 +32,7 @@
             android:name=".Investments"
             android:exported="true" />
         <activity
-            android:name=".VerifyOTPMobileNumber"
+            android:name=".VerifyOTPMobileNumberActivity"
             android:exported="true" />
         <activity
             android:name=".Vehicle"
@@ -59,25 +62,25 @@
             android:name=".EditCategory"
             android:exported="true" />
         <activity
-            android:name=".UserProfile"
+            android:name=".UserProfileActivity"
             android:exported="true" />
         <activity
             android:name=".Settings"
             android:exported="true" />
         <activity
-            android:name=".ResetPasswordMobileNumber"
+            android:name=".ResetPasswordMobileNumberActivity"
             android:exported="true" />
         <activity
-            android:name=".ResetPasswordEmail"
+            android:name=".ResetPasswordEmailActivity"
             android:exported="true" />
         <activity
-            android:name=".Privacy"
+            android:name=".PrivacyActivity"
             android:exported="true" />
         <activity
             android:name=".OtpMobileNumber"
             android:exported="true" />
         <activity
-            android:name=".VerifyOTPEmail"
+            android:name=".VerifyOTPEmailActivity"
             android:exported="true" />
         <activity
             android:name=".Notifications"
@@ -86,10 +89,10 @@
             android:name=".EditProfile"
             android:exported="true" />
         <activity
-            android:name=".ResetPassword"
+            android:name=".ResetPasswordActivity"
             android:exported="true" />
         <activity
-            android:name=".VerifyEmail"
+            android:name=".VerifyEmailActivity"
             android:exported="true" />
         <activity
             android:name=".AccountSettingsAddAccount"
@@ -98,7 +101,7 @@
             android:name=".AccountSettings"
             android:exported="true" />
         <activity
-            android:name=".AboutDucatus"
+            android:name=".AboutAppActivity"
             android:exported="true" />
         <activity
             android:name=".LoanMainActivity"
@@ -182,16 +185,17 @@
             android:name=".EditGoal"
             android:exported="true" />
         <activity
-            android:name=".Homescreen"
+            android:name=".HomeActivity"
             android:exported="true" />
         <activity
-            android:name=".Signup"
+            android:name=".SignupActivity"
             android:exported="true" />
         <activity
-            android:name=".Login"
-            android:exported="true" >
+            android:name=".LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

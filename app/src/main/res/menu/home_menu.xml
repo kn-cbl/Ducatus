@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_transactions"
+            android:title="@string/transactions" />
+        <item
+            android:id="@+id/nav_reports"
+            android:title="@string/reports" />
+        <item
+            android:id="@+id/nav_planned_payments"
+            android:title="@string/planned_payments" />
+        <item
+            android:id="@+id/nav_budgets"
+            android:title="@string/budgets" />
+        <item
+            android:id="@+id/nav_loans"
+            android:title="@string/loans" />
+        <item
+            android:id="@+id/nav_goals"
+            android:title="@string/goals" />
+        <item
+            android:id="@+id/nav_challenges"
+            android:title="@string/challenges" />
+        <item
+            android:id="@+id/nav_tips"
+            android:title="@string/tips" />
+        <item
+            android:id="@+id/nav_help"
+            android:title="@string/help" />
+        <item
+            android:id="@+id/nav_settings"
+            android:title="@string/settings" />
+    </group>
+</menu>

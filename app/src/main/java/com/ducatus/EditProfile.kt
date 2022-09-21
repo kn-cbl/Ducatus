@@ -41,11 +41,6 @@ class EditProfile : AppCompatActivity() {
         loadUser()
         inputObserver()
 
-        binding.imgBtnEditProfileBack.setOnClickListener {
-            startActivity(Intent(this, UserProfile::class.java))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-        }
-
         binding.btnEditProfileSave.setOnClickListener {
             validateCredentials()
         }

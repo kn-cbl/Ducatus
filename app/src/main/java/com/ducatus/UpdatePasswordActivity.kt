@@ -1,6 +1,5 @@
 package com.ducatus
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -10,7 +9,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityUpdatePasswordBinding
 import com.google.firebase.auth.AuthCredential
@@ -23,15 +21,14 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class UpdatePassword : AppCompatActivity() {
+class UpdatePasswordActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var alertDialog: AlertDialog
+    private lateinit var binding: ActivityUpdatePasswordBinding
     private lateinit var builder: AlertDialog.Builder
-    private lateinit var credential: AuthCredential
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var binding: ActivityUpdatePasswordBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +41,7 @@ class UpdatePassword : AppCompatActivity() {
         inputObserver()
 
         binding.tbUpdatePassword.setNavigationOnClickListener {
-            startActivity(Intent(this, Settings::class.java))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            onBackPressed()
         }
 
         binding.btnUpdatePassword.setOnClickListener {
@@ -54,7 +50,7 @@ class UpdatePassword : AppCompatActivity() {
         }
 
         binding.btnUpdatePasswordCancel.setOnClickListener {
-            cancel()
+            onBackPressed()
         }
     }
 
@@ -86,7 +82,6 @@ class UpdatePassword : AppCompatActivity() {
 
     private fun validatePassword() {
         clearErrors()
-
         val currentPassword = binding.tfUpdatePasswordCurrent.editText?.text.toString().trim {it <= ' '}
         val newPassword = binding.tfUpdatePasswordNew.editText?.text.toString().trim {it <= ' '}
         val confirmPassword = binding.tfUpdatePasswordConfirm.editText?.text.toString().trim {it <= ' '}
@@ -117,13 +112,12 @@ class UpdatePassword : AppCompatActivity() {
 
     private fun reauthenticateUser(newPassword: String, currentPassword: String) {
         disableWindow()
-
         auth = Firebase.auth
-        val user = FirebaseAuth.getInstance().currentUser
-        credential = EmailAuthProvider.getCredential(user!!.email.toString(), currentPassword)
-        user.reauthenticate(credential).addOnCompleteListener { authTask ->
+        val authUser = FirebaseAuth.getInstance().currentUser
+        val credential = EmailAuthProvider.getCredential(authUser!!.email.toString(), currentPassword)
+        authUser.reauthenticate(credential).addOnCompleteListener { authTask ->
             if (authTask.isSuccessful) {
-                updatePassword(user, newPassword)
+                updatePassword(authUser, newPassword)
             }
             else {
                 enableWindow()
@@ -133,27 +127,23 @@ class UpdatePassword : AppCompatActivity() {
         }
     }
 
-    private fun updatePassword(user: FirebaseUser, newPassword: String) {
-        user.updatePassword(newPassword).addOnCompleteListener { updateTask ->
+    private fun updatePassword(authUser: FirebaseUser, newPassword: String) {
+        authUser.updatePassword(newPassword).addOnCompleteListener { updateTask ->
             if (updateTask.isSuccessful) {
                 crypto = Crypto()
                 database = Firebase.database
-                databaseReference = database.getReference("users/" + user.uid + "/password")
+                databaseReference = database.getReference("users/" + authUser.uid + "/password")
                 databaseReference.setValue(crypto.encrypt(newPassword).toString())
 
                 enableWindow()
                 Toast.makeText(this, "Successfully changed password", Toast.LENGTH_SHORT).show()
-            } else {
+            }
+            else {
                 enableWindow()
                 Log.d("updatePassword", updateTask.exception!!.message.toString())
                 binding.tvUpdatePasswordErrorAuth.text = updateTask.exception!!.message
             }
         }
-    }
-
-    private fun cancel() {
-        startActivity(Intent(this, Settings::class.java))
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     private fun enableWindow() {

@@ -17,7 +17,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
-class VerifyOTPMobileNumber : AppCompatActivity() {
+class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityVerifyOtpMobileNumberBinding
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
@@ -70,7 +70,7 @@ class VerifyOTPMobileNumber : AppCompatActivity() {
 
             auth.signInWithCredential(credential).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this, ResetPassword::class.java)
+                    val intent = Intent(this, ResetPasswordActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)

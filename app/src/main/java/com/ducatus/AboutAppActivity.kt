@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.ducatus.databinding.ActivityAboutDucatusBinding
 
-class AboutDucatus : AppCompatActivity() {
+class AboutAppActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAboutDucatusBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +16,7 @@ class AboutDucatus : AppCompatActivity() {
         setContentView(view)
 
         binding.tbAboutApp.setNavigationOnClickListener {
-            startActivity(Intent(this, Settings::class.java))
+            onBackPressed()
         }
     }
 

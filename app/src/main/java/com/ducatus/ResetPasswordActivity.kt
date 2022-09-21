@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ResetPassword : AppCompatActivity() {
+class ResetPasswordActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityResetPasswordBinding
     private lateinit var crypto: Crypto
@@ -94,7 +94,7 @@ class ResetPassword : AppCompatActivity() {
 
                 Toast.makeText(this, "Successfully reset password", Toast.LENGTH_SHORT).show()
                 auth.signOut()
-                startActivity(Intent(this, Login::class.java))
+                startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
             else {

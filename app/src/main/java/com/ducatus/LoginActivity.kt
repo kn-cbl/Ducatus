@@ -23,7 +23,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class Login : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityLoginBinding
     private lateinit var database: FirebaseDatabase
@@ -46,13 +46,13 @@ class Login : AppCompatActivity() {
 
         binding.tvForgotPassword.setOnClickListener {
             clearErrors()
-            startActivity(Intent(this, ResetPasswordEmail::class.java))
+            startActivity(Intent(this, ResetPasswordEmailActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         binding.tvSignupLink.setOnClickListener {
             clearErrors()
-            startActivity(Intent(this, Signup::class.java))
+            startActivity(Intent(this, SignupActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
@@ -86,7 +86,7 @@ class Login : AppCompatActivity() {
         auth = Firebase.auth
         val authUser = FirebaseAuth.getInstance().currentUser
         if (authUser != null) {
-            val intent = Intent(this, Homescreen::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -101,7 +101,7 @@ class Login : AppCompatActivity() {
 
         val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
         if (googleSignInAccount != null) {
-            val intent = Intent(this, Homescreen::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -214,7 +214,7 @@ class Login : AppCompatActivity() {
                 disableWindow()
                 userExists(account)
 
-                val intent = Intent(this, Homescreen::class.java)
+                val intent = Intent(this, HomeActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -222,8 +222,10 @@ class Login : AppCompatActivity() {
             }
         }
         catch (e: ApiException) {
-            Log.e("signup", e.statusCode.toString())
-            binding.tvLoginErrorAuth.text = e.localizedMessage
+            Log.e("google signin", e.statusCode.toString())
+            if (e.statusCode == 12500) {
+                binding.tvLoginErrorAuth.text = getString(R.string.google_sign_in_failed)
+            }
         }
     }
 
@@ -240,14 +242,14 @@ class Login : AppCompatActivity() {
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         disableWindow()
         if (firebaseUser.isEmailVerified) {
-            val intent = Intent(this, Homescreen::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
         }
         else {
-            startActivity(Intent(this, VerifyEmail::class.java))
+            startActivity(Intent(this, VerifyEmailActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }

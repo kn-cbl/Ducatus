@@ -21,7 +21,7 @@ import javax.mail.Transport
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-class ResetPasswordEmail : AppCompatActivity() {
+class ResetPasswordEmailActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityResetPasswordEmailBinding
     private lateinit var appExecutors: AppExecutors
@@ -41,13 +41,13 @@ class ResetPasswordEmail : AppCompatActivity() {
 
         binding.tvResetPasswordMobileLink.setOnClickListener {
             clearErrors()
-            startActivity(Intent(this, ResetPasswordMobileNumber::class.java))
+            startActivity(Intent(this, ResetPasswordMobileNumberActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         binding.imgBtnResetPasswordEmailBack.setOnClickListener {
             clearErrors()
-            startActivity(Intent(this, Login::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
@@ -126,7 +126,7 @@ class ResetPasswordEmail : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    val intent = Intent(this, VerifyOTPEmail::class.java)
+                    val intent = Intent(this, VerifyOTPEmailActivity::class.java)
                     intent.putExtra("code", otp)
                     intent.putExtra("email", email)
                     startActivity(intent)

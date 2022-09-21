@@ -19,7 +19,7 @@ import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-class VerifyOTPEmail : AppCompatActivity() {
+class VerifyOTPEmailActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityVerifyOtpEmailBinding
     private lateinit var appExecutors: AppExecutors
@@ -116,7 +116,7 @@ class VerifyOTPEmail : AppCompatActivity() {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this, ResetPassword::class.java)
+                    val intent = Intent(this, ResetPasswordActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)

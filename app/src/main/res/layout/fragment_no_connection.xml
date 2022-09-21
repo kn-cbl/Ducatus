@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".NoConnectionFragment">
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_wifi_off"
+        android:backgroundTint="@color/green_secondary"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:padding="50dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/inter_medium"
+        android:text="@string/no_connection"
+        android:textAlignment="center"
+        android:textColor="@color/gray_text"
+        android:textSize="18sp" />
+</LinearLayout>

@@ -3,6 +3,8 @@
     <string name="app_description">A Budgeting and Financing Android Mobile Application with Subscription Management and Loan Monitoring</string>
     <string name="app_title">Personal Budget and Finance Manager</string>
     <string name="app_description_2">It is a mobile application that allows users to set their monthly expenses and their amount, assisting them in their financial transactions to reduce their unnecessary expenses, and set a given budget for a given time.</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="goalColor_hint"><b>Goal Color</b></string>
     <string name="icon_hint"><b>Icon</b></string>
@@ -19,10 +21,14 @@
     <string name="hello">Hello!</string>
     <string name="log_in_to_your_account">Log in to your account</string>
     <string name="email">Email</string>
+    <string name="new_email">New Email</string>
+    <string name="update_email">Update Email</string>
+    <string name="update_email_confirm">Update your email?</string>
     <string name="username">Username</string>
     <string name="email_username">Email or Username</string>
     <string name="log_in">Log In</string>
     <string name="continue_with_google">Continue with Google</string>
+    <string name="google_sign_in_failed">Sign-in failed, please try again</string>
     <string name="or">Or</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="sign_up">Sign Up</string>
@@ -86,6 +92,8 @@
     <!--  Errors  -->
     <string name="email_empty">Enter your email</string>
     <string name="email_invalid">Enter a valid email</string>
+    <string name="new_email_empty">Enter your new email</string>
+    <string name="new_email_same">New email must not be the same as current email</string>
     <string name="username_empty">Enter your username</string>
     <string name="username_exists">Username already exists</string>
     <string name="email_username_empty">Enter your email or username</string>
@@ -94,6 +102,7 @@
     <string name="password_complexity">Password must be at least 8 characters</string>
     <string name="current_password_empty">Enter your current password</string>
     <string name="new_password_empty">Enter your new password</string>
+    <string name="new_password_same">New password must not be the same as current password</string>
     <string name="confirm_password_empty">Confirm your new password</string>
     <string name="password_match_error">Passwords do not match</string>
     <string name="verification_code_empty">Enter verification code</string>
@@ -102,6 +111,23 @@
     <string name="mobile_number_invalid">Enter a valid mobile number</string>
     <string name="mobile_auth_request_error">Too many requests, please try again</string>
     <string name="unknown_error">Unknown error occurred, please try again</string>
-    <string name="save">Save</string>
+    <string name="save_changes">Save Changes</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edit">Edit</string>
+    <string name="update">Update</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
+    <string name="no_connection">No connection</string>
+    <string name="transactions">Transactions</string>
+    <string name="reports">Reports</string>
+    <string name="planned_payments">Planned Payments</string>
+    <string name="budgets">Budgets</string>
+    <string name="loans">Loans</string>
+    <string name="goals">Goals</string>
+    <string name="challenges">Challenges</string>
+    <string name="tips">Tips</string>
+    <string name="help">Help</string>
 
 </resources>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_user_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserProfileFragment">
+
+    <ImageView
+        android:id="@+id/imgViewUserProfilePicture"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_marginBottom="-24dp"
+        android:contentDescription="@string/user_profile_picture"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/imgViewUserProfilePictureUpdate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/user_profile" />
+
+    <ImageView
+        android:id="@+id/imgViewUserProfilePictureUpdate"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/oval_gray"
+        android:contentDescription="@string/icon_hint"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvUserProfileUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/camera" />
+
+    <TextView
+        android:id="@+id/tvUserProfileUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/username"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgViewUpdateUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="11dp"
+        android:background="@drawable/ic_edit"
+        android:contentDescription="@string/edit"
+        app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
+        app:layout_constraintStart_toEndOf="@+id/tvUserProfileUsername" />
+
+    <TextView
+        android:id="@+id/tvJoinDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/user_join_date"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/tfUserProfileEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tfUserProfileEmail"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:hint="@string/email"
+        app:endIconDrawable="@drawable/ic_edit"
+        app:endIconMode="custom"
+        app:expandedHintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/tfUserProfileMobileNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="false"
+            android:fontFamily="@font/inter_regular"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/email"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tfUserProfileMobileNumber"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:hint="@string/mobile_number"
+        app:endIconDrawable="@drawable/ic_edit"
+        app:endIconMode="custom"
+        app:expandedHintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/btnUserProfileSave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:prefixText="@string/_63">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="false"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/mobile_number"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+        android:id="@+id/pbUserProfile"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:indeterminateDrawable="@drawable/progress_bg"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnUserProfileSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/green_button"
+        android:text="@string/save_changes"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/green_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

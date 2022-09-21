@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class VerifyEmail : AppCompatActivity() {
+class VerifyEmailActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityVerifyEmailBinding
 
@@ -81,7 +81,7 @@ class VerifyEmail : AppCompatActivity() {
 
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         if (firebaseUser.isEmailVerified) {
-            val intent = Intent(this, Homescreen::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_profile"
+    app:startDestination="@id/userProfileFragment">
+
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.ducatus.UserProfileFragment"
+        android:label="fragment_user_profile"
+        tools:layout="@layout/fragment_user_profile">
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateMobileNumberFragment"
+            app:destination="@id/updateMobileNumberFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateUsernameFragment"
+            app:destination="@id/updateUsernameFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateEmailFragment"
+            app:destination="@id/updateEmailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/updateMobileNumberFragment"
+        android:name="com.ducatus.UpdateMobileNumberFragment"
+        android:label="fragment_update_mobile_number"
+        tools:layout="@layout/fragment_update_mobile_number" >
+        <action
+            android:id="@+id/action_updateMobileNumberFragment_to_verifyUpdateMobileNumberFragment"
+            app:destination="@id/verifyUpdateMobileNumberFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/updateUsernameFragment"
+        android:name="com.ducatus.UpdateUsernameFragment"
+        android:label="fragment_update_username"
+        tools:layout="@layout/fragment_update_username" />
+
+    <fragment
+        android:id="@+id/updateEmailFragment"
+        android:name="com.ducatus.UpdateEmailFragment"
+        android:label="fragment_update_email"
+        tools:layout="@layout/fragment_update_email" />
+    <fragment
+        android:id="@+id/verifyUpdateMobileNumberFragment"
+        android:name="com.ducatus.VerifyUpdateMobileNumberFragment"
+        android:label="fragment_verify_update_mobile_number"
+        tools:layout="@layout/fragment_verify_update_mobile_number" >
+        <action
+            android:id="@+id/action_verifyUpdateMobileNumberFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="mobileNumber"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

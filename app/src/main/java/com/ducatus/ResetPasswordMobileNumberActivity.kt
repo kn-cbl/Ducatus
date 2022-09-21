@@ -15,7 +15,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ResetPasswordMobileNumber : AppCompatActivity() {
+class ResetPasswordMobileNumberActivity : AppCompatActivity() {
     private lateinit var binding: ActivityResetPasswordMobileNumberBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
@@ -33,12 +33,12 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
 
         binding.tvResetPasswordEmailLink.setOnClickListener {
             clearErrors()
-            startActivity(Intent(this, ResetPasswordEmail::class.java))
+            startActivity(Intent(this, ResetPasswordEmailActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         binding.imgBtnResetPasswordMobileNumberBack.setOnClickListener {
-            startActivity(Intent(this, Login::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
@@ -57,7 +57,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
         binding.tfResetPasswordMobile.editText?.doOnTextChanged { text, _, _, _ ->
             if (text?.length == 0) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_empty)
             else if (!mobileNumberRegex.toRegex().matches(text!!)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_invalid)
-            else  binding.tfResetPasswordMobile.error = null
+            else binding.tfResetPasswordMobile.error = null
         }
     }
 
@@ -92,7 +92,7 @@ class ResetPasswordMobileNumber : AppCompatActivity() {
                 enableWindow()
 
                 if (mobileNumberExists) {
-                    val intent = Intent(applicationContext, VerifyOTPMobileNumber::class.java)
+                    val intent = Intent(applicationContext, VerifyOTPMobileNumberActivity::class.java)
                     intent.putExtra("mobileNumber", mobileNumber)
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
