@@ -161,9 +161,8 @@ class SignupActivity : AppCompatActivity() {
         crypto = Crypto()
         database = Firebase.database
         databaseReference = database.getReference("users")
-        var user: User? = null
 
-        user = if (password != null) User(firebaseUser.uid, firebaseUser.email, crypto.encrypt(password), username)
+        val user = if (password != null) User(firebaseUser.uid, firebaseUser.email, crypto.encrypt(password), username)
         else User(firebaseUser.uid, firebaseUser.email, null, username)
 
         databaseReference.child(firebaseUser.uid).setValue(user)

@@ -83,7 +83,7 @@
         android:layout_marginBottom="100dp"
         android:fontFamily="@font/inter_bold"
         android:letterSpacing="0.04"
-        android:text="Update"
+        android:text="@string/update"
         android:textAllCaps="false"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
