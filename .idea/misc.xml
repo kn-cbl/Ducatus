@@ -41,6 +41,43 @@
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_investments.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_shopping.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_vehicle.xml" value="0.25416666666666665" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_check2.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_selector2.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_uncheck2.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_bluebg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_pinkbg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_purplebg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_redbg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_tealbg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_25.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_calendar_month_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_notifications_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_warning_24.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_budgets.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_challenges.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_goals.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_help.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_home.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_loans.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_reports.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_settings.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_subscriptions.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_tips.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_transactions.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/receipt.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/remaining_balance.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/shape2.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_gray.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_lightgreen.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/cropimage_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/editbudget_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/notifications_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/subscriptions_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/transactions_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/Ducatus/app/src/main/res/layout/activity_main.xml" value="0.35144927536231885" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable-v24/cancel_button.xml" value="0.3645" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable-v24/gold_button.xml" value="0.2625" />
