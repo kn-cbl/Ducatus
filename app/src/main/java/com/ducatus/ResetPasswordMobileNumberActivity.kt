@@ -23,8 +23,6 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_password_mobile_number)
-
         binding = ActivityResetPasswordMobileNumberBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -63,10 +61,9 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
 
     private fun validateCredentials() {
         clearErrors()
-
         val mobileNumber = binding.tfResetPasswordMobile.editText?.text.toString().trim {it <= ' '}
         if (mobileNumberRegex.toRegex().matches(mobileNumber)) {
-            disableWindow()
+            showProgressDialog()
             mobileNumberExists(mobileNumber)
         }
         else {
@@ -89,8 +86,7 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
                     }
                 }
 
-                enableWindow()
-
+                hideProgressDialog()
                 if (mobileNumberExists) {
                     val intent = Intent(applicationContext, VerifyOTPMobileNumberActivity::class.java)
                     intent.putExtra("mobileNumber", mobileNumber)
@@ -98,27 +94,26 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 }
                 else {
-                    binding.tvResetPasswordMobileErrorAuth.setText(R.string.user_does_not_exist)
+                    binding.tvResetPasswordMobileErrorAuth.text = getString(R.string.user_does_not_exist)
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                enableWindow()
-                Log.e("databaseError", error.message)
-                Toast.makeText(applicationContext, error.message, Toast.LENGTH_LONG).show()
+                hideProgressDialog()
+                binding.tvResetPasswordMobileErrorAuth.text = error.message
             }
         })
     }
 
-    private fun enableWindow() {
-        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialog() {
+        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun clearErrors() {

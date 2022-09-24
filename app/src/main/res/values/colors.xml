@@ -19,6 +19,7 @@
     <!-- For loans, challenges, goals, tips-->
 
     <!-- bg colors-->
+    <color name="bg_progress_bar">#5C5C5C</color>
     <color name="toolbar_bg">#206967</color>
     <color name="cardview_bg">#F8F8F8</color>
     <color name="frame_bg">#E7E7E7</color>
@@ -35,6 +36,7 @@
     <color name="gray_text">#545454</color>
     <color name="green_text">#2DB57B</color>
     <color name="light_gray_text">#7A7A7A</color>
+    <color name="lighter_gray_text">#9e9e9e</color>
     <color name="green_cyan_text">#389583</color>
     <color name="green_dark_text">#0FA958</color>
 

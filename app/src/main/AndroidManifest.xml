@@ -80,7 +80,7 @@
             android:name=".VerifyOTPEmailActivity"
             android:exported="true" />
         <activity
-            android:name=".Notifications"
+            android:name=".NotificationsActivity"
             android:exported="true" />
         <activity
             android:name=".EditProfile"
@@ -95,7 +95,7 @@
             android:name=".AccountSettingsAddAccount"
             android:exported="true" />
         <activity
-            android:name=".AccountSettings"
+            android:name=".AccountsActivity"
             android:exported="true" />
         <activity
             android:name=".AboutAppActivity"

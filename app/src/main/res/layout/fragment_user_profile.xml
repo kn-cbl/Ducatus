@@ -5,16 +5,17 @@
     android:id="@+id/fragment_user_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     tools:context=".UserProfileFragment">
 
     <ImageView
         android:id="@+id/imgViewUserProfilePicture"
         android:layout_width="240dp"
         android:layout_height="240dp"
-        android:layout_marginBottom="-24dp"
+        android:layout_marginBottom="45dp"
         android:contentDescription="@string/user_profile_picture"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/imgViewUserProfilePictureUpdate"
+        app:layout_constraintBottom_toTopOf="@+id/etUserProfileUsername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/user_profile" />
@@ -27,34 +28,40 @@
         android:background="@drawable/oval_gray"
         android:contentDescription="@string/icon_hint"
         android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvUserProfileUsername"
+        app:layout_constraintBottom_toTopOf="@+id/etUserProfileUsername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/camera" />
 
-    <TextView
-        android:id="@+id/tvUserProfileUsername"
+    <EditText
+        android:id="@+id/etUserProfileUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        android:autofillHints="username"
+        android:background="@android:color/transparent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="text"
         android:text="@string/username"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="LabelFor" />
 
     <ImageView
         android:id="@+id/imgViewUpdateUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="11dp"
         android:background="@drawable/ic_edit"
         android:contentDescription="@string/edit"
         app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
-        app:layout_constraintStart_toEndOf="@+id/tvUserProfileUsername" />
+        app:layout_constraintStart_toEndOf="@+id/etUserProfileUsername" />
 
     <TextView
         android:id="@+id/tvJoinDate"
@@ -78,6 +85,8 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:hint="@string/email"
+        app:boxStrokeColor="@color/lighter_gray_text"
+        app:boxStrokeWidthFocused="1dp"
         app:endIconDrawable="@drawable/ic_edit"
         app:endIconMode="custom"
         app:expandedHintEnabled="true"
@@ -94,7 +103,7 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/email"
-            android:textColor="@color/black"
+            android:textColor="@color/gray_text"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,15 +114,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="110dp"
         android:hint="@string/mobile_number"
         app:endIconDrawable="@drawable/ic_edit"
         app:endIconMode="custom"
         app:expandedHintEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/btnUserProfileSave"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:prefixText="@string/_63">
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -123,21 +131,9 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/mobile_number"
-            android:textColor="@color/black"
+            android:textColor="@color/gray_text"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <ProgressBar
-        android:id="@+id/pbUserProfile"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:indeterminateDrawable="@drawable/progress_bg"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnUserProfileSave"
@@ -147,10 +143,31 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/green_button"
+        android:fontFamily="@font/inter_bold"
+        android:letterSpacing="0.04"
         android:text="@string/save_changes"
         android:textAllCaps="false"
         app:backgroundTint="@color/green_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/flUserProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_progress_bar"
+        android:padding="20dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateDrawable="@drawable/progress_bg_light" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

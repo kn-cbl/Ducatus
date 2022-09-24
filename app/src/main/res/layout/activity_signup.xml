@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clSignup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -42,11 +43,11 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:gravity="center"
             android:fontFamily="@font/inter_regular"
+            android:gravity="center"
             android:text=""
             android:textColor="#ff0000"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <ProgressBar
             android:id="@+id/pbSignup"
@@ -54,73 +55,73 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="-48dp"
-            android:visibility="invisible"
-            android:indeterminateDrawable="@drawable/progress_bg" />
+            android:indeterminateDrawable="@drawable/progress_bg"
+            android:visibility="invisible" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfSignupEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
-            app:errorEnabled="true"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="textEmailAddress"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:fontFamily="@font/inter_regular"
                 android:textColor="@color/black"
-                android:textSize="14sp"
-                android:inputType="textEmailAddress" />
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfSignupUsername"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/username"
-            app:errorEnabled="true"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="text"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:fontFamily="@font/inter_regular"
                 android:textColor="@color/black"
-                android:textSize="14sp"
-                android:inputType="text" />
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfSignupPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/password"
             app:errorEnabled="true"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/gray_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:passwordToggleTint="@color/gray_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="textPassword"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:fontFamily="@font/inter_regular"
                 android:textColor="@color/black"
-                android:textSize="14sp"
-                android:inputType="textPassword" />
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -145,8 +146,8 @@
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/line"
-                android:contentDescription="@string/icon_hint" />
+                android:contentDescription="@string/icon_hint"
+                app:srcCompat="@drawable/line" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -156,7 +157,7 @@
                 android:fontFamily="@font/inter_semibold"
                 android:text="@string/or"
                 android:textAlignment="center"
-                android:textColor="#818284"/>
+                android:textColor="#818284" />
         </FrameLayout>
 
         <FrameLayout
@@ -171,11 +172,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawablePadding="10dp"
+                android:fontFamily="@font/inter_semibold"
                 android:text="@string/continue_with_google"
                 android:textAllCaps="false"
                 android:textColor="#545454"
                 android:textSize="14sp"
-                android:fontFamily="@font/inter_semibold"
                 app:drawableStartCompat="@drawable/google_wrap" />
         </FrameLayout>
 

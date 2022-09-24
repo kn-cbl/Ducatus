@@ -1,5 +1,7 @@
 package com.ducatus
 
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -8,9 +10,9 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 internal class Crypto {
-    private val secretKey = "tK5UTui+DPh8lIlBxya5XVsmeDCoUl6vHhdIESMB6sQ="
-    private val salt = "Tk9RalkzNDliQ2JMMTJmRkU="
-    private val iv = "NTVsaFc2bWxBUmxlY1NDWg=="
+    private val secretKey = BuildConfig.SECRET_KEY
+    private val salt = BuildConfig.SALT
+    private val iv = BuildConfig.IV
 
     fun encrypt(strToEncrypt: String) :  String?
     {

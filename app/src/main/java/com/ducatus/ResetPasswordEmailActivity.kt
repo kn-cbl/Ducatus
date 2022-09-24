@@ -1,6 +1,8 @@
 package com.ducatus
 
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -25,13 +27,10 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityResetPasswordEmailBinding
     private lateinit var appExecutors: AppExecutors
-    private lateinit var mailConfig: MailConfig
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_password_email)
-
         binding = ActivityResetPasswordEmailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -72,25 +71,24 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
 
     private fun validateCredentials() {
         clearErrors()
-
         val email = binding.tfResetPasswordEmail.editText?.text.toString().trim {it <= ' '}
         if (emailRegex.toRegex().matches(email)) {
-            disableWindow()
+            showProgressDialog()
             auth = Firebase.auth
             FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
-                .addOnSuccessListener { task ->
-                    if(!task.signInMethods?.isEmpty()!!) {
+                .addOnSuccessListener {
+                    if(!it.signInMethods?.isEmpty()!!) {
                         appExecutors = AppExecutors()
                         sendEmail(email)
                     }
                     else {
-                        enableWindow()
-                        binding.tvResetPasswordEmailErrorAuth.setText(R.string.user_does_not_exist)
+                        hideProgressDialog()
+                        binding.tvResetPasswordEmailErrorAuth.text = getString(R.string.user_does_not_exist)
                     }
                 }
                 .addOnFailureListener {
-                    enableWindow()
-                    binding.tvResetPasswordEmailErrorAuth.setText(R.string.user_does_not_exist)
+                    hideProgressDialog()
+                    binding.tvResetPasswordEmailErrorAuth.text = getString(R.string.user_does_not_exist)
                 }
         }
         else {
@@ -101,31 +99,31 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
 
     private fun sendEmail(email: String){
         appExecutors.diskIO().execute {
-            mailConfig = MailConfig()
             val props = System.getProperties()
-            props["mail.smtp.host"] = mailConfig.smtpHost
-            props["mail.smtp.socketFactory.port"] = mailConfig.smtpPort
-            props["mail.smtp.socketFactory.class"] = mailConfig.smtpClass
-            props["mail.smtp.auth"] = mailConfig.smtpAuth
-            props["mail.smtp.port"] = mailConfig.smtpPort
+            props["mail.smtp.host"] = BuildConfig.SMTP_HOST
+            props["mail.smtp.socketFactory.port"] = BuildConfig.SMTP_PORT
+            props["mail.smtp.socketFactory.class"] = BuildConfig.SMTP_CLASS
+            props["mail.smtp.auth"] = BuildConfig.SMTP_AUTH
+            props["mail.smtp.port"] = BuildConfig.SMTP_PORT
 
             val session = Session.getInstance(props,
                 object : javax.mail.Authenticator() {
                     override fun getPasswordAuthentication(): PasswordAuthentication {
-                        return PasswordAuthentication(mailConfig.senderEmail, mailConfig.senderPassword)
+                        return PasswordAuthentication(BuildConfig.MAIL_SENDER, BuildConfig.MAIL_KEY)
                     }
                 })
 
             try {
                 val otp = generateOTP()
                 val mm = MimeMessage(session)
-                mm.setFrom(InternetAddress(mailConfig.senderEmail))
+                mm.setFrom(InternetAddress(BuildConfig.MAIL_SENDER))
                 mm.addRecipient(Message.RecipientType.TO, InternetAddress(email))
                 mm.subject = "Ducatus Verification Code"
                 mm.setText("$otp is your verification code.")
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
+                    hideProgressDialog()
                     val intent = Intent(this, VerifyOTPEmailActivity::class.java)
                     intent.putExtra("code", otp)
                     intent.putExtra("email", email)
@@ -134,9 +132,8 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
                 }
             }
             catch (e: MessagingException) {
-                enableWindow()
-                Log.e("sendEmailError", e.toString())
-                binding.tvResetPasswordEmailErrorAuth.text = e.message
+                hideProgressDialog()
+                binding.tvResetPasswordEmailErrorAuth.text = e.localizedMessage
             }
         }
     }
@@ -146,16 +143,16 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
         return otp.toString()
     }
 
-    private fun enableWindow() {
-        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.pbResetPasswordEmail.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPasswordEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialog() {
+        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbResetPasswordEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun clearErrors() {
