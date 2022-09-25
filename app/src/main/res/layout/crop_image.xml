@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CFC7C7">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar14"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/teal_700"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/cropimage_menu"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+        app:title="Crop Image"
+        app:titleTextColor="#FFFFFF" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView115"
+            android:layout_width="match_parent"
+            android:layout_height="94dp"
+            android:layout_gravity="bottom|end"
+            android:background="#000000" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/imageButton4"
+                android:layout_width="70dp"
+                android:layout_height="67dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="19dp"
+                android:background="@color/material_on_background_disabled"
+                app:srcCompat="@drawable/ic_baseline_rotate_left_24" />
+
+            <TextView
+                android:id="@+id/textView118"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="20dp"
+                android:text="Rotate Left"
+                android:textColor="#FFFFFF"
+                app:layout_constraintTop_toBottomOf="@+id/imageButton4" />
+
+            <ImageButton
+                android:id="@+id/imageButton8"
+                android:layout_width="70dp"
+                android:layout_height="67dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="19dp"
+                android:background="@color/material_on_background_disabled"
+                app:srcCompat="@drawable/ic_baseline_rotate_right_24" />
+
+            <TextView
+                android:id="@+id/textView120"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="320dp"
+                android:layout_marginBottom="20dp"
+                android:text="Rotate Right"
+                android:textColor="#FFFFFF"
+                app:layout_constraintTop_toBottomOf="@+id/imageButton8" />
+
+            <ImageButton
+                android:id="@+id/imageButton9"
+                android:layout_width="78dp"
+                android:layout_height="73dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="81dp"
+                android:layout_marginBottom="14dp"
+                android:layout_toStartOf="@+id/imageButton8"
+                android:layout_toEndOf="@+id/imageButton4"
+                android:background="@color/material_on_background_disabled"
+                app:srcCompat="@drawable/ic_baseline_crop_24" />
+
+            <TextView
+                android:id="@+id/textView121"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="107dp"
+                android:layout_marginBottom="20dp"
+                android:layout_toEndOf="@+id/textView118"
+                android:text="Crop"
+                android:textColor="#FFFFFF" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
