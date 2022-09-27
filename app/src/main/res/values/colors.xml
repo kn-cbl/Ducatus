@@ -44,4 +44,32 @@
     <color name="green_color">#2DB57B</color>
     <color name="purple_color">#9804DE</color>
     <color name="blue_color">#007FFF</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- for color palette -->
+    <color name="color_one">#FFF09F</color>
+    <color name="color_two">#EED180</color>
+    <color name="color_three">#FFC54D</color>
+    <color name="color_four">#FEB139</color>
+    <color name="color_five">#F77E21</color>
+    <color name="color_six">#FF5B00</color>
+    <color name="color_seven">#D1512D</color>
+    <color name="color_eight">#B22727</color>
+    <color name="color_nine">#FE7E6D</color>
+    <color name="color_ten">#FF6767</color>
+    <color name="color_eleven">#FF4949</color>
+    <color name="color_twelve">#EB4747</color>
+    <color name="color_thirteen">#FFC4C4</color>
+    <color name="color_fourteen">#FF869E</color>
+    <color name="color_fifteen">#C65D7B</color>
+    <color name="color_sixteen">#B93160</color>
+    <color name="color_seventeen">#A4DEBE</color>
+    <color name="color_eighteen">#2DB57B</color>
+    <color name="color_nineteen">#498554</color>
+    <color name="color_twenty">#A3BCF2</color>
+    <color name="color_twenty_one">#4B70BE</color>
+    <color name="color_twenty_two">#114BC7</color>
+    <color name="color_twenty_three">#E1A3FF</color>
+    <color name="color_twenty_four">#C957FF</color>
+    <color name="color_twenty_five">#9804DE</color>
 </resources>
