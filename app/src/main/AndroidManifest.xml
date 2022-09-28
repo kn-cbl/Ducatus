@@ -89,7 +89,7 @@
             android:name=".VerifyEmailActivity"
             android:exported="true" />
         <activity
-            android:name=".AccountSettingsAddAccount"
+            android:name=".AccountSettingsActivity"
             android:exported="true" />
         <activity
             android:name=".AccountsActivity"

@@ -1,19 +1,19 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
@@ -34,7 +34,7 @@ class UpdateMobileNumberFragment : Fragment() {
     private lateinit var binding: FragmentUpdateMobileNumberBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var rootLayout: ConstraintLayout
+    private lateinit var rootLayout: LinearLayout
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var mobileNumber: String
     private lateinit var options: PhoneAuthOptions
@@ -86,6 +86,13 @@ class UpdateMobileNumberFragment : Fragment() {
     private fun validateMobileNumber() {
         clearErrors()
 
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         mobileNumber = binding.tfUpdateMobileNumber.editText?.text.toString().trim { it <= ' ' }
         if (mobileNumberRegex.toRegex().matches(mobileNumber)) {
             mobileNumberExists(mobileNumber)
@@ -98,7 +105,7 @@ class UpdateMobileNumberFragment : Fragment() {
 
     private fun mobileNumberExists(mobileNumber: String) {
         showProgressDialog()
-        rootLayout = activity.findViewById(R.id.clUserProfile)
+        rootLayout = activity.findViewById(R.id.llUserProfile)
 
         database = Firebase.database
         databaseReference = database.getReference("users")
@@ -142,7 +149,6 @@ class UpdateMobileNumberFragment : Fragment() {
             else -> {
                 val firebaseUser: FirebaseUser? = auth.currentUser
                 if (firebaseUser != null) {
-                    showProgressDialog()
                     updateDB(firebaseUser.uid, mobileNumber, verificationCode)
                 }
                 else {
@@ -153,6 +159,7 @@ class UpdateMobileNumberFragment : Fragment() {
     }
 
     private fun updateDB(uid: String, mobileNumber: String, verificationCode: String) {
+        showProgressDialog()
         databaseReference = database.getReference("users/" + uid + "/mobile_number")
         databaseReference.setValue(mobileNumber)
             .addOnSuccessListener {
@@ -169,6 +176,7 @@ class UpdateMobileNumberFragment : Fragment() {
     }
 
     private fun updateMobileNumber(phoneAuthCredential: PhoneAuthCredential) {
+        showProgressDialog()
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             firebaseUser.updatePhoneNumber(phoneAuthCredential)
@@ -178,13 +186,21 @@ class UpdateMobileNumberFragment : Fragment() {
                         .make(rootLayout, "Successfully updated mobile number", Snackbar.LENGTH_LONG)
                         .show()
 
-                    val action = UpdateMobileNumberFragmentDirections.actionUpdateMobileNumberFragmentToUserProfileFragment()
-                    findNavController().navigate(action)
+                    // add 3 second delay
+                    object : CountDownTimer(3000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            // do nothing
+                        }
+                        override fun onFinish() {
+                            val action = UpdateMobileNumberFragmentDirections.actionUpdateMobileNumberFragmentToUserProfileFragment()
+                            findNavController().navigate(action)
+                        }
+                    }.start()
                 }
                 .addOnFailureListener {
                     hideProgressDialog()
                     Snackbar
-                        .make(rootLayout, it.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
+                        .make(rootLayout, "Failed to update mobile number", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Retry") {updateMobileNumber(phoneAuthCredential) }
                         .show()
                 }
@@ -221,9 +237,12 @@ class UpdateMobileNumberFragment : Fragment() {
             }
 
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                binding.tvResendMobileNumberVerification.isEnabled = false
                 binding.llUpdateMobileNumber.visibility = View.GONE
                 binding.llVerifyMobileNumber.visibility = View.VISIBLE
                 binding.tvUpdateMobileNumber.text = "0$mobileNumber"
+
                 storedVerificationId = verificationId
                 resendToken = token
 
@@ -259,9 +278,7 @@ class UpdateMobileNumberFragment : Fragment() {
     private fun startTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
                 binding.tvResendMobileNumberVerification.text = "Resend in " + millisUntilFinished / 1000
-                binding.tvResendMobileNumberVerification.isEnabled = false
             }
             override fun onFinish() {
                 binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))

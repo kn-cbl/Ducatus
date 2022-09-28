@@ -10,9 +10,4 @@
         android:name="com.ducatus.PrivacyFragment"
         android:label="fragment_privacy"
         tools:layout="@layout/fragment_privacy" />
-    <fragment
-        android:id="@+id/aboutAppFragment"
-        android:name="com.ducatus.AboutAppFragment"
-        android:label="fragment_about_app"
-        tools:layout="@layout/fragment_about_app" />
 </navigation>

@@ -1,13 +1,13 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordMobileNumberBinding
@@ -61,6 +61,14 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
 
     private fun validateCredentials() {
         clearErrors()
+
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         val mobileNumber = binding.tfResetPasswordMobile.editText?.text.toString().trim {it <= ' '}
         if (mobileNumberRegex.toRegex().matches(mobileNumber)) {
             showProgressDialog()

@@ -1,13 +1,14 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordBinding
@@ -58,6 +59,13 @@ class ResetPasswordActivity : AppCompatActivity() {
     }
 
     private fun validatePassword() {
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         binding.tvResetPasswordError.text = ""
         binding.tfResetPasswordNew.error = null
         binding.tfResetPasswordConfirm.error = null
@@ -93,14 +101,23 @@ class ResetPasswordActivity : AppCompatActivity() {
                     auth.signOut()
 
                     Snackbar
-                        .make(binding.clResetPassword, "Successfully reset password", Snackbar.LENGTH_LONG)
+                        .make(binding.llResetPassword, "Successfully reset password", Snackbar.LENGTH_LONG)
                         .show()
 
-                    val intent = Intent(this, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                    finish()
+                    // add 3 second delay
+                    object : CountDownTimer(3000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            // do nothing
+                        }
+                        override fun onFinish() {
+                            val intent = Intent(applicationContext, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                            finish()
+                        }
+                    }.start()
+
                 }
                 .addOnFailureListener {
                     hideProgressDialog()

@@ -1,5 +1,6 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordEmailBinding
@@ -71,6 +73,14 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
 
     private fun validateCredentials() {
         clearErrors()
+
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         val email = binding.tfResetPasswordEmail.editText?.text.toString().trim {it <= ' '}
         if (emailRegex.toRegex().matches(email)) {
             showProgressDialog()

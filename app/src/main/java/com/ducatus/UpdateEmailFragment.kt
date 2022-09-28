@@ -1,6 +1,7 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -10,9 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
@@ -22,6 +24,9 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class UpdateEmailFragment : Fragment() {
@@ -30,8 +35,10 @@ class UpdateEmailFragment : Fragment() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var binding: FragmentUpdateEmailBinding
     private lateinit var builder: AlertDialog.Builder
+    private lateinit var database: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
     private lateinit var email: String
-    private lateinit var rootLayout: ConstraintLayout
+    private lateinit var rootLayout: LinearLayout
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
     private var status: Boolean = false
 
@@ -46,7 +53,7 @@ class UpdateEmailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rootLayout = activity.findViewById(R.id.clUserProfile)
+        rootLayout = activity.findViewById(R.id.llUserProfile)
         inputObserver()
 
         binding.btnUpdateEmail.setOnClickListener {
@@ -77,6 +84,13 @@ class UpdateEmailFragment : Fragment() {
     }
 
     private fun validateCredentials() {
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         binding.tfUpdateEmail.error = null
         binding.tfUpdateEmailReauthenticate.error = null
 
@@ -130,7 +144,7 @@ class UpdateEmailFragment : Fragment() {
         showProgressDialog()
         firebaseUser.updateEmail(email)
             .addOnSuccessListener {
-                sendEmail(firebaseUser)
+                unlinkGoogle(firebaseUser, email)
             }
             .addOnFailureListener {
                 hideProgressDialog()
@@ -141,15 +155,56 @@ class UpdateEmailFragment : Fragment() {
             }
     }
 
+    private fun unlinkGoogle(firebaseUser: FirebaseUser, email: String) {
+        var googleKey = false
+        for (provider in firebaseUser.providerData) {
+            if (provider.providerId == "google.com") {
+                googleKey = true
+            }
+        }
+
+        if (googleKey) {
+            firebaseUser.unlink("google.com")
+                .addOnSuccessListener {
+                    updateDB(firebaseUser, email)
+                }
+                .addOnFailureListener {
+                    unlinkGoogle(firebaseUser, email)
+                }
+        }
+        else {
+            updateDB(firebaseUser, email)
+        }
+    }
+
+    private fun updateDB(firebaseUser: FirebaseUser, email: String) {
+        showProgressDialog()
+        database = Firebase.database
+        databaseReference = database.getReference("users/" + firebaseUser.uid + "/email")
+        databaseReference.setValue(email)
+            .addOnSuccessListener {
+                sendEmail(firebaseUser)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Could not update email", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { updateDB(firebaseUser, email) }
+                    .show()
+            }
+    }
+
     private fun sendEmail(firebaseUser: FirebaseUser) {
         showProgressDialog()
         firebaseUser.sendEmailVerification()
             .addOnSuccessListener {
+                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                binding.tvResendEmailVerification.isEnabled = false
                 binding.tvResendEmailVerification.visibility = View.VISIBLE
                 status = true
 
                 hideProgressDialog()
-                startTimer()
+                startTimer(false)
 
                 Snackbar
                     .make(rootLayout, "Successfully updated email, email verification has been sent", Snackbar.LENGTH_LONG)
@@ -170,8 +225,11 @@ class UpdateEmailFragment : Fragment() {
         if (firebaseUser != null) {
             firebaseUser.sendEmailVerification()
                 .addOnSuccessListener {
+                    binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                    binding.tvResendEmailVerification.isEnabled = false
+
                     hideProgressDialog()
-                    startTimer()
+                    startTimer(false)
                     Snackbar
                         .make(rootLayout, "Resent email verification", Snackbar.LENGTH_LONG)
                         .show()
@@ -206,28 +264,39 @@ class UpdateEmailFragment : Fragment() {
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         if (firebaseUser.isEmailVerified) {
             hideProgressDialog()
+            startTimer(true)
+
             Snackbar
                 .make(rootLayout, "Successfully verified email", Snackbar.LENGTH_LONG)
                 .show()
 
-            val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
-            findNavController().navigate(action)
+            // add 3 second delay
+            object : CountDownTimer(3000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // do nothing
+                }
+                override fun onFinish() {
+                    val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
+                    findNavController().navigate(action)
+                }
+            }.start()
         }
     }
 
-    private fun startTimer() {
-        object : CountDownTimer(60000, 1000) {
+    private fun startTimer(finish: Boolean) {
+        val timer: CountDownTimer = object: CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
                 binding.tvResendEmailVerification.text = "Resend in " + millisUntilFinished / 1000
-                binding.tvResendEmailVerification.isEnabled = false
             }
             override fun onFinish() {
                 binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
-                binding.tvResendEmailVerification.text = getString(R.string.resend_email_verification)
+                binding.tvResendEmailVerification.setText(R.string.resend_email_verification)
                 binding.tvResendEmailVerification.isEnabled = true
             }
-        }.start()
+        }
+
+        if (finish) timer.cancel()
+        else timer.start()
     }
 
     private fun sessionExpired() {

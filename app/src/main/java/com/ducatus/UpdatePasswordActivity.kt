@@ -1,13 +1,14 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
@@ -78,7 +79,13 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun validatePassword() {
-        binding.tvUpdatePasswordErrorAuth.text = ""
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         binding.tfUpdatePasswordCurrent.error = null
         binding.tfUpdatePasswordNew.error = null
         binding.tfUpdatePasswordConfirm.error = null
@@ -124,16 +131,15 @@ class UpdatePasswordActivity : AppCompatActivity() {
                 .addOnFailureListener {
                     hideProgressDialog()
                     Snackbar
-                        .make(binding.clUpdatePassword, "Failed to reauthenticate user", Snackbar.LENGTH_INDEFINITE)
+                        .make(binding.llUpdatePassword, "Failed to reauthenticate user", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Retry") { reauthenticateUser(newPassword, currentPassword) }
                         .show()
-                    binding.tvUpdatePasswordErrorAuth.text = it.message
                 }
         }
         else {
             hideProgressDialog()
             Snackbar
-                .make(binding.clUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+                .make(binding.llUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
                 .show()
 
             val intent = Intent(this, LoginActivity::class.java)
@@ -145,22 +151,36 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun updatePassword(firebaseUser: FirebaseUser, newPassword: String) {
-        firebaseUser.updatePassword(newPassword).addOnCompleteListener { updateTask ->
-            if (updateTask.isSuccessful) {
+        showProgressDialog()
+        firebaseUser.updatePassword(newPassword)
+            .addOnSuccessListener {
                 crypto = Crypto()
                 database = Firebase.database
                 databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
                 databaseReference.setValue(crypto.encrypt(newPassword).toString())
 
                 hideProgressDialog()
-                Toast.makeText(this, "Successfully changed password", Toast.LENGTH_SHORT).show()
+                Snackbar
+                    .make(binding.llUpdatePassword, "Successfully updated password", Snackbar.LENGTH_LONG)
+                    .show()
+
+                // add 3 second delay
+                object : CountDownTimer(3000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        // do nothing
+                    }
+                    override fun onFinish() {
+                        onBackPressed()
+                    }
+                }.start()
             }
-            else {
+            .addOnFailureListener {
                 hideProgressDialog()
-                Log.d("updatePassword", updateTask.exception!!.message.toString())
-                binding.tvUpdatePasswordErrorAuth.text = updateTask.exception!!.message
+                Snackbar
+                    .make(binding.llUpdatePassword, "Failed to update password", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { updatePassword(firebaseUser, newPassword) }
+                    .show()
             }
-        }
     }
 
     private fun showProgressDialog() {

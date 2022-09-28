@@ -1,11 +1,13 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivitySignupBinding
@@ -24,7 +26,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-
 class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivitySignupBinding
@@ -50,7 +51,7 @@ class SignupActivity : AppCompatActivity() {
         }
 
         binding.btnSignup.setOnClickListener {
-            // validate credentials -> check if user data exists -> create user
+            // validate credentials -> check if user data exists -> create user -> store data -> create default account -> verify email
             validateCredentials()
         }
 
@@ -84,6 +85,14 @@ class SignupActivity : AppCompatActivity() {
     // User Manual Sign In
     private fun validateCredentials() {
         clearErrors()
+
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         val username = binding.tfSignupUsername.editText?.text.toString().trim {it <= ' '}
         val email = binding.tfSignupEmail.editText?.text.toString().trim {it <= ' '}
         val password = binding.tfSignupPassword.editText?.text.toString().trim {it <= ' '}
@@ -158,23 +167,59 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun storeData(firebaseUser: FirebaseUser, password: String?, username: String) {
+        showProgressDialog()
         crypto = Crypto()
+
+        val user = if (password != null) User(firebaseUser.email, crypto.encrypt(password), username, null)
+        else User(firebaseUser.email, null, username, null)
+
         database = Firebase.database
         databaseReference = database.getReference("users")
-
-        val user = if (password != null) User(firebaseUser.uid, firebaseUser.email, crypto.encrypt(password), username)
-        else User(firebaseUser.uid, firebaseUser.email, null, username)
-
         databaseReference.child(firebaseUser.uid).setValue(user)
             .addOnSuccessListener {
-                verifyEmail(firebaseUser.isEmailVerified)
+                createDefaultAccount(firebaseUser, username)
             }
             .addOnFailureListener {
+                hideProgressDialog()
                 Snackbar
-                    .make(findViewById(R.id.clSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                    .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Retry") { storeData(firebaseUser, password, username) }
                     .show()
             }
+    }
+
+    private fun createDefaultAccount(firebaseUser: FirebaseUser, username: String) {
+        showProgressDialog()
+        databaseReference = database.getReference("accounts/" + firebaseUser.uid)
+        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    val account = Account(0, username, 0.00, resources.getResourceEntryName(R.color.green_primary))
+                    databaseReference.child("0").setValue(account)
+                        .addOnSuccessListener {
+                            verifyEmail(firebaseUser.isEmailVerified)
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialog()
+                            Snackbar
+                                .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                                .show()
+                        }
+                }
+                else {
+                    verifyEmail(firebaseUser.isEmailVerified)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                hideProgressDialog()
+                Snackbar
+                    .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                    .show()
+            }
+        })
     }
 
     // Google Sign In

@@ -1,11 +1,13 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityLoginBinding
@@ -100,6 +102,12 @@ class LoginActivity : AppCompatActivity() {
 
     private fun validateCredentials() {
         clearErrors()
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         val emailUsername = binding.tfLoginEmailUsername.editText?.text.toString().trim {it <= ' '}
         val password = binding.tfLoginPassword.editText?.text.toString().trim {it <= ' '}
 
@@ -160,7 +168,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 val firebaseUser: FirebaseUser? = it.user
                 if (firebaseUser != null) {
-                    isEmailVerified(firebaseUser)
+                    verifyEmail(firebaseUser.isEmailVerified)
                 }
             }
             .addOnFailureListener {
@@ -170,19 +178,21 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun storeData(firebaseUser: FirebaseUser, googleSignInAccount: GoogleSignInAccount) {
+        showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("users")
         databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (!snapshot.child(firebaseUser.uid).exists()) {
-                    val user = User(firebaseUser.uid, firebaseUser.email, null, firebaseUser.displayName)
+                    val user = User(firebaseUser.email, null, firebaseUser.displayName, null)
                     databaseReference.child(firebaseUser.uid).setValue(user)
                         .addOnSuccessListener {
-                            isEmailVerified(firebaseUser)
+                            createDefaultAccount(firebaseUser, firebaseUser.displayName.toString())
                         }
                         .addOnFailureListener {
+                            hideProgressDialog()
                             Snackbar
-                                .make(binding.clLogin, "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                                .make(binding.llLogin, "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
                                 .setAction("Retry") { storeData(firebaseUser, googleSignInAccount) }
                                 .show()
                         }
@@ -193,7 +203,7 @@ class LoginActivity : AppCompatActivity() {
                         updateProfile(firebaseUser, googleSignInAccount, username)
                     }
                     else {
-                        isEmailVerified(firebaseUser)
+                        verifyEmail(firebaseUser.isEmailVerified)
                     }
                 }
             }
@@ -205,7 +215,42 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
+    private fun createDefaultAccount(firebaseUser: FirebaseUser, username: String) {
+        showProgressDialog()
+        databaseReference = database.getReference("accounts/" + firebaseUser.uid)
+        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    val account = Account(0, username, 0.00, resources.getResourceEntryName(R.color.green_primary))
+                    databaseReference.child("0").setValue(account)
+                        .addOnSuccessListener {
+                            verifyEmail(firebaseUser.isEmailVerified)
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialog()
+                            Snackbar
+                                .make(findViewById(R.id.llLogin), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                                .show()
+                        }
+                }
+                else {
+                    verifyEmail(firebaseUser.isEmailVerified)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                hideProgressDialog()
+                Snackbar
+                    .make(findViewById(R.id.llLogin), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                    .show()
+            }
+        })
+    }
+
     private fun updateProfile(firebaseUser: FirebaseUser, googleSignInAccount: GoogleSignInAccount, username: String) {
+        showProgressDialog()
         val updates = UserProfileChangeRequest.Builder()
             .setDisplayName(username)
             .setPhotoUri(googleSignInAccount.photoUrl)
@@ -213,19 +258,19 @@ class LoginActivity : AppCompatActivity() {
 
         firebaseUser.updateProfile(updates)
             .addOnSuccessListener {
-                isEmailVerified(firebaseUser)
+                verifyEmail(firebaseUser.isEmailVerified)
             }
             .addOnFailureListener {
+                hideProgressDialog()
                 Snackbar
-                    .make(binding.clLogin, "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
+                    .make(binding.llLogin, "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Retry") { updateProfile(firebaseUser, googleSignInAccount, username) }
                     .show()
             }
     }
 
-    private fun isEmailVerified(firebaseUser: FirebaseUser) {
-        showProgressDialog()
-        if (firebaseUser.isEmailVerified) {
+    private fun verifyEmail(verified: Boolean) {
+        if (verified) {
             val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

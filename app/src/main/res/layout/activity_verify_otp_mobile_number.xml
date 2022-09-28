@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".VerifyOTPMobileNumberActivity">
 
     <ImageView
@@ -129,74 +128,6 @@
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     tools:ignore="LabelFor,SpeakableTextPresentCheck" />
-
-                <!--                <LinearLayout-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:orientation="horizontal"-->
-                <!--                    android:layout_marginLeft="35dp"-->
-                <!--                    android:layout_marginRight="35dp"-->
-                <!--                    android:layout_marginTop="20dp">-->
-
-                <!--                    <EditText-->
-                <!--                        android:id="@+id/etOTPMobile1"-->
-                <!--                        android:layout_width="183dp"-->
-                <!--                        android:layout_height="51dp"-->
-                <!--                        android:layout_weight="1"-->
-                <!--                        android:background="@drawable/otp_input"-->
-                <!--                        android:ems="10"-->
-                <!--                        android:inputType="textPersonName"-->
-                <!--                        android:fontFamily="@font/inter_semibold"-->
-                <!--                        android:textSize="25sp"-->
-                <!--                        android:textColor="#000000"-->
-                <!--                        android:padding="10dp"-->
-                <!--                        android:textAlignment="center" />-->
-
-                <!--                    <EditText-->
-                <!--                        android:id="@+id/etOTPMobile2"-->
-                <!--                        android:layout_width="183dp"-->
-                <!--                        android:layout_height="51dp"-->
-                <!--                        android:layout_weight="1"-->
-                <!--                        android:background="@drawable/otp_input"-->
-                <!--                        android:ems="10"-->
-                <!--                        android:inputType="textPersonName"-->
-                <!--                        android:layout_marginLeft="10dp"-->
-                <!--                        android:fontFamily="@font/inter_semibold"-->
-                <!--                        android:textSize="25sp"-->
-                <!--                        android:textColor="#000000"-->
-                <!--                        android:padding="10dp"-->
-                <!--                        android:textAlignment="center"/>-->
-
-                <!--                    <EditText-->
-                <!--                        android:id="@+id/etOTPMobile3"-->
-                <!--                        android:layout_width="183dp"-->
-                <!--                        android:layout_height="51dp"-->
-                <!--                        android:layout_weight="1"-->
-                <!--                        android:background="@drawable/otp_input"-->
-                <!--                        android:ems="10"-->
-                <!--                        android:inputType="textPersonName"-->
-                <!--                        android:layout_marginLeft="10dp"-->
-                <!--                        android:fontFamily="@font/inter_semibold"-->
-                <!--                        android:textSize="25sp"-->
-                <!--                        android:textColor="#000000"-->
-                <!--                        android:padding="10dp"-->
-                <!--                        android:textAlignment="center"/>-->
-
-                <!--                    <EditText-->
-                <!--                        android:id="@+id/etOTPMobile4"-->
-                <!--                        android:layout_width="183dp"-->
-                <!--                        android:layout_height="51dp"-->
-                <!--                        android:layout_weight="1"-->
-                <!--                        android:background="@drawable/otp_input"-->
-                <!--                        android:ems="10"-->
-                <!--                        android:inputType="textPersonName"-->
-                <!--                        android:layout_marginLeft="10dp"-->
-                <!--                        android:fontFamily="@font/inter_semibold"-->
-                <!--                        android:textSize="25sp"-->
-                <!--                        android:textColor="#000000"-->
-                <!--                        android:padding="10dp"-->
-                <!--                        android:textAlignment="center"/>-->
-                <!--                </LinearLayout>-->
 
                 <Button
                     android:id="@+id/btnVerifyOTPMobile"

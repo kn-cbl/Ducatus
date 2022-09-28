@@ -52,6 +52,7 @@
     <string name="send">Send</string>
     <string name="try_another_way">Try another way?</string>
     <string name="_63">+63</string>
+    <string name="php">PHP</string>
     <string name="bullet">••••••••••</string>
     <string name="user_profile">User Profile</string>
     <string name="user_profile_picture">User Profile Picture</string>
@@ -127,10 +128,22 @@
     <string name="reports">Reports</string>
     <string name="planned_payments">Planned Payments</string>
     <string name="budgets">Budgets</string>
+    <string name="monthly_budget">Monthly Budget</string>
+    <string name="monthly_budget_empty">Enter monthly budget</string>
     <string name="loans">Loans</string>
     <string name="goals">Goals</string>
     <string name="challenges">Challenges</string>
     <string name="tips">Tips</string>
     <string name="help">Help</string>
+    <string name="add_another_account">Add another account</string>
+    <string name="account_name">Account Name</string>
+    <string name="account_name_empty">Enter account name</string>
+    <string name="edit_account">Edit Account</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="color">Color</string>
+    
+    <string-array name="budget">
+        <item></item>
+    </string-array>
 
 </resources>

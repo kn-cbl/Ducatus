@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AccountsActivity">
+    tools:context=".AccountSettingsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
+        tools:layout_editor_absoluteX="-205dp"
+        tools:layout_editor_absoluteY="-121dp">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar6"
+            android:id="@+id/toolbar5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
@@ -22,157 +22,133 @@
             android:theme="?attr/actionBarTheme"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
             app:title="Account Settings"
-            app:titleTextColor="@color/white"/>
+            app:titleTextColor="@color/white" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageView24"
-                android:layout_width="wrap_content"
-                android:layout_height="112dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="145dp"
-                android:layout_marginTop="52dp"
-                android:layout_marginEnd="145dp"
-                app:srcCompat="@drawable/ic_baseline_account_circle_24" />
-
-            <ImageView
-                android:id="@+id/imageView25"
-                android:layout_width="wrap_content"
-                android:layout_height="51dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="363dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginEnd="24dp"
-                app:srcCompat="@drawable/ic_baseline_more_vert_24" />
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/textView78"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/blinker_semibold"
-            android:text="John Doe"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:layout_marginTop="13dp"
-            android:letterSpacing="0.03"/>
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="25dp"
+            android:hint="Account Name"
+            app:boxCornerRadiusBottomEnd="5dp"
+            app:boxCornerRadiusBottomStart="5dp"
+            app:boxCornerRadiusTopEnd="5dp"
+            app:boxCornerRadiusTopStart="5dp"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
+            app:hintTextColor="@color/teal_200"
+            android:textColorHint="@color/teal_200">
 
-        <TextView
-            android:id="@+id/textView81"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_regular"
-            android:text="PHP 89,690.00"
-            android:textAlignment="center"
-            android:textColor="#808080"
-            android:textSize="15sp"
-            android:letterSpacing="0.09"
-            android:layout_marginTop="5dp"/>
-
-        <View
-            android:id="@+id/divider9"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider"
-            android:layout_marginTop="40dp" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageView26"
-                android:layout_width="61dp"
-                android:layout_height="56dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="26dp"
-                android:layout_marginTop="13dp"
-                app:srcCompat="@drawable/ic_baseline_account_circle_24" />
-
-            <TextView
-                android:id="@+id/textView82"
-                android:layout_width="268dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="21dp"
-                android:layout_marginEnd="52dp"
-                android:layout_toEndOf="@+id/imageView26"
-                android:fontFamily="@font/inter_medium"
-                android:text="Mary Doe"
-                android:textColor="#000000"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/textView83"
-                android:layout_width="271dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView82"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="49dp"
-                android:layout_toEndOf="@+id/imageView26"
+            <!--this is the actual edit text which takes the input-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:fontFamily="@font/inter_regular"
-                android:text="PHP 15,000.00"
-                android:textColor="#808080"
-                android:textSize="12sp" />
+                android:inputType="textPersonName"
+                android:paddingBottom="15dp" />
 
-            <ImageView
-                android:id="@+id/imageView28"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="363dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:srcCompat="@drawable/ic_baseline_more_vert_24" />
-        </RelativeLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputLayout2"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="25dp"
+            android:hint="Budget"
+            app:boxCornerRadiusBottomEnd="5dp"
+            app:boxCornerRadiusBottomStart="5dp"
+            app:boxCornerRadiusTopEnd="5dp"
+            app:boxCornerRadiusTopStart="5dp"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
+            app:hintTextColor="@color/teal_200"
+            android:textColorHint="@color/teal_200">
+
+            <!--this is the actual edit text which takes the input-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/TextInputEditText2"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="textPersonName"
+                android:paddingBottom="15dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputLayout3"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="25dp"
+            android:hint="Color"
+            app:boxCornerRadiusBottomEnd="5dp"
+            app:boxCornerRadiusBottomStart="5dp"
+            app:boxCornerRadiusTopEnd="5dp"
+            app:boxCornerRadiusTopStart="5dp"
+            app:boxStrokeColor="@color/text_input_box_stroke_color"
+            app:hintTextColor="@color/teal_200"
+            android:textColorHint="@color/teal_200">
+
+            <!--this is the actual edit text which takes the input-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/TextInputEditText3"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="textPassword"
+                android:paddingBottom="15dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="25dp">
 
-            <ImageView
-                android:id="@+id/imageView29"
-                android:layout_width="41dp"
-                android:layout_height="40dp"
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="34dp"
-                android:layout_marginTop="4dp"
-                app:srcCompat="@drawable/add_another_account" />
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="217dp"
+                android:background="@drawable/cancel_button"
+                android:fontFamily="@font/inter_bold"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="?attr/colorSecondary" />
 
-            <TextView
-                android:id="@+id/textView84"
-                android:layout_width="254dp"
-                android:layout_height="wrap_content"
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="62dp"
-                android:layout_toEndOf="@+id/imageView29"
-                android:fontFamily="@font/inter_medium"
-                android:text="Add another account"
-                android:textColor="#545454"
-                android:textSize="14sp" />
+                android:layout_marginStart="217dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/green_button"
+                android:backgroundTint="#E91E63"
+                android:fontFamily="@font/inter_bold"
+                android:text="Add Account"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:backgroundTint="?attr/colorPrimaryVariant" />
         </RelativeLayout>
-
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

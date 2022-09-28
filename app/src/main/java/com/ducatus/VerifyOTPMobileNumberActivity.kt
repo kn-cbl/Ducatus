@@ -1,5 +1,6 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpMobileNumberBinding
 import com.google.firebase.FirebaseException
@@ -56,6 +58,13 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     }
 
     private fun verifyCode() {
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         binding.tvVerifyOTPMobileError.text = ""
         val code = binding.etOTPMobile.text.toString().trim {it <= ' '}
 
@@ -98,7 +107,6 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
 
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
-//                    Log.e("error", "Invalid request")
                 }
                 else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
@@ -107,11 +115,9 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
             }
 
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                // The SMS verification code has been sent to the provided phone number, we
-                // now need to ask the user to enter the code and then construct a credential
-                // by combining the code with a verification ID.
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                binding.tvResendOTPMobile.isEnabled = false
 
-                // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
                 status = true
@@ -153,9 +159,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     private fun startTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
                 binding.tvResendOTPMobile.text = "Resend in " + millisUntilFinished / 1000
-                binding.tvResendOTPMobile.isEnabled = false
             }
             override fun onFinish() {
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))

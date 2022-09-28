@@ -14,8 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
@@ -36,7 +36,7 @@ class UserProfileFragment : Fragment() {
     private lateinit var binding: FragmentUserProfileBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var rootLayout: ConstraintLayout
+    private lateinit var rootLayout: LinearLayout
     private lateinit var currentUsername: String
     private var currentPhotoUri: Uri? = null
     private var photoUri: Uri? = null
@@ -53,12 +53,15 @@ class UserProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rootLayout = activity.findViewById(R.id.clUserProfile)
-        loadUser()
+        rootLayout = activity.findViewById(R.id.llUserProfile)
+        loadData()
 
         binding.fragmentUserProfile.setOnClickListener {
+            // hide keyboard
             val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             keyboard.hideSoftInputFromWindow(binding.etUserProfileUsername.windowToken, 0)
+
+            // clear focus on textview
             binding.etUserProfileUsername.clearFocus()
             binding.etUserProfileUsername.isFocusable = false
             binding.etUserProfileUsername.isFocusableInTouchMode = false
@@ -69,10 +72,13 @@ class UserProfileFragment : Fragment() {
         }
 
         binding.imgViewUpdateUsername.setOnClickListener {
+            // set textview as focusable and focus on the end of the text
             binding.etUserProfileUsername.isFocusable = true
             binding.etUserProfileUsername.isFocusableInTouchMode = true
             binding.etUserProfileUsername.requestFocus()
             binding.etUserProfileUsername.setSelection(binding.etUserProfileUsername.length())
+
+            // show keyboard
             val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             keyboard.showSoftInput(binding.etUserProfileUsername, 0)
         }
@@ -93,7 +99,7 @@ class UserProfileFragment : Fragment() {
         }
     }
 
-    private fun loadUser() {
+    private fun loadData() {
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
@@ -152,6 +158,9 @@ class UserProfileFragment : Fragment() {
 
             // filtering changes is necessary to skip username validation if username was not changed
             when {
+                // username field is empty
+                TextUtils.isEmpty(username) -> Snackbar.make(rootLayout, getString(R.string.username_empty), Snackbar.LENGTH_LONG).show()
+
                 // refresh fragment if no changes were made
                 currentUsername == username && photoUri == null -> activity.onBackPressed()
 
@@ -163,9 +172,6 @@ class UserProfileFragment : Fragment() {
 
                 // username and photo changed
                 currentUsername != username && photoUri != null -> usernameExists(firebaseUser.uid, username, photoUri)
-
-                // username field is empty
-                TextUtils.isEmpty(username) -> Snackbar.make(rootLayout, getString(R.string.username_empty), Snackbar.LENGTH_LONG).show()
             }
         }
         else {
@@ -208,6 +214,7 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun updateDB(uid: String, username: String, photoUri: Uri?) {
+        showProgressDialog()
         databaseReference = database.getReference("users/" + uid + "/username")
         databaseReference.setValue(username)
             .addOnSuccessListener {

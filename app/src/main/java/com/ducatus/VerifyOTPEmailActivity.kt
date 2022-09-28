@@ -1,5 +1,6 @@
 package com.ducatus
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpEmailBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -60,6 +62,13 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun verifyCode(generatedOTP: String) {
+        // hide keyboard
+        try {
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        catch (e: Exception){}
+
         binding.tvVerifyOTPEmailError.text = ""
         val code = binding.etOTPEmail.text.toString().trim {it <= ' '}
 
@@ -159,13 +168,15 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
+                    binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                    binding.tvResendOTPEmail.isEnabled = false
+
                     hideProgressDialog()
                     startTimer()
                 }
             }
             catch (e: MessagingException) {
                 hideProgressDialog()
-                Log.e("sendEmailError", e.toString())
                 binding.tvVerifyOTPEmailError.text = e.message
             }
         }
@@ -179,9 +190,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     private fun startTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
                 binding.tvResendOTPEmail.text = "Resend in " + millisUntilFinished / 1000
-                binding.tvResendOTPEmail.isEnabled = false
             }
             override fun onFinish() {
                 binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
