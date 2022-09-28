@@ -88,7 +88,7 @@ class AccountsFragment : Fragment() {
 
     private fun showPopup(view: View) {
         val popup = PopupMenu(activity, view)
-        popup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
+        popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.editAccount -> {
                     toolbar.title = "Edit Account"
@@ -102,7 +102,7 @@ class AccountsFragment : Fragment() {
                 }
                 else -> false
             }
-        })
+        }
         popup.menuInflater.inflate(R.menu.edit_account_menu, popup.menu)
         popup.show()
     }
