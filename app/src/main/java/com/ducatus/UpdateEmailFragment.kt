@@ -1,9 +1,10 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,12 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUpdateEmailBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -26,7 +30,10 @@ class UpdateEmailFragment : Fragment() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var binding: FragmentUpdateEmailBinding
     private lateinit var builder: AlertDialog.Builder
+    private lateinit var email: String
+    private lateinit var rootLayout: ConstraintLayout
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
+    private var status: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,12 +46,22 @@ class UpdateEmailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        rootLayout = activity.findViewById(R.id.clUserProfile)
         inputObserver()
 
         binding.btnUpdateEmail.setOnClickListener {
+            // validate credentials -> show confirmation -> reauthenticate -> update email -> send email verification
             validateCredentials()
         }
+
+        binding.tvResendEmailVerification.setOnClickListener {
+            resendEmail()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (status) reloadUser()
     }
 
     private fun inputObserver() {
@@ -53,7 +70,6 @@ class UpdateEmailFragment : Fragment() {
             else if (!emailRegex.toRegex().matches(text!!)) binding.tfUpdateEmail.error = getString(R.string.email_invalid)
             else binding.tfUpdateEmail.error = null
         }
-
         binding.tfUpdateEmailReauthenticate.editText?.doOnTextChanged { text, _, _, _ ->
             if (text?.length == 0) binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_empty)
             else binding.tfUpdateEmailReauthenticate.error = null
@@ -61,87 +77,181 @@ class UpdateEmailFragment : Fragment() {
     }
 
     private fun validateCredentials() {
-        clearErrors()
-        val email = binding.tfUpdateEmail.editText?.text.toString().trim {it <= ' '}
+        binding.tfUpdateEmail.error = null
+        binding.tfUpdateEmailReauthenticate.error = null
+
+        email = binding.tfUpdateEmail.editText?.text.toString().trim {it <= ' '}
         val password = binding.tfUpdateEmailReauthenticate.editText?.text.toString().trim {it <= ' '}
 
         auth = Firebase.auth
-        val authUser = auth.currentUser
-
-        if (authUser != null) {
-            if (authUser.email != email && emailRegex.toRegex().matches(email) && !TextUtils.isEmpty(password)) {
-                confirmUpdate(email, password)
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            if (firebaseUser.email != email && emailRegex.toRegex().matches(email) && !TextUtils.isEmpty(password)) {
+                confirmUpdate(firebaseUser, email, password)
             }
             else {
                 if (!emailRegex.toRegex().matches(email)) binding.tfUpdateEmail.error = getString(R.string.email_invalid)
-                if (authUser.email == email) binding.tfUpdateEmail.error = getString(R.string.new_email_same)
+                if (firebaseUser.email == email) binding.tfUpdateEmail.error = getString(R.string.new_email_same)
                 if (TextUtils.isEmpty(email)) binding.tfUpdateEmail.error = getString(R.string.new_email_empty)
                 if (TextUtils.isEmpty(password)) binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_empty)
             }
         }
         else {
-            Toast.makeText(activity, "null", Toast.LENGTH_SHORT).show()
+            sessionExpired()
         }
     }
 
-    private fun confirmUpdate(email: String, password: String) {
+    private fun confirmUpdate(firebaseUser: FirebaseUser, email: String, password: String) {
         builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.update_email)
         builder.setMessage(R.string.update_email_confirm)
         builder.setIcon(R.drawable.lock)
-        builder.setPositiveButton("Update") { _, _ -> reauthenticateUser(email, password) }
+        builder.setPositiveButton("Update") { _, _ -> reauthenticateUser(firebaseUser, email, password) }
         builder.setNegativeButton("No") { _, _ -> }
 
         alertDialog = builder.create()
         alertDialog.show()
     }
 
-    private fun reauthenticateUser(email: String, password: String) {
-        disableWindow()
-        val authUser = auth.currentUser
-        val credential = EmailAuthProvider.getCredential(authUser!!.email.toString(), password)
-        authUser.reauthenticate(credential).addOnCompleteListener { authTask ->
-            if (authTask.isSuccessful) {
-                updateEmail(authUser, email)
+    private fun reauthenticateUser(firebaseUser: FirebaseUser, email: String, password: String) {
+        showProgressDialog()
+        val credential = EmailAuthProvider.getCredential(firebaseUser.email.toString(), password)
+        firebaseUser.reauthenticate(credential)
+            .addOnSuccessListener {
+                updateEmail(firebaseUser, email)
             }
-            else {
-                enableWindow()
-                binding.tfUpdateEmailReauthenticate.error = authTask.exception!!.localizedMessage
+            .addOnFailureListener {
+                hideProgressDialog()
+                binding.tfUpdateEmailReauthenticate.error = it.localizedMessage
             }
+    }
+
+    private fun updateEmail(firebaseUser: FirebaseUser, email: String) {
+        showProgressDialog()
+        firebaseUser.updateEmail(email)
+            .addOnSuccessListener {
+                sendEmail(firebaseUser)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Could not update email", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { updateEmail(firebaseUser, email) }
+                    .show()
+            }
+    }
+
+    private fun sendEmail(firebaseUser: FirebaseUser) {
+        showProgressDialog()
+        firebaseUser.sendEmailVerification()
+            .addOnSuccessListener {
+                binding.tvResendEmailVerification.visibility = View.VISIBLE
+                status = true
+
+                hideProgressDialog()
+                startTimer()
+
+                Snackbar
+                    .make(rootLayout, "Successfully updated email, email verification has been sent", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Could not send email verification", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Resend") { sendEmail(firebaseUser) }
+                    .show()
+            }
+    }
+
+    private fun resendEmail() {
+        showProgressDialog()
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            firebaseUser.sendEmailVerification()
+                .addOnSuccessListener {
+                    hideProgressDialog()
+                    startTimer()
+                    Snackbar
+                        .make(rootLayout, "Resent email verification", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+                .addOnFailureListener {
+                    hideProgressDialog()
+                    Snackbar
+                        .make(rootLayout, "Could not send email verification", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Resend") { resendEmail() }
+                        .show()
+                }
+        }
+        else {
+            sessionExpired()
         }
     }
 
-    private fun updateEmail(authUser: FirebaseUser, email: String) {
-        authUser.updateEmail(email).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                enableWindow()
-                Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                enableWindow()
-                Toast.makeText(activity, task.exception?.localizedMessage, Toast.LENGTH_SHORT).show()
-            }
+    private fun reloadUser() {
+        var firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            firebaseUser.reload()
+                .addOnSuccessListener {
+                    firebaseUser = auth.currentUser
+                    isEmailVerified(firebaseUser!!)
+                }
+        }
+        else {
+            sessionExpired()
         }
     }
 
-    private fun verifyEmail() {
+    private fun isEmailVerified(firebaseUser: FirebaseUser) {
+        if (firebaseUser.isEmailVerified) {
+            hideProgressDialog()
+            Snackbar
+                .make(rootLayout, "Successfully verified email", Snackbar.LENGTH_LONG)
+                .show()
 
+            val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
+            findNavController().navigate(action)
+        }
     }
 
-    private fun enableWindow() {
-        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
-        binding.pbUpdateEmail.visibility = View.INVISIBLE
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    private fun startTimer() {
+        object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                binding.tvResendEmailVerification.text = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendEmailVerification.isEnabled = false
+            }
+            override fun onFinish() {
+                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
+                binding.tvResendEmailVerification.text = getString(R.string.resend_email_verification)
+                binding.tvResendEmailVerification.isEnabled = true
+            }
+        }.start()
     }
 
-    private fun disableWindow() {
+    private fun sessionExpired() {
+        hideProgressDialog()
+        Snackbar
+            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+            .show()
+
+        val intent = Intent(activity, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        activity.finish()
+    }
+
+    private fun showProgressDialog() {
         binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.light_gray_text)
         binding.pbUpdateEmail.visibility = View.VISIBLE
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
-    private fun clearErrors() {
-        binding.tfUpdateEmail.error = null
-        binding.tfUpdateEmailReauthenticate.error = null
+    private fun hideProgressDialog() {
+        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
+        binding.pbUpdateEmail.visibility = View.INVISIBLE
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

@@ -1,5 +1,6 @@
 package com.ducatus
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -11,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityUpdatePasswordBinding
-import com.google.firebase.auth.AuthCredential
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -48,10 +49,6 @@ class UpdatePasswordActivity : AppCompatActivity() {
             // validate password -> reauthenticate user -> update password
             validatePassword()
         }
-
-        binding.btnUpdatePasswordCancel.setOnClickListener {
-            onBackPressed()
-        }
     }
 
     override fun onBackPressed() {
@@ -81,7 +78,11 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun validatePassword() {
-        clearErrors()
+        binding.tvUpdatePasswordErrorAuth.text = ""
+        binding.tfUpdatePasswordCurrent.error = null
+        binding.tfUpdatePasswordNew.error = null
+        binding.tfUpdatePasswordConfirm.error = null
+
         val currentPassword = binding.tfUpdatePasswordCurrent.editText?.text.toString().trim {it <= ' '}
         val newPassword = binding.tfUpdatePasswordNew.editText?.text.toString().trim {it <= ' '}
         val confirmPassword = binding.tfUpdatePasswordConfirm.editText?.text.toString().trim {it <= ' '}
@@ -111,59 +112,66 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun reauthenticateUser(newPassword: String, currentPassword: String) {
-        disableWindow()
+        showProgressDialog()
         auth = Firebase.auth
-        val authUser = FirebaseAuth.getInstance().currentUser
-        val credential = EmailAuthProvider.getCredential(authUser!!.email.toString(), currentPassword)
-        authUser.reauthenticate(credential).addOnCompleteListener { authTask ->
-            if (authTask.isSuccessful) {
-                updatePassword(authUser, newPassword)
-            }
-            else {
-                enableWindow()
-                Log.d("updatePassword", authTask.exception!!.message.toString())
-                binding.tvUpdatePasswordErrorAuth.text = authTask.exception!!.message
-            }
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            val credential = EmailAuthProvider.getCredential(firebaseUser.email.toString(), currentPassword)
+            firebaseUser.reauthenticate(credential)
+                .addOnSuccessListener {
+                    updatePassword(firebaseUser, newPassword)
+                }
+                .addOnFailureListener {
+                    hideProgressDialog()
+                    Snackbar
+                        .make(binding.clUpdatePassword, "Failed to reauthenticate user", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Retry") { reauthenticateUser(newPassword, currentPassword) }
+                        .show()
+                    binding.tvUpdatePasswordErrorAuth.text = it.message
+                }
+        }
+        else {
+            hideProgressDialog()
+            Snackbar
+                .make(binding.clUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+                .show()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
         }
     }
 
-    private fun updatePassword(authUser: FirebaseUser, newPassword: String) {
-        authUser.updatePassword(newPassword).addOnCompleteListener { updateTask ->
+    private fun updatePassword(firebaseUser: FirebaseUser, newPassword: String) {
+        firebaseUser.updatePassword(newPassword).addOnCompleteListener { updateTask ->
             if (updateTask.isSuccessful) {
                 crypto = Crypto()
                 database = Firebase.database
-                databaseReference = database.getReference("users/" + authUser.uid + "/password")
+                databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
                 databaseReference.setValue(crypto.encrypt(newPassword).toString())
 
-                enableWindow()
+                hideProgressDialog()
                 Toast.makeText(this, "Successfully changed password", Toast.LENGTH_SHORT).show()
             }
             else {
-                enableWindow()
+                hideProgressDialog()
                 Log.d("updatePassword", updateTask.exception!!.message.toString())
                 binding.tvUpdatePasswordErrorAuth.text = updateTask.exception!!.message
             }
         }
     }
 
-    private fun enableWindow() {
-        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.btnUpdatePasswordCancel.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.blue_cancel)
-        binding.pbUpdatePassword.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
-        binding.btnUpdatePasswordCancel.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbUpdatePassword.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
-    private fun clearErrors() {
-        binding.tvUpdatePasswordErrorAuth.text = ""
-        binding.tfUpdatePasswordCurrent.error = null
-        binding.tfUpdatePasswordNew.error = null
-        binding.tfUpdatePasswordConfirm.error = null
+    private fun hideProgressDialog() {
+        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbUpdatePassword.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

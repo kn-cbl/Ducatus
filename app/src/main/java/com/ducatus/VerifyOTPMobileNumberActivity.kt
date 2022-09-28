@@ -28,8 +28,6 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_verify_otp_mobile_number)
-
         binding = ActivityVerifyOtpMobileNumberBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -62,56 +60,49 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
         val code = binding.etOTPMobile.text.toString().trim {it <= ' '}
 
         if (TextUtils.isEmpty(code)) {
-            binding.tvVerifyOTPMobileError.setText(R.string.verification_code_empty)
+            binding.tvVerifyOTPMobileError.text = getString(R.string.verification_code_empty)
         }
         else {
-            disableWindow()
+            showProgressDialog()
             val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, code)
-
-            auth.signInWithCredential(credential).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
+            auth.signInWithCredential(credential)
+                .addOnSuccessListener {
                     val intent = Intent(this, ResetPasswordActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                     finish()
                 }
-                else {
-                    enableWindow()
-                    binding.tvVerifyOTPMobileError.setText(R.string.verification_code_error)
+                .addOnFailureListener {
+                    hideProgressDialog()
+                    binding.tvVerifyOTPMobileError.text = getString(R.string.verification_code_error)
                 }
-            }
         }
     }
 
     private fun sendVerificationCode(mobileNumber: String) {
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             // Refer to Firebase documentation
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                Log.d("complete", "onVerificationCompleted:$credential")
-            }
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {}
 
             override fun onVerificationFailed(e: FirebaseException) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext, R.color.green_primary))
-                binding.tvResendOTPMobile.setText(R.string.resend_verification_code)
+                binding.tvResendOTPMobile.text = getString(R.string.resend_verification_code)
                 binding.tvResendOTPMobile.isEnabled = true
                 status = false
 
                 binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
-                Log.w("failed", "onVerificationFailed", e)
-
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
-                    Log.e("error", "Invalid request")
+//                    Log.e("error", "Invalid request")
                 }
                 else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    binding.tvVerifyOTPMobileError.setText(R.string.mobile_auth_request_error)
-                    Log.e("error", "Too many requests, please try again")
+                    binding.tvVerifyOTPMobileError.text = getString(R.string.mobile_auth_request_error)
                 }
             }
 
@@ -119,16 +110,13 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                enableWindow()
-
-                Log.d("verifyId", "onCodeSent:$verificationId")
-                Log.d("token", "onCodeSent:$token")
 
                 // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
                 status = true
 
+                hideProgressDialog()
                 startTimer()
             }
         }
@@ -146,8 +134,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
 
     private fun resendVerificationCode(mobileNumber: String, resendToken: PhoneAuthProvider.ForceResendingToken) {
         binding.tvVerifyOTPMobileError.text = ""
-
-        if(status) {
+        if (status) {
             options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber("+63$mobileNumber")
                 .setTimeout(60L, TimeUnit.SECONDS)
@@ -172,20 +159,21 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
             }
             override fun onFinish() {
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
-                binding.tvResendOTPMobile.setText(R.string.resend_verification_code)
+                binding.tvResendOTPMobile.text = getString(R.string.resend_verification_code)
                 binding.tvResendOTPMobile.isEnabled = true
             }
         }.start()
     }
 
-    private fun enableWindow() {
-        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPMobile.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialog() {
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

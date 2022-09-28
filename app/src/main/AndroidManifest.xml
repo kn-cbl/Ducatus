@@ -80,10 +80,7 @@
             android:name=".VerifyOTPEmailActivity"
             android:exported="true" />
         <activity
-            android:name=".Notifications"
-            android:exported="true" />
-        <activity
-            android:name=".EditProfile"
+            android:name=".NotificationsActivity"
             android:exported="true" />
         <activity
             android:name=".ResetPasswordActivity"
@@ -95,7 +92,7 @@
             android:name=".AccountSettingsAddAccount"
             android:exported="true" />
         <activity
-            android:name=".AccountSettings"
+            android:name=".AccountsActivity"
             android:exported="true" />
         <activity
             android:name=".AboutAppActivity"
@@ -167,20 +164,17 @@
             android:name=".LoanDetail2"
             android:exported="true" />
         <activity
-            android:name=".NewGoal"
-            android:exported="true" />
-        <activity
             android:name=".OverdueLoanDetail"
             android:exported="true" />
         <activity
             android:name=".UnpaidLoanDetail"
             android:exported="true" />
         <activity
-            android:name=".NewGoal1"
-            android:exported="true" />
+            android:name=".NewGoal"
+            android:exported="true"/>
         <activity
             android:name=".EditGoal"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".HomeActivity"
             android:exported="true" />
@@ -196,6 +190,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

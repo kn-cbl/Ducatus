@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -28,8 +29,6 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_password)
-
         binding = ActivityResetPasswordBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -75,7 +74,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                 binding.tfResetPasswordConfirm.error = getString(R.string.password_match_error)
             }
             else {
-                disableWindow()
+                showProgressDialog()
                 resetPassword(newPassword)
             }
         }
@@ -83,37 +82,50 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     private fun resetPassword(newPassword: String) {
         auth = Firebase.auth
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            firebaseUser.updatePassword(newPassword)
+                .addOnSuccessListener {
+                    crypto = Crypto()
+                    database = Firebase.database
+                    databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
+                    databaseReference.setValue(crypto.encrypt(newPassword).toString())
+                    auth.signOut()
 
-        val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
-        firebaseUser?.updatePassword(newPassword)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                crypto = Crypto()
-                database = Firebase.database
-                databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
-                databaseReference.setValue(crypto.encrypt(newPassword).toString())
+                    Snackbar
+                        .make(binding.clResetPassword, "Successfully reset password", Snackbar.LENGTH_LONG)
+                        .show()
 
-                Toast.makeText(this, "Successfully reset password", Toast.LENGTH_SHORT).show()
-                auth.signOut()
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            else {
-                enableWindow()
-                Log.e("resetPassword", task.exception!!.message.toString())
-                binding.tvResetPasswordError.text = task.exception!!.message
-            }
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    finish()
+                }
+                .addOnFailureListener {
+                    hideProgressDialog()
+                    binding.tvResetPasswordError.text = it.localizedMessage
+                }
         }
+        else {
+            val intent = Intent(this, ResetPasswordEmailActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
+        }
+
     }
 
-    private fun enableWindow() {
-        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.pbResetPassword.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPassword.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialog() {
+        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbResetPassword.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

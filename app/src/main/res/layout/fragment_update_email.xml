@@ -83,12 +83,27 @@
         android:layout_marginBottom="100dp"
         android:fontFamily="@font/inter_bold"
         android:letterSpacing="0.04"
-        android:text="Update"
+        android:text="@string/update"
         android:textAllCaps="false"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvResendEmailVerification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:enabled="false"
+        android:fontFamily="@font/inter_regular"
+        android:text="@string/resend_in_60"
+        android:textColor="@color/gray_text"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

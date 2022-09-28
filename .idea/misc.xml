@@ -41,7 +41,6 @@
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_investments.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_shopping.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Studio Projects/DucatusShai/app/src/main/res/layout/activity_vehicle.xml" value="0.25416666666666665" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/addloan_input.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_check2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_selector2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_uncheck2.xml" value="0.1945" />
@@ -50,25 +49,12 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_purplebg.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_redbg.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_tealbg.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_add.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_25.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_calendar_month_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_circle_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_crop_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_download_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_notifications_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_rotate_left_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_rotate_right_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_square_green.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_square_red.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_baseline_warning_24.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_budgets.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_challenges.xml" value="0.1945" />
@@ -87,39 +73,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/shape2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_gray.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_lightgreen.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/drawable/stroke_bottom.xml" value="0.1945" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/add_budget.xml" value="0.25" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/add_new_record.xml" value="0.22" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/add_subscription_one_time.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/add_subscription_recurring.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/budget_detail.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/budgets_main.xml" value="0.4148148148148148" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/confirm_image.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/crop_image.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/edit_budget.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/edit_subscription.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/home_accounts.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/home_budgets_and_goals.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/home_main.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/notifications_panel.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/record_detail.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/reports_main.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/scan_image.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/subscriptions_main.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/subscriptions_one_time.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/subscriptions_recurring.xml" value="0.33" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/transaction_detail.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/transaction_history.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/transactions_breakdown.xml" value="0.15076507650765075" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/transactions_calendar_overview.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/transactions_main.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/view_subscriptions_maynilad.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/view_subscriptions_netflix1.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/view_subscriptions_netflix2.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/view_subscriptions_netflix3.xml" value="0.1675929884566054" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/view_subscriptions_netflix4.xml" value="0.1675929884566054" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/cropimage_menu.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/menu/edit_menu.xml" value="0.1675929884566054" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/editbudget_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/notifications_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/subscriptions_menu.xml" value="0.20416666666666666" />

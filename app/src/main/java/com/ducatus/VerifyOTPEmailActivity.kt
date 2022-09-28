@@ -1,6 +1,8 @@
 package com.ducatus
 
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -26,13 +28,10 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var mailConfig: MailConfig
     private var generatedOTP: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_verify_otp_email)
-
         binding = ActivityVerifyOtpEmailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -65,16 +64,16 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         val code = binding.etOTPEmail.text.toString().trim {it <= ' '}
 
         if (TextUtils.isEmpty(code)) {
-            binding.tvVerifyOTPEmailError.setText(R.string.verification_code_error)
+            binding.tvVerifyOTPEmailError.text = getString(R.string.verification_code_error)
         }
         else {
-            disableWindow()
-            if(code == generatedOTP) {
+            showProgressDialog()
+            if (code == generatedOTP) {
                 readData()
             }
             else {
-                enableWindow()
-                binding.tvVerifyOTPEmailError.setText(R.string.verification_code_error)
+                hideProgressDialog()
+                binding.tvVerifyOTPEmailError.text = getString(R.string.verification_code_error)
             }
         }
     }
@@ -87,7 +86,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                 val email = intent.getStringExtra("email").toString()
                 var password: String? = null
 
-                for(child in snapshot.children) {
+                for (child in snapshot.children) {
                     if (email == child.child("email").value.toString()) {
                         password = child.child("password").value.toString()
                         break
@@ -98,14 +97,13 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                     login(email, password)
                 }
                 else {
-                    enableWindow()
-                    binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
+                    hideProgressDialog()
+                    binding.tvVerifyOTPEmailError.text = getString(R.string.unknown_error)
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                enableWindow()
-                Log.e("databaseError", error.message)
-                binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
+                hideProgressDialog()
+                binding.tvVerifyOTPEmailError.text = getString(R.string.unknown_error)
             }
         })
     }
@@ -114,19 +112,16 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         crypto = Crypto()
         auth = Firebase.auth
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val intent = Intent(this, ResetPasswordActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                    finish()
-                }
-                else {
-                    enableWindow()
-                    Log.e("authError", "Auth failed")
-                    binding.tvVerifyOTPEmailError.setText(R.string.unknown_error)
-                }
+            .addOnSuccessListener {
+                val intent = Intent(this, ResetPasswordActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                finish()
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                binding.tvVerifyOTPEmailError.text = getString(R.string.unknown_error)
             }
     }
 
@@ -136,21 +131,19 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun sendEmail(email: String){
-        disableWindow()
-
+        showProgressDialog()
         appExecutors.diskIO().execute {
-            mailConfig = MailConfig()
             val props = System.getProperties()
-            props["mail.smtp.host"] = mailConfig.smtpHost
-            props["mail.smtp.socketFactory.port"] = mailConfig.smtpPort
-            props["mail.smtp.socketFactory.class"] = mailConfig.smtpClass
-            props["mail.smtp.auth"] = mailConfig.smtpAuth
-            props["mail.smtp.port"] = mailConfig.smtpPort
+            props["mail.smtp.host"] = BuildConfig.SMTP_HOST
+            props["mail.smtp.socketFactory.port"] = BuildConfig.SMTP_PORT
+            props["mail.smtp.socketFactory.class"] = BuildConfig.SMTP_CLASS
+            props["mail.smtp.auth"] = BuildConfig.SMTP_AUTH
+            props["mail.smtp.port"] = BuildConfig.SMTP_PORT
 
             val session = Session.getInstance(props,
                 object : javax.mail.Authenticator() {
                     override fun getPasswordAuthentication(): PasswordAuthentication {
-                        return PasswordAuthentication(mailConfig.senderEmail, mailConfig.senderPassword)
+                        return PasswordAuthentication(BuildConfig.MAIL_SENDER, BuildConfig.MAIL_KEY)
                     }
                 })
 
@@ -159,19 +152,19 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                 generatedOTP = otp
 
                 val mm = MimeMessage(session)
-                mm.setFrom(InternetAddress(mailConfig.senderEmail))
+                mm.setFrom(InternetAddress(BuildConfig.MAIL_SENDER))
                 mm.addRecipient(Message.RecipientType.TO, InternetAddress(email))
-                mm.subject = "Test Email"
-                mm.setText("OTP: $otp")
+                mm.subject = "Ducatus Verification Code"
+                mm.setText("$otp is your verification code.")
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    enableWindow()
+                    hideProgressDialog()
                     startTimer()
                 }
             }
             catch (e: MessagingException) {
-                enableWindow()
+                hideProgressDialog()
                 Log.e("sendEmailError", e.toString())
                 binding.tvVerifyOTPEmailError.text = e.message
             }
@@ -192,22 +185,21 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
             }
             override fun onFinish() {
                 binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
-                binding.tvResendOTPEmail.setText(R.string.resend_verification_code)
+                binding.tvResendOTPEmail.text = getString(R.string.resend_verification_code)
                 binding.tvResendOTPEmail.isEnabled = true
             }
         }.start()
     }
 
-    private fun enableWindow() {
-        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
-        binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
+    private fun showProgressDialog() {
         binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPEmail.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
+    private fun hideProgressDialog() {
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
 }

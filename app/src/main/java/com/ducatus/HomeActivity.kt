@@ -4,43 +4,41 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.navigation.Navigation
 import com.ducatus.databinding.ActivityHomeBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var loggedUser: AuthObserver
+    private var currentFragment: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        loggedUser = AuthObserver()
-        if(!loggedUser.isUserLoggedIn(this, applicationContext)) {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-//        NetworkConnectivityObserver(applicationContext).observe(this) {
+        loadUser()
+
+//        NetworkConnectivityObserver(this).observe(this) {
 //            if (it == NetworkStatus.Available) {
-//                val action = NoConnectionFragmentDirections.actionNoConnectionFragmentToHomeFragment()
-//                Navigation.findNavController(view).navigate(action)
-//                supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HomeFragment()).commit()
+//                val action = Navigation.findNavController(this, R.id.fcHome)
+//                action.navigateUp()
+//                action.navigate(currentFragment)
 //            }
 //            else {
-//                val action = HomeFragmentDirections.actionHomeFragmentToNoConnectionFragment()
-//                Navigation.findNavController(view).navigate(action)
-//                supportFragmentManager.beginTransaction().replace(binding.fcHome.id, NoConnectionFragment()).commit()
+//                val action = Navigation.findNavController(this, R.id.fcHome)
+//                action.navigateUp()
+//                action.navigate(R.id.noConnectionFragment)
 //            }
 //        }
 
@@ -58,7 +56,9 @@ class HomeActivity : AppCompatActivity() {
         binding.nvHome.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
+                    currentFragment = R.id.homeFragment
                     binding.tbHome.setTitle(R.string.home)
+
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigateUp()
                     action.navigate(R.id.homeFragment)
@@ -91,7 +91,9 @@ class HomeActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }
                 R.id.nav_settings -> {
+                    currentFragment = R.id.settingsFragment
                     binding.tbHome.setTitle(R.string.settings)
+
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigateUp()
                     action.navigate(R.id.settingsFragment)
@@ -114,10 +116,22 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun loadUser() {
+        currentFragment = R.id.homeFragment
+
         auth = Firebase.auth
-        val authUser = auth.currentUser
-        val username = findViewById<TextView>(R.id.tvUsername)
-        username.text = authUser?.displayName
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            val headerView = binding.nvHome.getHeaderView(0)
+            val username = headerView.findViewById<TextView>(R.id.tvUsername)
+            username.text = firebaseUser.displayName
+        }
+        else {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
+        }
     }
 
 //    private fun replaceFragmentAnimation(fragment: Fragment) {
