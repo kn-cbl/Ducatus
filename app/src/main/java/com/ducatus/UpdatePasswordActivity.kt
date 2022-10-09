@@ -9,10 +9,10 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityUpdatePasswordBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -25,9 +25,7 @@ import com.google.firebase.ktx.Firebase
 
 class UpdatePasswordActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
-    private lateinit var alertDialog: AlertDialog
     private lateinit var binding: ActivityUpdatePasswordBinding
-    private lateinit var builder: AlertDialog.Builder
     private lateinit var crypto: Crypto
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
@@ -63,16 +61,16 @@ class UpdatePasswordActivity : AppCompatActivity() {
         val confirmPassword = binding.tfUpdatePasswordConfirm
 
         currentPassword.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) currentPassword.error = getString(R.string.current_password_empty)
+            if (text == null || text.isEmpty()) currentPassword.error = getString(R.string.current_password_empty)
             else  currentPassword.error = null
         }
         newPassword.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) newPassword.error = getString(R.string.new_password_empty)
-            else if (text?.length!! < 8) newPassword.error = getString(R.string.password_complexity)
+            if (text == null || text.isEmpty()) newPassword.error = getString(R.string.new_password_empty)
+            else if (text.length < 8) newPassword.error = getString(R.string.password_complexity)
             else  newPassword.error = null
         }
         confirmPassword.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) confirmPassword.error = getString(R.string.confirm_password_empty)
+            if (text == null || text.isEmpty()) confirmPassword.error = getString(R.string.confirm_password_empty)
             else if (text.toString() != newPassword.editText?.text.toString()) confirmPassword.error = getString(R.string.password_match_error)
             else  confirmPassword.error = null
         }
@@ -107,15 +105,11 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun confirmUpdate(newPassword: String, currentPassword: String) {
-        builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.update_password)
-        builder.setMessage(R.string.update_password_confirm)
-        builder.setIcon(R.drawable.lock)
-        builder.setPositiveButton("Update") { _, _ -> reauthenticateUser(newPassword, currentPassword) }
-        builder.setNegativeButton("No") { _, _ -> }
-
-        alertDialog = builder.create()
-        alertDialog.show()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.change_password_mark))
+            .setPositiveButton(resources.getString(R.string.change)) { _, _ -> reauthenticateUser(newPassword, currentPassword) }
+            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> } // do nothing
+            .show()
     }
 
     private fun reauthenticateUser(newPassword: String, currentPassword: String) {
@@ -132,7 +126,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
                     hideProgressDialog()
                     Snackbar
                         .make(binding.llUpdatePassword, "Failed to reauthenticate user", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry") { reauthenticateUser(newPassword, currentPassword) }
+                        .setAction(getString(R.string.retry)) { reauthenticateUser(newPassword, currentPassword) }
                         .show()
                 }
         }
@@ -156,7 +150,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 crypto = Crypto()
                 database = Firebase.database
-                databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
+                databaseReference = database.getReference("users").child(firebaseUser.uid).child("password")
                 databaseReference.setValue(crypto.encrypt(newPassword).toString())
 
                 hideProgressDialog()
@@ -178,20 +172,22 @@ class UpdatePasswordActivity : AppCompatActivity() {
                 hideProgressDialog()
                 Snackbar
                     .make(binding.llUpdatePassword, "Failed to update password", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { updatePassword(firebaseUser, newPassword) }
+                    .setAction(getString(R.string.retry)) { updatePassword(firebaseUser, newPassword) }
                     .show()
             }
     }
 
     private fun showProgressDialog() {
-        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbUpdatePassword.visibility = View.VISIBLE
+        binding.btnUpdatePassword.text = null
+        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbUpdatePassword.visibility = View.INVISIBLE
+        binding.btnUpdatePassword.text = getString(R.string.change_password)
+        binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

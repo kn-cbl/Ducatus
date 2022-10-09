@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".AccountsFragment">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbAccount"
-        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateDrawable="@drawable/progress_bg"
+        android:indeterminate="true"
+        app:indicatorColor="@color/green_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,25 +22,30 @@
         android:id="@+id/clAccount"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivEditSelectedAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
             android:contentDescription="@string/edit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
+            app:srcCompat="@drawable/ic_more" />
 
         <ImageView
             android:id="@+id/ivSelectedAccountImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="30dp"
-            android:contentDescription="@string/user_profile_picture"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/account_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,8 +55,8 @@
             android:id="@+id/tvSelectedAccountName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/inter_semibold"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/inter_semi_bold"
             android:text="@string/account_name"
             android:textAlignment="center"
             android:textColor="@color/black"
@@ -64,111 +69,63 @@
             android:id="@+id/tvSelectedAccountBudget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/inter_regular"
             android:text="@string/monthly_budget"
             android:textAlignment="center"
-            android:textColor="@color/gray_text"
+            android:textColor="@color/darker_gray"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectedAccountName" />
 
         <View
-            android:id="@+id/divider9"
+            android:id="@+id/vwAccount"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="16dp"
             android:background="?android:attr/listDivider"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectedAccountBudget" />
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout4"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAccounts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider9">
-
-            <ImageView
-                android:id="@+id/imageView26"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="20dp"
-                android:contentDescription="@string/user_profile_picture"
-                app:srcCompat="@drawable/ic_account_circle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="48dp"
-                android:layout_toEndOf="@+id/imageView26"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvAccountName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_medium"
-                    android:text="@string/account_name"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/textView83"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/monthly_budget"
-                    android:textColor="@color/gray_text"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imageView28"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="30dp"
-                android:contentDescription="@string/edit"
-                app:srcCompat="@drawable/ic_baseline_more_vert_24" />
-        </RelativeLayout>
+            app:layout_constraintTop_toBottomOf="@+id/vwAccount" />
 
         <RelativeLayout
-            android:id="@+id/relativeLayout3"
+            android:id="@+id/rlAddAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/relativeLayout4">
+            app:layout_constraintTop_toBottomOf="@+id/rvAccounts">
 
             <ImageView
                 android:id="@+id/imageView29"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="20dp"
                 android:contentDescription="@string/user_profile_picture"
                 app:srcCompat="@drawable/add_another_account" />
 
             <TextView
-                android:id="@+id/textView84"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="48dp"
+                android:layout_marginStart="16dp"
                 android:layout_toEndOf="@+id/imageView29"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/add_another_account"
-                android:textColor="@color/gray_text"
+                android:textColor="@color/darker_gray"
                 android:textSize="14sp" />
         </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +40,7 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/green_circle_bg"
                     android:padding="10dp"
-                    android:src="@drawable/ic_plane" />
+                    app:srcCompat="@drawable/ic_plane" />
 
                 <TextView
                     android:id="@+id/textView_goalActive1"
@@ -62,7 +62,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_toRightOf="@id/sample_img_goalActive1"
                     android:text="Target date on Jul 28, 2020"
-                    android:textColor="@color/light_gray_text" />
+                    android:textColor="@color/gray" />
 
                 <TextView
                     android:id="@+id/percentProgress_goalActive1"
@@ -74,7 +74,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="75%"
-                    android:textColor="@color/green_cyan_text"
+                    android:textColor="@color/light_teal"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -99,7 +99,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="Earned"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/remaining_goalActive1"
@@ -109,7 +109,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginTop="16dp"
                     android:text="Remaining"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/goal_goalActive1"
@@ -120,7 +120,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="Goal"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/earnedAmount_goalActive1"
@@ -172,7 +172,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             android:layout_row="1"
@@ -192,7 +192,7 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/purple_circle_bg"
                     android:padding="12dp"
-                    android:src="@drawable/ic_car" />
+                    app:srcCompat="@drawable/ic_car" />
 
                 <TextView
                     android:id="@+id/textView_goalActive2"
@@ -214,7 +214,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_toRightOf="@id/sample_img_goalActive2"
                     android:text="No Target date"
-                    android:textColor="@color/light_gray_text" />
+                    android:textColor="@color/gray" />
 
                 <TextView
                     android:id="@+id/percentProgress_goalActive2"
@@ -251,7 +251,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="Earned"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/remaining_goalActive2"
@@ -261,7 +261,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginTop="16dp"
                     android:text="Remaining"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/goal_goalActive2"
@@ -272,7 +272,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="Goal"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/earnedAmount_goalActive2"
@@ -327,7 +327,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             android:layout_row="2"
@@ -350,7 +350,7 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/green_circle_bg"
                     android:padding="8dp"
-                    android:src="@drawable/ic_sample_img_goal" />
+                    app:srcCompat="@drawable/ic_sample_img_goal" />
 
                 <TextView
                     android:id="@+id/textView_goalActive3"
@@ -372,7 +372,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_toRightOf="@id/sample_img_goalActive3"
                     android:text="Target date on Jul 4, 2020"
-                    android:textColor="@color/light_gray_text" />
+                    android:textColor="@color/gray" />
 
                 <TextView
                     android:id="@+id/percentProgress_goalActive3"
@@ -384,7 +384,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="75%"
-                    android:textColor="@color/green_cyan_text"
+                    android:textColor="@color/light_teal"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -409,7 +409,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="Earned"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/remaining_goalActive3"
@@ -419,7 +419,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginTop="16dp"
                     android:text="Remaining"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/goal_goalActive3"
@@ -430,7 +430,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="Goal"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/earnedAmount_goalActive3"
@@ -481,7 +481,7 @@
                     android:layout_below="@id/progressBar_goalActive3"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/ic_warning" />
+                    app:srcCompat="@drawable/ic_warning" />
 
                 <TextView
                     android:id="@+id/textView_goalWarning"
@@ -505,7 +505,7 @@
         android:layout_margin="10dp"
         android:backgroundTint="#007FFF"
         android:clickable="true"
-        android:src="@drawable/ic_add"
+        app:srcCompat="@drawable/ic_add"
         android:tint="@color/white"
         android:visibility="visible"
         app:fabCustomSize="60dp"

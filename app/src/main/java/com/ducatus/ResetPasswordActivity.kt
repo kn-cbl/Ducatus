@@ -49,11 +49,11 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     private fun inputObserver() {
         binding.tfResetPasswordNew.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
+            if (text == null || text.isEmpty()) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
             else  binding.tfResetPasswordNew.error = null
         }
         binding.tfResetPasswordConfirm.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
+            if (text == null || text.isEmpty()) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
             else  binding.tfResetPasswordConfirm.error = null
         }
     }
@@ -64,7 +64,7 @@ class ResetPasswordActivity : AppCompatActivity() {
             val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
-        catch (e: Exception){}
+        catch (e: Exception) {}
 
         binding.tvResetPasswordError.text = ""
         binding.tfResetPasswordNew.error = null
@@ -96,7 +96,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     crypto = Crypto()
                     database = Firebase.database
-                    databaseReference = database.getReference("users/" + firebaseUser.uid + "/password")
+                    databaseReference = database.getReference("users").child(firebaseUser.uid).child("password")
                     databaseReference.setValue(crypto.encrypt(newPassword).toString())
                     auth.signOut()
 
@@ -135,14 +135,16 @@ class ResetPasswordActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPassword.visibility = View.VISIBLE
+        binding.btnResetPassword.text = null
+        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbResetPassword.visibility = View.INVISIBLE
+        binding.btnResetPassword.text = getString(R.string.reset_password)
+        binding.btnResetPassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

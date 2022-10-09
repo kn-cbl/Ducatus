@@ -36,7 +36,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="728dp"
             android:text="July 16, 2022"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -226,7 +226,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:text="July 3, 2022"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_column="0"
                 app:layout_row="1" />

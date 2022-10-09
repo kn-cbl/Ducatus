@@ -3,6 +3,7 @@ package com.ducatus
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -59,11 +60,14 @@ class VerifyEmailActivity : AppCompatActivity() {
             .addOnFailureListener {
                 binding.tvVerifyEmailError.text = it.localizedMessage
             }
+        hideProgressDialog()
     }
 
     // reload email verified status of user
     private fun reloadUser() {
-        showProgressDialog()
+        binding.pbVerifyEmail.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
         var firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             firebaseUser.reload()
@@ -103,20 +107,30 @@ class VerifyEmailActivity : AppCompatActivity() {
             .make(binding.clVerifyEmail, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
             .show()
 
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        finish()
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(applicationContext, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {
-        binding.pbVerifyEmail.visibility = View.VISIBLE
+        binding.pbResendEmailVerification.visibility = View.VISIBLE
+        binding.btnResendEmail.text = null
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
         binding.pbVerifyEmail.visibility = View.INVISIBLE
+        binding.pbResendEmailVerification.visibility = View.INVISIBLE
+        binding.btnResendEmail.text = getString(R.string.resend_email_verification)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

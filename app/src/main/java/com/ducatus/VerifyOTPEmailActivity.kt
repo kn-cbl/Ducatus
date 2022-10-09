@@ -2,13 +2,10 @@ package com.ducatus
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -140,7 +137,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun sendEmail(email: String){
-        showProgressDialog()
+        showProgressDialog2()
         appExecutors.diskIO().execute {
             val props = System.getProperties()
             props["mail.smtp.host"] = BuildConfig.SMTP_HOST
@@ -168,7 +165,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                 Transport.send(mm)
 
                 appExecutors.mainThread().execute {
-                    binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                    binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.darker_gray))
                     binding.tvResendOTPEmail.isEnabled = false
 
                     hideProgressDialog()
@@ -190,7 +187,8 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     private fun startTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendOTPEmail.text = "Resend in " + millisUntilFinished / 1000
+                val message = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendOTPEmail.text = message
             }
             override fun onFinish() {
                 binding.tvResendOTPEmail.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
@@ -201,14 +199,23 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPEmail.visibility = View.VISIBLE
+        binding.btnVerifyOTPEmail.text = null
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgressDialog2() {
+        binding.pbResendOTPEmail.visibility = View.VISIBLE
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbResendOTPEmail.visibility = View.INVISIBLE
         binding.pbVerifyOTPEmail.visibility = View.INVISIBLE
+        binding.btnVerifyOTPEmail.text = getString(R.string.verify)
+        binding.btnVerifyOTPEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

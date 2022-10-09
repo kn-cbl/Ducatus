@@ -12,7 +12,7 @@
         android:id="@+id/overdueLoan_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +120,7 @@
             android:layout_alignParentLeft="true"
             android:layout_marginStart="18dp"
             android:text="Aug 15, 2022"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textStyle="bold"/>
 
         <ImageView
@@ -135,7 +135,7 @@
             android:maxWidth="16dp"
             android:maxHeight="16dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_menuvertical" />
+            app:srcCompat="@drawable/ic_menuvertical" />
 
         <ImageView
             android:id="@+id/dueImg_overdueLoan"
@@ -148,7 +148,7 @@
             android:maxWidth="16dp"
             android:maxHeight="16dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_warning" />
+            app:srcCompat="@drawable/ic_warning" />
 
         <TextView
             android:id="@+id/loanDueDays_overdueLoan"
@@ -188,7 +188,7 @@
             android:maxWidth="24dp"
             android:maxHeight="24dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_editdate"/>
+            app:srcCompat="@drawable/ic_editdate"/>
 
         <TextView
             android:id="@+id/loanEditDate_overdueLoan"
@@ -198,7 +198,7 @@
             android:layout_marginTop="22dp"
             android:text="Edit Date"
             android:layout_toRightOf="@+id/editDateImg_overdueLoan"
-            android:textColor="#000000" />
+            android:textColor="@color/black" />
 
         <ImageView
             android:id="@+id/dismissImg_overdueLoan"
@@ -213,7 +213,7 @@
             android:maxWidth="24dp"
             android:maxHeight="24dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_dismiss" />
+            app:srcCompat="@drawable/ic_dismiss" />
 
         <TextView
             android:id="@+id/loanDismiss"
@@ -224,7 +224,7 @@
             android:layout_marginTop="16dp"
             android:layout_toRightOf="@+id/dismissImg_overdueLoan"
             android:text="Dismiss"
-            android:textColor="#000000" />
+            android:textColor="@color/black" />
 
     </RelativeLayout>
 

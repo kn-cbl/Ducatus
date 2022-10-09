@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/iconCheck"
-        android:icon="@drawable/ic_check"
-        android:iconTint="@color/white"
-        android:title="Check"
-        android:visible="true"
-        app:showAsAction="ifRoom|collapseActionView" />
+        android:id="@+id/done"
+        android:contentDescription="@string/done"
+        android:icon="@drawable/ic_baseline_check_24_white"
+        android:title="@string/done"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -26,6 +26,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlin.math.floor
+
 class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivitySignupBinding
@@ -67,17 +69,17 @@ class SignupActivity : AppCompatActivity() {
 
     private fun inputObserver() {
         binding.tfSignupEmail.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfSignupEmail.error = getString(R.string.email_empty)
-            else if (!emailRegex.toRegex().matches(text!!)) binding.tfSignupEmail.error = getString(R.string.email_invalid)
+            if (text == null || text.isEmpty()) binding.tfSignupEmail.error = getString(R.string.email_empty)
+            else if (!emailRegex.toRegex().matches(text)) binding.tfSignupEmail.error = getString(R.string.email_invalid)
             else binding.tfSignupEmail.error = null
         }
         binding.tfSignupUsername.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfSignupUsername.error = getString(R.string.username_empty)
+            if (text == null || text.isEmpty()) binding.tfSignupUsername.error = getString(R.string.username_empty)
             else binding.tfSignupUsername.error = null
         }
         binding.tfSignupPassword.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfSignupPassword.error = getString(R.string.password_empty)
-            else if (text?.length!! < 8)  binding.tfSignupPassword.error = getString(R.string.password_complexity)
+            if (text == null || text.isEmpty()) binding.tfSignupPassword.error = getString(R.string.password_empty)
+            else if (text.length < 8)  binding.tfSignupPassword.error = getString(R.string.password_complexity)
             else binding.tfSignupPassword.error = null
         }
     }
@@ -182,28 +184,33 @@ class SignupActivity : AppCompatActivity() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { storeData(firebaseUser, password, username) }
+                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { storeData(firebaseUser, password, username) }
                     .show()
             }
     }
 
     private fun createDefaultAccount(firebaseUser: FirebaseUser, username: String) {
         showProgressDialog()
-        databaseReference = database.getReference("accounts/" + firebaseUser.uid)
-        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object: ValueEventListener {
+        databaseReference = database.getReference("accounts").child(firebaseUser.uid)
+        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!snapshot.exists()) {
-                    val account = Account(0, username, 0.00, resources.getResourceEntryName(R.color.green_primary))
+                if (!snapshot.exists()) { // check if path exists
+                    val randomColor = generateRandomColor()
+                    val account = Account(0, username, resources.getResourceEntryName(randomColor), 0.0, 0.0)
                     databaseReference.child("0").setValue(account)
                         .addOnSuccessListener {
-                            verifyEmail(firebaseUser.isEmailVerified)
+                            val sharedPreferences = SharedPreferences(applicationContext)
+                            sharedPreferences.accountName = account.account_name
+                            sharedPreferences.accountColor = account.account_color
+
+                            createDefaultCategories(firebaseUser)
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
                             Snackbar
-                                .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
-                                .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                                .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                                .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
                                 .show()
                         }
                 }
@@ -215,8 +222,73 @@ class SignupActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
                 hideProgressDialog()
                 Snackbar
-                    .make(findViewById(R.id.llSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { createDefaultAccount(firebaseUser, username) }
+                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
+                    .show()
+            }
+        })
+    }
+
+    private fun createDefaultCategories(firebaseUser: FirebaseUser) {
+        showProgressDialog()
+        databaseReference = database.getReference("categories").child(firebaseUser.uid).child("0")
+        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) { // check if path exists
+                    val categoryNames = listOf(
+                        "Electronics", "Financial Expenses", "Food and Drinks",
+                        "Housing", "Investments", "Life and Entertainment",
+                        "Shopping", "Transportation", "Vehicle",
+                        "Others"
+                    )
+
+                    val categoryNatures = listOf(
+                        1, 0, 0,
+                        0, 0, 1,
+                        1, 0, 1,
+                        1
+                    )
+
+                    val categoryColors= listOf(
+                        "dark_blue", "dark_yellow", "bright_red",
+                        "dark_green", "orange", "cyan",
+                        "light_pink", "dark_brown", "purple",
+                        "light_gray"
+                    )
+
+                    val categoryIcons = listOf(
+                        "ic_baseline_devices_24", "ic_baseline_wallet_24", "ic_baseline_fastfood_24",
+                        "ic_baseline_home_24", "investment", "ic_baseline_videogame_asset_24",
+                        "ic_outline_shopping_bag_24", "ic_baseline_directions_bus_24", "ic_baseline_directions_car_24",
+                        "ic_baseline_more_horiz_24"
+                    )
+
+                    // loop through items and store values based on index
+                    for (i in categoryNames.indices) {
+                        val category = Category(i, categoryNames[i], categoryNatures[i], categoryColors[i], categoryIcons[i])
+                        databaseReference.child(i.toString()).setValue(category)
+                            .addOnSuccessListener {
+                                verifyEmail(firebaseUser.isEmailVerified)
+                            }
+                            .addOnFailureListener {
+                                hideProgressDialog()
+                                Snackbar
+                                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
+                                    .show()
+                            }
+                    }
+                }
+                else {
+                    verifyEmail(firebaseUser.isEmailVerified)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                hideProgressDialog()
+                Snackbar
+                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
                     .show()
             }
         })
@@ -293,15 +365,32 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
+    private fun generateRandomColor(): Int {
+        // select random color from list
+        val colorList = listOf(
+            "color_one", "color_two", "color_three", "color_four", "color_five",
+            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
+            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
+            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
+            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
+        )
+
+        val randomIndex = floor(Math.random() * colorList.size).toInt()
+        return resources.getIdentifier(colorList[randomIndex], "color", packageName)
+    }
+
     private fun showProgressDialog() {
-        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
+        clearErrors()
         binding.pbSignup.visibility = View.VISIBLE
+        binding.btnSignup.text = null
+        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbSignup.visibility = View.INVISIBLE
+        binding.btnSignup.text = getString(R.string.create_account)
+        binding.btnSignup.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 

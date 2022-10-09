@@ -10,7 +10,7 @@
         android:id="@+id/goalDetail_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/green_circle_bg"
             android:padding="10dp"
-            android:src="@drawable/ic_sample_img_goal" />
+            app:srcCompat="@drawable/ic_sample_img_goal" />
 
         <TextView
             android:id="@+id/textView_goalDetail"
@@ -59,7 +59,7 @@
             android:layout_marginStart="16dp"
             android:layout_toRightOf="@id/img_goalDetail"
             android:text="Reached: Jul 16, 2022"
-            android:textColor="@color/light_gray_text" />
+            android:textColor="@color/gray" />
 
         <ProgressBar
             android:id="@+id/goalDetail_progressBar"
@@ -122,7 +122,7 @@
             android:text="₱30,000"
             android:letterSpacing="0.05"
             android:textSize="16sp"
-            android:textColor="@color/gray_text" />
+            android:textColor="@color/darker_gray" />
 
     </LinearLayout>
 

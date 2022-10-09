@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:checked="true"
+            android:icon="@drawable/ic_outline_home_24"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_reports"
+            android:icon="@drawable/ic_reports"
+            android:title="@string/reports" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_budgets"
+            android:icon="@drawable/ic_budgets"
+            android:title="@string/budgets" />
+        <item
+            android:id="@+id/nav_transactions"
+            android:icon="@drawable/ic_transactions"
+            android:title="@string/transactions" />
+        <item
+            android:id="@+id/nav_planned_payments"
+            android:icon="@drawable/ic_outline_calendar_month_24"
+            android:title="@string/planned_payments" />
+        <item
+            android:id="@+id/nav_loans"
+            android:icon="@drawable/ic_outline_handshake_24"
+            android:title="@string/loans" />
+        <item
+            android:id="@+id/nav_goals"
+            android:icon="@drawable/ic_goals"
+            android:title="@string/goals" />
+        <item
+            android:id="@+id/nav_challenges"
+            android:icon="@drawable/ic_challenges"
+            android:title="@string/challenges" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_tips"
+            android:icon="@drawable/ic_outline_lightbulb_24"
+            android:title="@string/tips" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_outline_help_outline_24"
+            android:title="@string/help" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_outline_settings_24"
+            android:title="@string/settings" />
+    </group>
+</menu>

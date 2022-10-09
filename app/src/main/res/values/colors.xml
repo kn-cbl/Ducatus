@@ -5,45 +5,60 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+
     <color name="black">#FF000000</color>
+    <color name="dark_brown">#704f4f</color>
+    <color name="darker_gray">#545454</color>
+    <color name="dark_gray">#5C5C5C</color>
+    <color name="gray">#7A7A7A</color>
+    <color name="gray_alpha">#669e9e9e</color>
+    <color name="light_gray">#838383</color>
+    <color name="lighter_gray">#9e9e9e</color>
+    <color name="darker_white">#E3E3E3</color>
+    <color name="dark_white">#F8F8F8</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="light_pink">#f65a83</color>
+    <color name="light_red">#F76C6E</color>
+    <color name="bright_red">#f53e3e</color>
+    <color name="dark_red">#D50000</color>
+
+    <color name="orange">#ff7a00</color>
+
+    <color name="gold">#E6D0AC</color>
+    <color name="dark_yellow">#ffbd08</color>
 
     <color name="green_primary">#206967</color>
     <color name="green_secondary">#389583</color>
     <color name="green_tertiary">#FF018786</color>
-    <color name="et_shadow">#bfbfbf</color>
-    <color name="text_input_box_stroke_color">#389583</color>
-    <color name="blue_cancel">#033F63</color>
-    <color name="gold">#E6D0AC</color>
+    <color name="cyan">#03ccd9</color>
+    <color name="dark_green">#5a8f7b</color>
+    <color name="bright_green">#0FA958</color>
+    <color name="light_teal">#389583</color>
+
+    <color name="blue">#007FFF</color>
+    <color name="dark_blue">#305dbe</color>
+    <color name="very_dark_blue">#033F63</color>
+
+    <color name="purple">#9611ff</color>
 
     <!-- For loans, challenges, goals, tips-->
 
     <!-- bg colors-->
-    <color name="bg_progress_bar">#5C5C5C</color>
-    <color name="toolbar_bg">#206967</color>
-    <color name="cardview_bg">#F8F8F8</color>
     <color name="frame_bg">#E7E7E7</color>
     <color name="progressbar_bg">#D9D9D9</color>
-    <color name="green_bg">#0FA958</color>
 
     <!-- btn colors-->
     <color name="btn_givemoney">#F76C6E</color>
     <color name="btn_borrowmoney">#2DB57B</color>
 
     <!-- text colors-->
-    <color name="red_text">#FF0000</color>
-    <color name="red_text_2">#D50000</color>
-    <color name="gray_text">#545454</color>
     <color name="green_text">#2DB57B</color>
-    <color name="light_gray_text">#7A7A7A</color>
-    <color name="lighter_gray_text">#9e9e9e</color>
-    <color name="green_cyan_text">#389583</color>
     <color name="green_dark_text">#0FA958</color>
 
     <!-- additional colors-->
     <color name="green_color">#2DB57B</color>
     <color name="purple_color">#9804DE</color>
-    <color name="blue_color">#007FFF</color>
     <color name="transparent">#00000000</color>
 
     <!-- for color palette -->

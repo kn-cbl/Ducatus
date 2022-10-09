@@ -11,7 +11,7 @@
         android:id="@+id/tipsDetailArticleToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-                android:textColor="@color/gray_text"
+                android:textColor="@color/darker_gray"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -58,7 +58,7 @@
                 android:layout_below="@+id/video_videoPlay"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:src="@drawable/ic_author" />
+                app:srcCompat="@drawable/ic_author" />
 
             <TextView
                 android:id="@+id/textView_videoArtistName"

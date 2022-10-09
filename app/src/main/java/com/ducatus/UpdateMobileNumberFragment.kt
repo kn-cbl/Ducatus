@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
@@ -53,7 +52,6 @@ class UpdateMobileNumberFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         inputObserver()
 
         binding.btnUpdateMobileNumber.setOnClickListener {
@@ -73,12 +71,12 @@ class UpdateMobileNumberFragment : Fragment() {
 
     private fun inputObserver() {
         binding.tfUpdateMobileNumber.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfUpdateMobileNumber.error = getString(R.string.mobile_number_empty)
-            else if (!mobileNumberRegex.toRegex().matches(text!!)) binding.tfUpdateMobileNumber.error = getString(R.string.mobile_number_invalid)
+            if (text == null || text.isEmpty()) binding.tfUpdateMobileNumber.error = getString(R.string.mobile_number_empty)
+            else if (!mobileNumberRegex.toRegex().matches(text)) binding.tfUpdateMobileNumber.error = getString(R.string.mobile_number_invalid)
             else binding.tfUpdateMobileNumber.error = null
         }
         binding.tfVerifyMobileNumber.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfVerifyMobileNumber.error = getString(R.string.verification_code_empty)
+            if (text == null || text.isEmpty()) binding.tfVerifyMobileNumber.error = getString(R.string.verification_code_empty)
             else binding.tfVerifyMobileNumber.error = null
         }
     }
@@ -159,29 +157,29 @@ class UpdateMobileNumberFragment : Fragment() {
     }
 
     private fun updateDB(uid: String, mobileNumber: String, verificationCode: String) {
-        showProgressDialog()
-        databaseReference = database.getReference("users/" + uid + "/mobile_number")
+        showProgressDialogVerify()
+        databaseReference = database.getReference("users").child(uid).child("mobile_number")
         databaseReference.setValue(mobileNumber)
             .addOnSuccessListener {
                 val phoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, verificationCode)
                 updateMobileNumber(phoneAuthCredential)
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogVerify()
                 Snackbar
-                    .make(rootLayout, "Failed to update mobile number", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { updateDB(uid, mobileNumber, verificationCode) }
+                    .make(rootLayout, "Unable to update mobile number, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { updateDB(uid, mobileNumber, verificationCode) }
                     .show()
             }
     }
 
     private fun updateMobileNumber(phoneAuthCredential: PhoneAuthCredential) {
-        showProgressDialog()
+        showProgressDialogVerify()
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             firebaseUser.updatePhoneNumber(phoneAuthCredential)
                 .addOnSuccessListener {
-                    hideProgressDialog()
+                    hideProgressDialogVerify()
                     Snackbar
                         .make(rootLayout, "Successfully updated mobile number", Snackbar.LENGTH_LONG)
                         .show()
@@ -192,16 +190,19 @@ class UpdateMobileNumberFragment : Fragment() {
                             // do nothing
                         }
                         override fun onFinish() {
-                            val action = UpdateMobileNumberFragmentDirections.actionUpdateMobileNumberFragmentToUserProfileFragment()
-                            findNavController().navigate(action)
+                            try {
+                                val action = UpdateMobileNumberFragmentDirections.actionUpdateMobileNumberFragmentToUserProfileFragment()
+                                findNavController().navigate(action)
+                            }
+                            catch (e: Exception) {}
                         }
                     }.start()
                 }
                 .addOnFailureListener {
-                    hideProgressDialog()
+                    hideProgressDialogVerify()
                     Snackbar
-                        .make(rootLayout, "Failed to update mobile number", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry") {updateMobileNumber(phoneAuthCredential) }
+                        .make(rootLayout, "Unable to update mobile number, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.retry)) { updateMobileNumber(phoneAuthCredential) }
                         .show()
                 }
         }
@@ -223,7 +224,7 @@ class UpdateMobileNumberFragment : Fragment() {
                     hideProgressDialog()
                     Snackbar
                         .make(rootLayout, e.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry") { sendVerificationCode(mobileNumber) }
+                        .setAction(getString(R.string.retry)) { sendVerificationCode(mobileNumber) }
                         .show()
                 }
                 else if (e is FirebaseTooManyRequestsException) {
@@ -231,17 +232,18 @@ class UpdateMobileNumberFragment : Fragment() {
                     hideProgressDialog()
                     Snackbar
                         .make(rootLayout, e.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry") { sendVerificationCode(mobileNumber) }
+                        .setAction(getString(R.string.retry)) { sendVerificationCode(mobileNumber) }
                         .show()
                 }
             }
 
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                val phoneNumber = "0$mobileNumber"
+                binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
                 binding.tvResendMobileNumberVerification.isEnabled = false
                 binding.llUpdateMobileNumber.visibility = View.GONE
                 binding.llVerifyMobileNumber.visibility = View.VISIBLE
-                binding.tvUpdateMobileNumber.text = "0$mobileNumber"
+                binding.tvUpdateMobileNumber.text = phoneNumber
 
                 storedVerificationId = verificationId
                 resendToken = token
@@ -263,7 +265,39 @@ class UpdateMobileNumberFragment : Fragment() {
     }
 
     private fun resendVerificationCode(mobileNumber: String, resendToken: PhoneAuthProvider.ForceResendingToken) {
-        showProgressDialog()
+        showProgressDialogVerify()
+
+        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                hideProgressDialogVerify()
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                if (e is FirebaseAuthInvalidCredentialsException) {
+                    // Invalid request
+                    hideProgressDialogVerify()
+                    Snackbar
+                        .make(rootLayout, e.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.retry)) { resendVerificationCode(mobileNumber, resendToken) }
+                        .show()
+                }
+                else if (e is FirebaseTooManyRequestsException) {
+                    // The SMS quota for the project has been exceeded
+                    hideProgressDialogVerify()
+                    Snackbar
+                        .make(rootLayout, e.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.retry)) { resendVerificationCode(mobileNumber, resendToken) }
+                        .show()
+                }
+            }
+
+            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                storedVerificationId = verificationId
+                hideProgressDialogVerify()
+                startTimer()
+            }
+        }
+
         options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber("+63$mobileNumber")
             .setTimeout(60L, TimeUnit.SECONDS)
@@ -278,7 +312,8 @@ class UpdateMobileNumberFragment : Fragment() {
     private fun startTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendMobileNumberVerification.text = "Resend in " + millisUntilFinished / 1000
+                val message = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendMobileNumberVerification.text = message
             }
             override fun onFinish() {
                 binding.tvResendMobileNumberVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
@@ -294,22 +329,45 @@ class UpdateMobileNumberFragment : Fragment() {
             .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
             .show()
 
-        val intent = Intent(activity, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        activity.finish()
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(activity, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity.finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {
-        binding.btnVerifyMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.light_gray_text)
         binding.pbUpdateMobileNumber.visibility = View.VISIBLE
+        binding.btnUpdateMobileNumber.text = null
+        binding.btnUpdateMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnVerifyMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         binding.pbUpdateMobileNumber.visibility = View.INVISIBLE
+        binding.btnUpdateMobileNumber.text = getString(R.string.change)
+        binding.btnUpdateMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgressDialogVerify() {
+        binding.pbVerifyMobileNumber.visibility = View.VISIBLE
+        binding.btnVerifyMobileNumber.text = null
+        binding.btnVerifyMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
+        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialogVerify() {
+        binding.pbVerifyMobileNumber.visibility = View.INVISIBLE
+        binding.btnVerifyMobileNumber.text = getString(R.string.verify)
+        binding.btnVerifyMobileNumber.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 

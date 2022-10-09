@@ -61,14 +61,14 @@ class NewGoal : AppCompatActivity() {
 
         val adapter:ArrayAdapter<String> = object: ArrayAdapter<String>(
             context,
-            R.layout.color_spinner_item,
+            R.layout.spinner_item,
             R.id.txt_bundle,
             listItemColor
         ){
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View
             {
                 val view = getView(position, convertView, parent)
-                val color = view.findViewById<View>(R.id.colorBlob)
+                val color = view.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = color.background as GradientDrawable
                 db.setColor(listColor[position])
                 db.cornerRadius = 20f
@@ -94,7 +94,7 @@ class NewGoal : AppCompatActivity() {
 //                spinner.setBackgroundColor(listColor[position])
 
                 val sv = spinner.selectedView
-                val svv = sv.findViewById<View>(R.id.colorBlob)
+                val svv = sv.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = GradientDrawable()
                 db.setColor(listColor[position])
                 db.cornerRadius = 20f

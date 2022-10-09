@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rlItemCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <FrameLayout
+            android:id="@+id/flCategoryIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bg_circle"
+            android:backgroundTint="@color/dark_blue">
+
+            <ImageView
+                android:id="@+id/ivCategoryIcon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/category_icon"
+                app:srcCompat="@drawable/ic_baseline_devices_24_white" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvCategoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toStartOf="@id/ibCategoryEdit"
+            android:layout_toEndOf="@+id/flCategoryIcon"
+            android:fontFamily="@font/inter_medium"
+            android:text="@string/category_name"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/ibCategoryEdit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ic_more"
+            android:contentDescription="@string/edit"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            tools:ignore="TouchTargetSizeCheck" />
+    </RelativeLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

@@ -53,8 +53,8 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
 
     private fun inputObserver() {
         binding.tfResetPasswordMobile.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_empty)
-            else if (!mobileNumberRegex.toRegex().matches(text!!)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_invalid)
+            if (text == null || text.isEmpty()) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_empty)
+            else if (!mobileNumberRegex.toRegex().matches(text)) binding.tfResetPasswordMobile.error = getString(R.string.mobile_number_invalid)
             else binding.tfResetPasswordMobile.error = null
         }
     }
@@ -113,14 +113,16 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPasswordMobileNumber.visibility = View.VISIBLE
+        binding.btnResetPasswordMobileNumber.text = null
+        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbResetPasswordMobileNumber.visibility = View.INVISIBLE
+        binding.btnResetPasswordMobileNumber.text = getString(R.string.send)
+        binding.btnResetPasswordMobileNumber.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 

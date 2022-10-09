@@ -2,12 +2,9 @@ package com.ducatus
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -65,8 +62,8 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
 
     private fun inputObserver() {
         binding.tfResetPasswordEmail.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfResetPasswordEmail.error = getString(R.string.email_empty)
-            else if (!emailRegex.toRegex().matches(text!!)) binding.tfResetPasswordEmail.error = getString(R.string.email_invalid)
+            if (text == null || text.isEmpty()) binding.tfResetPasswordEmail.error = getString(R.string.email_empty)
+            else if (!emailRegex.toRegex().matches(text)) binding.tfResetPasswordEmail.error = getString(R.string.email_invalid)
             else binding.tfResetPasswordEmail.error = null
         }
     }
@@ -154,14 +151,16 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbResetPasswordEmail.visibility = View.VISIBLE
+        binding.btnResetPasswordEmail.text = null
+        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         binding.pbResetPasswordEmail.visibility = View.INVISIBLE
+        binding.btnResetPasswordEmail.text = getString(R.string.send)
+        binding.btnResetPasswordEmail.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 

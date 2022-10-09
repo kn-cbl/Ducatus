@@ -14,7 +14,7 @@
         android:layout_marginBottom="5dp"
         android:layout_gravity="center"
         android:backgroundTint="@color/purple_700"
-        android:id="@+id/colorBlob"/>
+        android:id="@+id/viewHelperItem"/>
 
     <TextView
         android:textSize="22sp"
@@ -28,7 +28,7 @@
 
     <TextView
         android:textSize="22sp"
-        android:text="#000000"
+        android:text="@color/black"
         android:gravity="center"
         android:textColor="@color/black"
         android:id="@+id/colorHex"

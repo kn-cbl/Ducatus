@@ -256,7 +256,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:text="MORE DETAILS"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
         </LinearLayout>

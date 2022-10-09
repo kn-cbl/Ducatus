@@ -15,7 +15,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+        app:navigationIcon="@drawable/ic_arrow_back"
         app:title="Scan Image"
         app:titleTextColor="#FFFFFF" />
 
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="94dp"
             android:layout_gravity="bottom|end"
-            android:background="#000000" />
+            android:background="@color/black" />
 
         <RelativeLayout
             android:layout_width="match_parent"

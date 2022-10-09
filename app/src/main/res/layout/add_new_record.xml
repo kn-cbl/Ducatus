@@ -102,7 +102,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:text="Top up value (₱)"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -128,7 +128,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="100"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -145,7 +145,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="300"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -162,7 +162,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="500"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -179,7 +179,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="1,000"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -198,7 +198,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="1,500"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -217,7 +217,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="2,000"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -234,7 +234,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="3,000"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -253,7 +253,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="4,000"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -272,7 +272,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:text="5,000"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -439,7 +439,7 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="#007FFF"
         android:clickable="true"
-        android:src="@drawable/ic_scan"
+        app:srcCompat="@drawable/ic_scan"
         android:tint="@color/white"
         android:visibility="visible"
         app:fabCustomSize="60dp"

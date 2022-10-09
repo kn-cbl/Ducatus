@@ -13,12 +13,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUpdateEmailBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -32,9 +31,7 @@ import com.google.firebase.ktx.Firebase
 class UpdateEmailFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var activity: Activity
-    private lateinit var alertDialog: AlertDialog
     private lateinit var binding: FragmentUpdateEmailBinding
-    private lateinit var builder: AlertDialog.Builder
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var email: String
@@ -73,12 +70,12 @@ class UpdateEmailFragment : Fragment() {
 
     private fun inputObserver() {
         binding.tfUpdateEmail.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfUpdateEmail.error = getString(R.string.new_email_empty)
-            else if (!emailRegex.toRegex().matches(text!!)) binding.tfUpdateEmail.error = getString(R.string.email_invalid)
+            if (text == null || text.isEmpty()) binding.tfUpdateEmail.error = getString(R.string.new_email_empty)
+            else if (!emailRegex.toRegex().matches(text)) binding.tfUpdateEmail.error = getString(R.string.email_invalid)
             else binding.tfUpdateEmail.error = null
         }
         binding.tfUpdateEmailReauthenticate.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text?.length == 0) binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_empty)
+            if (text == null || text.isEmpty()) binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_empty)
             else binding.tfUpdateEmailReauthenticate.error = null
         }
     }
@@ -116,15 +113,11 @@ class UpdateEmailFragment : Fragment() {
     }
 
     private fun confirmUpdate(firebaseUser: FirebaseUser, email: String, password: String) {
-        builder = AlertDialog.Builder(activity)
-        builder.setTitle(R.string.update_email)
-        builder.setMessage(R.string.update_email_confirm)
-        builder.setIcon(R.drawable.lock)
-        builder.setPositiveButton("Update") { _, _ -> reauthenticateUser(firebaseUser, email, password) }
-        builder.setNegativeButton("No") { _, _ -> }
-
-        alertDialog = builder.create()
-        alertDialog.show()
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.change_email_mark))
+            .setPositiveButton(resources.getString(R.string.change)) { _, _ -> reauthenticateUser(firebaseUser, email, password) }
+            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .show()
     }
 
     private fun reauthenticateUser(firebaseUser: FirebaseUser, email: String, password: String) {
@@ -149,8 +142,8 @@ class UpdateEmailFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Could not update email", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { updateEmail(firebaseUser, email) }
+                    .make(rootLayout, "Unable to update email, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { updateEmail(firebaseUser, email) }
                     .show()
             }
     }
@@ -180,7 +173,7 @@ class UpdateEmailFragment : Fragment() {
     private fun updateDB(firebaseUser: FirebaseUser, email: String) {
         showProgressDialog()
         database = Firebase.database
-        databaseReference = database.getReference("users/" + firebaseUser.uid + "/email")
+        databaseReference = database.getReference("users").child(firebaseUser.uid).child("email")
         databaseReference.setValue(email)
             .addOnSuccessListener {
                 sendEmail(firebaseUser)
@@ -188,8 +181,8 @@ class UpdateEmailFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Could not update email", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { updateDB(firebaseUser, email) }
+                    .make(rootLayout, "Unable to update email, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { updateDB(firebaseUser, email) }
                     .show()
             }
     }
@@ -198,7 +191,7 @@ class UpdateEmailFragment : Fragment() {
         showProgressDialog()
         firebaseUser.sendEmailVerification()
             .addOnSuccessListener {
-                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
                 binding.tvResendEmailVerification.isEnabled = false
                 binding.tvResendEmailVerification.visibility = View.VISIBLE
                 status = true
@@ -213,7 +206,7 @@ class UpdateEmailFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Could not send email verification", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Unable to send email verification, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Resend") { sendEmail(firebaseUser) }
                     .show()
             }
@@ -225,7 +218,7 @@ class UpdateEmailFragment : Fragment() {
         if (firebaseUser != null) {
             firebaseUser.sendEmailVerification()
                 .addOnSuccessListener {
-                    binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.gray_text))
+                    binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
                     binding.tvResendEmailVerification.isEnabled = false
 
                     hideProgressDialog()
@@ -237,7 +230,7 @@ class UpdateEmailFragment : Fragment() {
                 .addOnFailureListener {
                     hideProgressDialog()
                     Snackbar
-                        .make(rootLayout, "Could not send email verification", Snackbar.LENGTH_INDEFINITE)
+                        .make(rootLayout, "Unable to resend email verification, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Resend") { resendEmail() }
                         .show()
                 }
@@ -276,8 +269,11 @@ class UpdateEmailFragment : Fragment() {
                     // do nothing
                 }
                 override fun onFinish() {
-                    val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
-                    findNavController().navigate(action)
+                    try {
+                        val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
+                        findNavController().navigate(action)
+                    }
+                    catch (e: Exception) {}
                 }
             }.start()
         }
@@ -286,7 +282,8 @@ class UpdateEmailFragment : Fragment() {
     private fun startTimer(finish: Boolean) {
         val timer: CountDownTimer = object: CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendEmailVerification.text = "Resend in " + millisUntilFinished / 1000
+                val message = "Resend in " + millisUntilFinished / 1000
+                binding.tvResendEmailVerification.text = message
             }
             override fun onFinish() {
                 binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
@@ -305,15 +302,22 @@ class UpdateEmailFragment : Fragment() {
             .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
             .show()
 
-        val intent = Intent(activity, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        activity.finish()
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(activity, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity.finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {
-        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.light_gray_text)
+        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         binding.pbUpdateEmail.visibility = View.VISIBLE
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }

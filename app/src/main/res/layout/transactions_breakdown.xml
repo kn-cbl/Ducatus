@@ -124,7 +124,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="15dp"
                 android:text="Σ -₱3,450.00"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="12sp" />
         </RelativeLayout>
     </RelativeLayout>
@@ -386,7 +386,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="15dp"
                 android:text="Σ -₱10,500.00"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="12sp" />
         </RelativeLayout>
 
@@ -717,7 +717,7 @@
                     android:layout_marginTop="295dp"
                     android:layout_marginEnd="15dp"
                     android:text="Σ -₱10,500.00"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </RelativeLayout>
         </RelativeLayout>

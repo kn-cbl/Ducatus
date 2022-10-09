@@ -14,18 +14,8 @@
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_noConnectionFragment"
-            app:destination="@id/noConnectionFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/noConnectionFragment"
-        android:name="com.ducatus.NoConnectionFragment"
-        android:label="fragment_no_connection"
-        tools:layout="@layout/fragment_no_connection" >
-        <action
-            android:id="@+id/action_noConnectionFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_homeFragment_to_budgetsFragment"
+            app:destination="@id/budgetsFragment" />
     </fragment>
 
     <fragment
@@ -33,5 +23,10 @@
         android:name="com.ducatus.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings"/>
+    <fragment
+        android:id="@+id/budgetsFragment"
+        android:name="com.ducatus.BudgetsFragment"
+        android:label="fragment_budgets"
+        tools:layout="@layout/fragment_budgets" />
 
 </navigation>

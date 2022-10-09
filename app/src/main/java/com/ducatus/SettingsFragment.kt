@@ -14,8 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 class SettingsFragment : Fragment() {
     private lateinit var activity: Activity
@@ -48,7 +46,7 @@ class SettingsFragment : Fragment() {
         }
 
         binding.rlCategories.setOnClickListener {
-//            activityIntent(Intent(activity, CategoriesActivity::class.java), false)
+            activityIntent(Intent(activity, CategoriesActivity::class.java), false)
         }
 
         binding.rlNotifications.setOnClickListener {
@@ -75,21 +73,26 @@ class SettingsFragment : Fragment() {
         if (finish) {
             val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
             if (firebaseUser != null) {
-                Firebase.auth.signOut()
+                // require internet connection before signing out
+                NetworkConnectivityObserver(activity).observe(viewLifecycleOwner) {
+                    if (it == NetworkStatus.Available) {
+                        FirebaseAuth.getInstance().signOut()
 
-                gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build()
+                        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestEmail()
+                            .build()
 
-                gsc = GoogleSignIn.getClient(requireActivity(), gso)
+                        gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
-                val googleSignInAccount: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(activity)
-                if (googleSignInAccount != null) {
-                    gsc.signOut()
+                        val googleSignInAccount: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(activity)
+                        if (googleSignInAccount != null) {
+                            gsc.signOut()
+                        }
+
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        activity.finish()
+                    }
                 }
-
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                activity.finish()
             }
         }
     }

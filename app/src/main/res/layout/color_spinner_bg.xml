@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/color_blob"
         android:layout_gravity="center"
-        android:id="@+id/colorBlob"/>
+        android:id="@+id/viewHelperItem"/>
 
     <TextView
         android:layout_width="match_parent"

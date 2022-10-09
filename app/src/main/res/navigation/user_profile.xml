@@ -12,62 +12,46 @@
         tools:layout="@layout/fragment_user_profile">
         <action
             android:id="@+id/action_userProfileFragment_to_updateMobileNumberFragment"
-            app:destination="@id/updateMobileNumberFragment"
-            app:enterAnim="@anim/slide_in_right_short"
-            app:exitAnim="@anim/slide_out_left_short"
-            app:popEnterAnim="@anim/slide_in_left_short"
-            app:popExitAnim="@anim/slide_out_right_short" />
-        <action
-            android:id="@+id/action_userProfileFragment_to_updateUsernameFragment"
-            app:destination="@id/updateUsernameFragment"
-            app:enterAnim="@anim/slide_in_right_short"
-            app:exitAnim="@anim/slide_out_left_short"
-            app:popEnterAnim="@anim/slide_in_left_short"
-            app:popExitAnim="@anim/slide_out_right_short" />
+            app:destination="@id/updateMobileNumberFragment" />
         <action
             android:id="@+id/action_userProfileFragment_to_updateEmailFragment"
-            app:destination="@id/updateEmailFragment"
-            app:enterAnim="@anim/slide_in_right_short"
-            app:exitAnim="@anim/slide_out_left_short"
-            app:popEnterAnim="@anim/slide_in_left_short"
-            app:popExitAnim="@anim/slide_out_right_short" />
+            app:destination="@id/updateEmailFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateUsernameFragment"
+            app:destination="@id/updateUsernameFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/updateMobileNumberFragment"
         android:name="com.ducatus.UpdateMobileNumberFragment"
         android:label="fragment_update_mobile_number"
-        tools:layout="@layout/fragment_update_mobile_number" >
+        tools:layout="@layout/fragment_update_mobile_number">
         <action
             android:id="@+id/action_updateMobileNumberFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment"
-            app:enterAnim="@anim/slide_in_left_short"
-            app:exitAnim="@anim/slide_out_right_short"
-            app:popEnterAnim="@anim/slide_in_right_short"
-            app:popExitAnim="@anim/slide_out_left_short"
             app:popUpTo="@id/user_profile"
             app:popUpToInclusive="true" />
     </fragment>
-    <fragment
-        android:id="@+id/updateUsernameFragment"
-        android:name="com.ducatus.UpdateUsernameFragment"
-        android:label="fragment_update_username"
-        tools:layout="@layout/fragment_update_username" />
 
     <fragment
         android:id="@+id/updateEmailFragment"
         android:name="com.ducatus.UpdateEmailFragment"
         android:label="fragment_update_email"
-        tools:layout="@layout/fragment_update_email" >
+        tools:layout="@layout/fragment_update_email">
         <action
             android:id="@+id/action_updateEmailFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment"
-            app:enterAnim="@anim/slide_in_left_short"
-            app:exitAnim="@anim/slide_out_right_short"
-            app:popEnterAnim="@anim/slide_in_right_short"
-            app:popExitAnim="@anim/slide_out_left_short"
             app:popUpTo="@id/user_profile"
             app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/updateUsernameFragment"
+        android:name="com.ducatus.UpdateUsernameFragment"
+        android:label="fragment_update_username"
+        tools:layout="@layout/fragment_update_username">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </dialog>
 
 </navigation>

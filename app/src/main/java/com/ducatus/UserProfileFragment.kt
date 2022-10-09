@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,19 +29,20 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
+import com.yalantis.ucrop.UCrop
+import java.io.File
+import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 class UserProfileFragment : Fragment() {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentUserProfileBinding
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var currentUsername: String
-    private var currentPhotoUri: Uri? = null
-    private var photoUri: Uri? = null
     private val requestPickImage = 1
 
     override fun onCreateView(
@@ -47,6 +50,8 @@ class UserProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         activity = requireActivity()
+        toolbar = activity.findViewById(R.id.tbUserProfile)
+        toolbar.title = getString(R.string.user_profile)
         binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -56,63 +61,75 @@ class UserProfileFragment : Fragment() {
         rootLayout = activity.findViewById(R.id.llUserProfile)
         loadData()
 
-        binding.fragmentUserProfile.setOnClickListener {
-            // hide keyboard
-            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            keyboard.hideSoftInputFromWindow(binding.etUserProfileUsername.windowToken, 0)
+//        binding.fragmentUserProfile.setOnClickListener {
+//            // hide keyboard
+//            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//            keyboard.hideSoftInputFromWindow(binding.etUserProfileUsername.windowToken, 0)
+//
+//            // clear focus on textview
+//            binding.etUserProfileUsername.clearFocus()
+//            binding.etUserProfileUsername.isFocusable = false
+//            binding.etUserProfileUsername.isFocusableInTouchMode = false
+//        }
 
-            // clear focus on textview
-            binding.etUserProfileUsername.clearFocus()
-            binding.etUserProfileUsername.isFocusable = false
-            binding.etUserProfileUsername.isFocusableInTouchMode = false
-        }
-
-        binding.imgViewUserProfilePictureUpdate.setOnClickListener {
+        binding.ivUserProfilePictureUpdate.setOnClickListener {
             selectImage()
         }
 
-        binding.imgViewUpdateUsername.setOnClickListener {
-            // set textview as focusable and focus on the end of the text
-            binding.etUserProfileUsername.isFocusable = true
-            binding.etUserProfileUsername.isFocusableInTouchMode = true
-            binding.etUserProfileUsername.requestFocus()
-            binding.etUserProfileUsername.setSelection(binding.etUserProfileUsername.length())
-
-            // show keyboard
-            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            keyboard.showSoftInput(binding.etUserProfileUsername, 0)
+        binding.ibUpdateUsername.setOnClickListener {
+            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateUsernameFragment(currentUsername)
+            findNavController().navigate(action)
         }
 
+//        binding.ibUpdateUsername.setOnClickListener {
+//            // set textview as focusable and focus on the end of the text
+//            binding.etUserProfileUsername.isFocusable = true
+//            binding.etUserProfileUsername.isFocusableInTouchMode = true
+//            binding.etUserProfileUsername.requestFocus()
+//            binding.etUserProfileUsername.setSelection(binding.etUserProfileUsername.length())
+//
+//            // show keyboard
+//            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//            keyboard.showSoftInput(binding.etUserProfileUsername, 0)
+//        }
+
         binding.tfUserProfileEmail.setEndIconOnClickListener {
+            toolbar.title = getString(R.string.email)
             val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateEmailFragment()
             findNavController().navigate(action)
         }
 
         binding.tfUserProfileMobileNumber.setEndIconOnClickListener {
+            toolbar.title = getString(R.string.mobile_number)
             val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateMobileNumberFragment()
             findNavController().navigate(action)
         }
 
-        binding.btnUserProfileSave.setOnClickListener {
-            // check changes -> update profile accordingly
-            validateChanges()
-        }
+//        binding.btnUserProfileSave.setOnClickListener {
+//            // check changes -> update profile accordingly
+//            validateChanges()
+//        }
     }
 
     private fun loadData() {
+        showProgressDialog()
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             currentUsername = firebaseUser.displayName.toString()
             if (firebaseUser.photoUrl != null) {
-                currentPhotoUri = firebaseUser.photoUrl
+                Picasso.get()
+                    .load(firebaseUser.photoUrl)
+                    .into(binding.ivUserProfilePicture)
             }
 
-            binding.imgViewUserProfilePicture.setImageURI(photoUri)
+            val style = DateFormat.MEDIUM
+            binding.tvJoinDate.text = DateFormat.getDateInstance(style, Locale.US).format(Date(firebaseUser.metadata!!.creationTimestamp))
             binding.etUserProfileUsername.setText(firebaseUser.displayName)
-            binding.tvJoinDate.text = SimpleDateFormat("MM/dd/yyyy").format(Date(firebaseUser.metadata!!.creationTimestamp))
             binding.tfUserProfileEmail.editText?.setText(firebaseUser.email)
             if (firebaseUser.phoneNumber?.isNotEmpty() == true) binding.tfUserProfileMobileNumber.editText?.setText(firebaseUser.phoneNumber)
+
+            hideProgressDialog()
         }
         else {
             sessionExpired()
@@ -120,136 +137,89 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun selectImage() {
+//        val photoPickerIntent = Intent(Intent.ACTION_GET_CONTENT)
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
-        photoPickerIntent.putExtra("crop", "true")
-        photoPickerIntent.putExtra("aspectX", 1)
-        photoPickerIntent.putExtra("aspectY", 1)
-        photoPickerIntent.putExtra("outputX", 240)
-        photoPickerIntent.putExtra("outputY", 240)
-        photoPickerIntent.putExtra("return-data", true)
+//        photoPickerIntent.putExtra("crop", "true")
+//        photoPickerIntent.putExtra("aspectX", 1)
+//        photoPickerIntent.putExtra("aspectY", 1)
+//        photoPickerIntent.putExtra("outputX", 240)
+//        photoPickerIntent.putExtra("outputY", 240)
+//        photoPickerIntent.putExtra("return-data", true)
         startActivityForResult(photoPickerIntent, requestPickImage)
+
     }
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+
         if (requestCode == requestPickImage && resultCode == RESULT_OK) {
-            val extras = data?.extras
-            val bitmap = extras?.getParcelable<Bitmap>("data")
+            val uri: Uri? = data?.data
+            if (uri != null) {
+                val options = UCrop.Options()
+                options.setHideBottomControls(false)
+                options.setFreeStyleCropEnabled(true)
 
-            binding.imgViewUserProfilePicture.setImageBitmap(bitmap)
-
-            val photoUri = data?.data
-            if (photoUri != null) {
-//                updateProfile(photoUri)
-            }
-            else {
-                Toast.makeText(activity, "null", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun validateChanges() {
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val username = binding.etUserProfileUsername.text.toString().trim {it <= ' '}
-
-            // filtering changes is necessary to skip username validation if username was not changed
-            when {
-                // username field is empty
-                TextUtils.isEmpty(username) -> Snackbar.make(rootLayout, getString(R.string.username_empty), Snackbar.LENGTH_LONG).show()
-
-                // refresh fragment if no changes were made
-                currentUsername == username && photoUri == null -> activity.onBackPressed()
-
-                // username changed, none to photo
-                currentUsername != username && photoUri == null -> usernameExists(firebaseUser.uid, username, currentPhotoUri)
-
-                // photo changed, none to username
-                currentUsername == username && photoUri != null -> usernameExists(firebaseUser.uid, username, photoUri)
-
-                // username and photo changed
-                currentUsername != username && photoUri != null -> usernameExists(firebaseUser.uid, username, photoUri)
-            }
-        }
-        else {
-            sessionExpired()
-        }
-    }
-
-    private fun usernameExists(uid: String, username: String, photoUri: Uri?) {
-        showProgressDialog()
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var usernameKey = false
-
-                for (child in snapshot.children) {
-                    if(username == child.child("username").value.toString()) {
-                        usernameKey = true
-                        break
-                    }
+                val fragment = parentFragmentManager.findFragmentById(R.id.fcUserProfile)
+                if (fragment != null) {
+                    UCrop.of(uri, Uri.fromFile(File(activity.cacheDir, "sample_cropped_image.jpg")))
+                        .withAspectRatio(1f, 1f)
+                        .withMaxResultSize(160, 160)
+                        .withOptions(options)
+                        .start(activity, fragment)
                 }
 
-                if (!usernameKey) {
-                    updateDB(uid, username, photoUri)
-                }
-                else {
-                    hideProgressDialog()
-                    Snackbar
-                        .make(rootLayout, getString(R.string.username_exists), Snackbar.LENGTH_LONG)
-                        .show()
-                }
             }
-            override fun onCancelled(error: DatabaseError) {
-                hideProgressDialog()
+
+//            val photoUri = data?.data
+//            Toast.makeText(activity, photoUri.toString(), Toast.LENGTH_SHORT).show()
+//            if (photoUri != null) {
+//                Toast.makeText(activity, "not null", Toast.LENGTH_SHORT).show()
+////                updateProfile(photoUri)
+//            }
+//            else {
+//                Toast.makeText(activity, "null", Toast.LENGTH_SHORT).show()
+//            }
+        }
+        else if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
+            if (data != null) {
+                val resultUri = UCrop.getOutput(data)
+                updateProfile(resultUri)
+            }
+        }
+        else if (resultCode == UCrop.RESULT_ERROR) {
+            if (data != null) {
+                val error = UCrop.getError(data)
                 Snackbar
-                    .make(rootLayout, error.message, Snackbar.LENGTH_LONG)
+                    .make(rootLayout, error.toString(), Snackbar.LENGTH_LONG)
                     .show()
             }
-        })
+        }
     }
 
-    private fun updateDB(uid: String, username: String, photoUri: Uri?) {
-        showProgressDialog()
-        databaseReference = database.getReference("users/" + uid + "/username")
-        databaseReference.setValue(username)
-            .addOnSuccessListener {
-                updateProfile(username, photoUri)
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, "Failed to update username", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { updateDB(uid, username, photoUri) }
-                    .show()
-            }
-    }
-
-    private fun updateProfile(username: String, photoUri: Uri?) {
+    private fun updateProfile(photoUri: Uri?) {
         showProgressDialog()
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             val updates = UserProfileChangeRequest.Builder()
-                .setDisplayName(username)
+                .setDisplayName(firebaseUser.displayName)
                 .setPhotoUri(photoUri)
                 .build()
 
             firebaseUser.updateProfile(updates)
                 .addOnSuccessListener {
-                    hideProgressDialog()
                     Snackbar
-                        .make(rootLayout, "Successfully saved changes", Snackbar.LENGTH_LONG)
+                        .make(rootLayout, "Successfully updated picture", Snackbar.LENGTH_LONG)
                         .show()
+
+                    loadData()
                 }
                 .addOnFailureListener {
-                    hideProgressDialog()
                     Snackbar
-                        .make(rootLayout, "Failed to save changes", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry") {updateProfile(username, photoUri)}
+                        .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.retry)) { updateProfile(photoUri) }
                         .show()
                 }
         }
@@ -259,27 +229,45 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun sessionExpired() {
-        hideProgressDialog()
         Snackbar
             .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
             .show()
 
-        val intent = Intent(activity, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        activity.finish()
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(activity, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                activity.finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {
-        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.light_gray_text)
-        binding.flUserProfile.visibility = View.VISIBLE
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        binding.pbUserProfile.visibility = View.VISIBLE
+        binding.llUserProfileFragment.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
-        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
-        binding.flUserProfile.visibility = View.INVISIBLE
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        binding.pbUserProfile.visibility = View.INVISIBLE
+        binding.llUserProfileFragment.visibility = View.VISIBLE
     }
+
+//    private fun showProgressDialog() {
+//        binding.pbUserProfile.visibility = View.VISIBLE
+//        binding.btnUserProfileSave.text = null
+//        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
+//        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+//    }
+//
+//    private fun hideProgressDialog() {
+//        binding.pbUserProfile.visibility = View.INVISIBLE
+//        binding.btnUserProfileSave.text = getString(R.string.save_changes)
+//        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
+//        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+//    }
 }

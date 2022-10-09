@@ -9,18 +9,37 @@
         android:id="@+id/accountsFragment"
         android:name="com.ducatus.AccountsFragment"
         android:label="fragment_account_settings"
-        tools:layout="@layout/fragment_accounts" >
+        tools:layout="@layout/fragment_accounts">
         <action
-            android:id="@+id/action_accountsFragment_to_accountsEditFragment"
-            app:destination="@id/accountsEditFragment"
-            app:enterAnim="@anim/slide_in_right_short"
-            app:exitAnim="@anim/slide_out_left_short"
-            app:popEnterAnim="@anim/slide_in_left_short"
-            app:popExitAnim="@anim/slide_out_right_short" />
+            android:id="@+id/action_accountsFragment_to_accountEditFragment"
+            app:destination="@id/accountEditFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
     </fragment>
     <fragment
-        android:id="@+id/accountsEditFragment"
-        android:name="com.ducatus.AccountsEditFragment"
+        android:id="@+id/accountEditFragment"
+        android:name="com.ducatus.AccountEditFragment"
         android:label="fragment_account_settings"
-        tools:layout="@layout/fragment_accounts_edit" />
+        tools:layout="@layout/fragment_account_edit">
+        <action
+            android:id="@+id/action_accountEditFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="accountId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountAddFragment"
+        android:name="com.ducatus.AccountAddFragment"
+        android:label="fragment_accounts_add"
+        tools:layout="@layout/fragment_account_add">
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

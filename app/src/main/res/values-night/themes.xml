@@ -1,26 +1,11 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.Ducatus" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Material.App" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green_primary</item>
         <item name="colorPrimaryVariant">@color/green_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/green_secondary</item>
-        <item name="colorSecondaryVariant">@color/green_tertiary</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/black</item>
-        <!-- Customize your theme here. -->
-    </style>
-
-    <style name="Material.Ducatus" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/green_primary</item>
-        <item name="colorPrimaryVariant">@color/green_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/blue_cancel</item>
+        <item name="colorSecondary">@color/very_dark_blue</item>
         <item name="colorSecondaryVariant">@color/green_tertiary</item>
         <item name="colorOnSecondary">@color/green_secondary</item>
         <!-- Status bar color. -->

@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -115,7 +114,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
             }
 
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.gray_text))
+                binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.darker_gray))
                 binding.tvResendOTPMobile.isEnabled = false
 
                 storedVerificationId = verificationId
@@ -139,6 +138,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     }
 
     private fun resendVerificationCode(mobileNumber: String, resendToken: PhoneAuthProvider.ForceResendingToken) {
+        showProgressDialog2()
         binding.tvVerifyOTPMobileError.text = ""
         if (status) {
             options = PhoneAuthOptions.newBuilder(auth)
@@ -154,6 +154,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
         else {
             sendVerificationCode(mobileNumber)
         }
+        hideProgressDialog()
     }
 
     private fun startTimer() {
@@ -170,14 +171,23 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.light_gray_text)
         binding.pbVerifyOTPMobile.visibility = View.VISIBLE
+        binding.btnVerifyOTPMobile.text = null
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgressDialog2() {
+        binding.pbResendOTPMobile.visibility = View.VISIBLE
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.gray)
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
+        binding.pbResendOTPMobile.visibility = View.INVISIBLE
         binding.pbVerifyOTPMobile.visibility = View.INVISIBLE
+        binding.btnVerifyOTPMobile.text = getString(R.string.verify)
+        binding.btnVerifyOTPMobile.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

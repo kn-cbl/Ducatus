@@ -11,45 +11,43 @@
         android:id="@+id/rlUserProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="15dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView11"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/user_settings" />
+            app:srcCompat="@drawable/ic_user_profile" />
 
-        <TextView
-            android:id="@+id/textView34"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="2dp"
-            android:layout_toEndOf="@+id/imageView11"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/user_profile"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView35"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView11"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/user_profile_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/user_profile"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/user_profile_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </RelativeLayout>
 
@@ -57,355 +55,334 @@
         android:id="@+id/rlUpdatePassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView12"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/lock" />
+            app:srcCompat="@drawable/ic_password" />
 
-        <TextView
-            android:id="@+id/textView36"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="2dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView12"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/password"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView39"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
-            android:layout_toEndOf="@+id/imageView12"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/update_password"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/password"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/change_password"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </RelativeLayout>
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="15dp"
-        android:background="?android:attr/listDivider" />
-
-    <TextView
-        android:id="@+id/textView40"
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/inter_medium"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
         android:text="@string/general_settings"
-        android:textColor="#545454"
+        android:textColor="@color/darker_gray"
         android:textSize="14sp" />
 
     <RelativeLayout
         android:id="@+id/rlAccounts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView13"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/accounts" />
+            app:srcCompat="@drawable/ic_accounts" />
 
-        <TextView
-            android:id="@+id/textView41"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="-5dp"
-            android:layout_toEndOf="@+id/imageView13"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/accounts"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView42"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginEnd="22dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView13"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/accounts_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/accounts"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/accounts_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlCategories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView14"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/category" />
+            app:srcCompat="@drawable/ic_categories" />
 
-        <TextView
-            android:id="@+id/textView44"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="-5dp"
-            android:layout_toEndOf="@+id/imageView14"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/categories"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView45"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginEnd="22dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView14"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/categories_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/categories"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/categories_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
-    <View
-        android:id="@+id/divider2"
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="20dp"
-        android:background="?android:attr/listDivider" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/textView47"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/inter_medium"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
         android:text="@string/other_settings"
-        android:textColor="#545454"
+        android:textColor="@color/darker_gray"
         android:textSize="14sp" />
 
     <RelativeLayout
         android:id="@+id/rlNotifications"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView15"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/notif" />
+            app:srcCompat="@drawable/ic_notifications"
+            app:tint="@color/green_secondary" />
 
-        <TextView
-            android:id="@+id/textView48"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="2dp"
-            android:layout_toEndOf="@+id/imageView15"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/notifications"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView49"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView15"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/notifications_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/notifications"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/notifications_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlPrivacy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView16"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="-5dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/privacy" />
+            app:srcCompat="@drawable/ic_privacy" />
 
-        <TextView
-            android:id="@+id/textView51"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="-5dp"
-            android:layout_toEndOf="@+id/imageView16"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/privacy"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/textView52"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginEnd="22dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView16"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/privacy_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/privacy"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/privacy_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlAboutApp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView17"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="-5dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/about" />
+            app:srcCompat="@drawable/ic_about_app" />
 
-        <TextView
-            android:id="@+id/textView55"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="2dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView17"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/about_app"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView56"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
-            android:layout_toEndOf="@+id/imageView17"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/about_app_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/about_app"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/about_app_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="24dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:minHeight="48dp">
 
         <ImageView
             android:id="@+id/imageView18"
-            android:layout_width="33dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="0dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/logout" />
+            app:srcCompat="@drawable/ic_logout" />
 
-        <TextView
-            android:id="@+id/textView57"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="2dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imageView18"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/logout"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView58"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
-            android:layout_toEndOf="@+id/imageView18"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/logout_description"
-            android:textColor="#808080"
-            android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/logout"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/logout_description"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
+
 </LinearLayout>

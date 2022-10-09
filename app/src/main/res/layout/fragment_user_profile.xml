@@ -2,172 +2,184 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_user_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     tools:context=".UserProfileFragment">
 
-    <ImageView
-        android:id="@+id/imgViewUserProfilePicture"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        android:layout_marginBottom="45dp"
-        android:contentDescription="@string/user_profile_picture"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/etUserProfileUsername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/user_profile" />
-
-    <ImageView
-        android:id="@+id/imgViewUserProfilePictureUpdate"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/oval_gray"
-        android:contentDescription="@string/icon_hint"
-        android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/etUserProfileUsername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/camera" />
-
-    <EditText
-        android:id="@+id/etUserProfileUsername"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/pbUserProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:autofillHints="username"
-        android:background="@android:color/transparent"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:inputType="text"
-        android:text="@string/username"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
+        android:indeterminate="true"
+        app:indicatorColor="@color/green_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="LabelFor" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imgViewUpdateUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="11dp"
-        android:background="@drawable/ic_edit"
-        android:contentDescription="@string/edit"
-        app:layout_constraintBottom_toTopOf="@+id/tvJoinDate"
-        app:layout_constraintStart_toEndOf="@+id/etUserProfileUsername" />
-
-    <TextView
-        android:id="@+id/tvJoinDate"
+    <LinearLayout
+        android:id="@+id/llUserProfileFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:text="@string/user_join_date"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/tfUserProfileEmail"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tfUserProfileEmail"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:hint="@string/email"
-        app:boxStrokeColor="@color/lighter_gray_text"
-        app:boxStrokeWidthFocused="1dp"
-        app:endIconDrawable="@drawable/ic_edit"
-        app:endIconMode="custom"
-        app:expandedHintEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/tfUserProfileMobileNumber"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <ImageView
+            android:id="@+id/ivUserProfilePicture"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="56dp"
+            android:contentDescription="@string/user_profile_picture"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_account_box"
+            tools:ignore="ImageContrastCheck" />
+
+        <ImageView
+            android:id="@+id/ivUserProfilePictureUpdate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="-24dp"
+            android:background="@drawable/oval_gray"
+            android:contentDescription="@string/icon_hint"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/etUserProfileUsername"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/camera" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:enabled="false"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/etUserProfileUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints="username"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/inter_medium"
+                android:inputType="text"
+                android:text="@string/username"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="LabelFor,TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/ibUpdateUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/ic_edit"
+                android:contentDescription="@string/edit_username"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/etUserProfileUsername"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tvJoinDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/inter_regular"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="@string/email"
-            android:textColor="@color/gray_text"
+            android:text="@string/user_join_date"
+            android:textAlignment="center"
+            android:textColor="@color/darker_gray"
             android:textSize="14sp" />
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tfUserProfileMobileNumber"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="110dp"
-        android:hint="@string/mobile_number"
-        app:endIconDrawable="@drawable/ic_edit"
-        app:endIconMode="custom"
-        app:expandedHintEnabled="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfUserProfileEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:enabled="false"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="@string/mobile_number"
-            android:textColor="@color/gray_text"
-            android:textSize="14sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/email"
+            app:boxStrokeColor="@color/lighter_gray"
+            app:boxStrokeWidthFocused="1dp"
+            app:endIconDrawable="@drawable/ic_edit"
+            app:endIconMode="custom"
+            app:expandedHintEnabled="true">
 
-    <Button
-        android:id="@+id/btnUserProfileSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/green_button"
-        android:fontFamily="@font/inter_bold"
-        android:letterSpacing="0.04"
-        android:text="@string/save_changes"
-        android:textAllCaps="false"
-        app:backgroundTint="@color/green_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:enabled="false"
+                android:fontFamily="@font/inter_regular"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/email"
+                android:textColor="@color/darker_gray"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <FrameLayout
-        android:id="@+id/flUserProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_progress_bar"
-        android:padding="20dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfUserProfileMobileNumber"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:indeterminateDrawable="@drawable/progress_bg_light" />
-    </FrameLayout>
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/mobile_number"
+            app:endIconDrawable="@drawable/ic_edit"
+            app:endIconMode="custom"
+            app:expandedHintEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:enabled="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/mobile_number"
+                android:textColor="@color/darker_gray"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--        <Button-->
+        <!--            android:id="@+id/btnUserProfileSave"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="56dp"-->
+        <!--            android:layout_marginStart="24dp"-->
+        <!--            android:layout_marginEnd="24dp"-->
+        <!--            android:background="@drawable/green_button"-->
+        <!--            android:fontFamily="@font/inter_bold"-->
+        <!--            android:letterSpacing="0.04"-->
+        <!--            android:text="@string/save_changes"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            app:backgroundTint="@color/green_primary" />-->
+
+        <!--        <com.google.android.material.progressindicator.CircularProgressIndicator-->
+        <!--            android:id="@+id/pbUserProfile"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="-48dp"-->
+        <!--            android:elevation="10dp"-->
+        <!--            android:indeterminate="true"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:indicatorColor="@color/white" />-->
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

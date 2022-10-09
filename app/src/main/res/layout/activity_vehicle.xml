@@ -20,7 +20,7 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_white"
+            app:navigationIcon="@drawable/ic_arrow_back"
             app:title="Vehicle"
             app:titleTextColor="@color/white"/>
 
@@ -89,7 +89,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_medium"
                     android:text="Name"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -102,7 +102,7 @@
                     android:layout_marginTop="35dp"
                     android:fontFamily="@font/inter_regular"
                     android:text="Vehicle"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
 
             </RelativeLayout>
@@ -139,7 +139,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_medium"
                     android:text="Category Nature"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -152,7 +152,7 @@
                     android:layout_marginTop="35dp"
                     android:fontFamily="@font/inter_regular"
                     android:text="Need"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
 
             </RelativeLayout>
@@ -217,7 +217,7 @@
                             android:layout_toEndOf="@+id/imageView27"
                             android:fontFamily="@font/inter_medium"
                             android:text="Fuel"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -256,7 +256,7 @@
                             android:layout_toEndOf="@+id/imageView28"
                             android:fontFamily="@font/inter_medium"
                             android:text="Leasing"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -295,7 +295,7 @@
                             android:layout_toEndOf="@+id/imageView29"
                             android:fontFamily="@font/inter_medium"
                             android:text="Parking"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -334,7 +334,7 @@
                             android:layout_toEndOf="@+id/imageView30"
                             android:fontFamily="@font/inter_medium"
                             android:text="Rentals"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -373,7 +373,7 @@
                             android:layout_toEndOf="@+id/imageView31"
                             android:fontFamily="@font/inter_medium"
                             android:text="Vehicle insurance"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -412,7 +412,7 @@
                             android:layout_toEndOf="@+id/imageView32"
                             android:fontFamily="@font/inter_medium"
                             android:text="Vehicle maintenance"
-                            android:textColor="#000000"
+                            android:textColor="@color/black"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
