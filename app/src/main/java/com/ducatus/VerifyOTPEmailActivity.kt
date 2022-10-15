@@ -11,9 +11,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpEmailBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import javax.mail.*
@@ -21,12 +19,7 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class VerifyOTPEmailActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityVerifyOtpEmailBinding
-    private lateinit var appExecutors: AppExecutors
-    private lateinit var crypto: Crypto
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
     private var generatedOTP: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,14 +78,14 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun readData() {
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        val database = Firebase.database
+        val databaseReference = database.getReference("users")
+        databaseReference.get()
+            .addOnSuccessListener {
                 val email = intent.getStringExtra("email").toString()
                 var password: String? = null
 
-                for (child in snapshot.children) {
+                for (child in it.children) {
                     if (email == child.child("email").value.toString()) {
                         password = child.child("password").value.toString()
                         break
@@ -107,17 +100,16 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                     binding.tvVerifyOTPEmailError.text = getString(R.string.unknown_error)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 binding.tvVerifyOTPEmailError.text = getString(R.string.unknown_error)
             }
-        })
     }
 
     private fun login(email: String, password: String) {
-        crypto = Crypto()
-        auth = Firebase.auth
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
+        val crypto = Crypto()
+        val auth = Firebase.auth
+        auth.signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
             .addOnSuccessListener {
                 val intent = Intent(this, ResetPasswordActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -138,6 +130,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
 
     private fun sendEmail(email: String){
         showProgressDialog2()
+        val appExecutors = AppExecutors()
         appExecutors.diskIO().execute {
             val props = System.getProperties()
             props["mail.smtp.host"] = BuildConfig.SMTP_HOST
@@ -180,7 +173,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
     }
 
     private fun generateOTP(): String {
-        val randomPin = (Math.random() * 9000).toInt() + 1000
+        val randomPin = (Math.random() * 900000).toInt() + 1000
         return randomPin.toString()
     }
 

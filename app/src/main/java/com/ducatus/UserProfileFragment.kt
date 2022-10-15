@@ -2,46 +2,37 @@ package com.ducatus
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
-import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout.END_ICON_NONE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
+import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import java.io.File
 import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
-class UserProfileFragment : Fragment() {
+class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentUserProfileBinding
     private lateinit var rootLayout: LinearLayout
-    private lateinit var toolbar: MaterialToolbar
     private lateinit var currentUsername: String
     private val requestPickImage = 1
 
@@ -50,27 +41,15 @@ class UserProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         activity = requireActivity()
-        toolbar = activity.findViewById(R.id.tbUserProfile)
-        toolbar.title = getString(R.string.user_profile)
+        rootLayout = activity.findViewById(R.id.llUserProfile)
+
         binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rootLayout = activity.findViewById(R.id.llUserProfile)
         loadData()
-
-//        binding.fragmentUserProfile.setOnClickListener {
-//            // hide keyboard
-//            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            keyboard.hideSoftInputFromWindow(binding.etUserProfileUsername.windowToken, 0)
-//
-//            // clear focus on textview
-//            binding.etUserProfileUsername.clearFocus()
-//            binding.etUserProfileUsername.isFocusable = false
-//            binding.etUserProfileUsername.isFocusableInTouchMode = false
-//        }
 
         binding.ivUserProfilePictureUpdate.setOnClickListener {
             selectImage()
@@ -81,34 +60,19 @@ class UserProfileFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-//        binding.ibUpdateUsername.setOnClickListener {
-//            // set textview as focusable and focus on the end of the text
-//            binding.etUserProfileUsername.isFocusable = true
-//            binding.etUserProfileUsername.isFocusableInTouchMode = true
-//            binding.etUserProfileUsername.requestFocus()
-//            binding.etUserProfileUsername.setSelection(binding.etUserProfileUsername.length())
-//
-//            // show keyboard
-//            val keyboard: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            keyboard.showSoftInput(binding.etUserProfileUsername, 0)
-//        }
-
         binding.tfUserProfileEmail.setEndIconOnClickListener {
-            toolbar.title = getString(R.string.email)
             val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateEmailFragment()
             findNavController().navigate(action)
         }
 
         binding.tfUserProfileMobileNumber.setEndIconOnClickListener {
-            toolbar.title = getString(R.string.mobile_number)
             val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateMobileNumberFragment()
             findNavController().navigate(action)
         }
+    }
 
-//        binding.btnUserProfileSave.setOnClickListener {
-//            // check changes -> update profile accordingly
-//            validateChanges()
-//        }
+    override fun onDismiss(dialog: DialogInterface) {
+        loadData()
     }
 
     private fun loadData() {
@@ -120,15 +84,16 @@ class UserProfileFragment : Fragment() {
             if (firebaseUser.photoUrl != null) {
                 Picasso.get()
                     .load(firebaseUser.photoUrl)
+                    .transform(CropCircleTransformation())
                     .into(binding.ivUserProfilePicture)
             }
 
-            val style = DateFormat.MEDIUM
-            binding.tvJoinDate.text = DateFormat.getDateInstance(style, Locale.US).format(Date(firebaseUser.metadata!!.creationTimestamp))
-            binding.etUserProfileUsername.setText(firebaseUser.displayName)
+            binding.tvJoinDate.text = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US).format(Date(firebaseUser.metadata!!.creationTimestamp))
+            binding.tvUserProfileUsername.text = firebaseUser.displayName
             binding.tfUserProfileEmail.editText?.setText(firebaseUser.email)
             if (firebaseUser.phoneNumber?.isNotEmpty() == true) binding.tfUserProfileMobileNumber.editText?.setText(firebaseUser.phoneNumber)
 
+            isGoogleOnly(firebaseUser)
             hideProgressDialog()
         }
         else {
@@ -136,16 +101,21 @@ class UserProfileFragment : Fragment() {
         }
     }
 
+    private fun isGoogleOnly(firebaseUser: FirebaseUser) {
+        val providers = mutableListOf<String>()
+        for (item in firebaseUser.providerData) {
+            providers.add(item.providerId)
+        }
+
+        if (!providers.contains("password")) {
+            binding.tfUserProfileEmail.endIconMode = END_ICON_NONE
+        }
+    }
+
     private fun selectImage() {
 //        val photoPickerIntent = Intent(Intent.ACTION_GET_CONTENT)
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
-//        photoPickerIntent.putExtra("crop", "true")
-//        photoPickerIntent.putExtra("aspectX", 1)
-//        photoPickerIntent.putExtra("aspectY", 1)
-//        photoPickerIntent.putExtra("outputX", 240)
-//        photoPickerIntent.putExtra("outputY", 240)
-//        photoPickerIntent.putExtra("return-data", true)
         startActivityForResult(photoPickerIntent, requestPickImage)
 
     }
@@ -153,7 +123,6 @@ class UserProfileFragment : Fragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
 
         if (requestCode == requestPickImage && resultCode == RESULT_OK) {
             val uri: Uri? = data?.data
@@ -164,24 +133,13 @@ class UserProfileFragment : Fragment() {
 
                 val fragment = parentFragmentManager.findFragmentById(R.id.fcUserProfile)
                 if (fragment != null) {
-                    UCrop.of(uri, Uri.fromFile(File(activity.cacheDir, "sample_cropped_image.jpg")))
+                    UCrop.of(uri, Uri.fromFile(File(activity.cacheDir, "cropped_image.jpg")))
                         .withAspectRatio(1f, 1f)
                         .withMaxResultSize(160, 160)
                         .withOptions(options)
                         .start(activity, fragment)
                 }
-
             }
-
-//            val photoUri = data?.data
-//            Toast.makeText(activity, photoUri.toString(), Toast.LENGTH_SHORT).show()
-//            if (photoUri != null) {
-//                Toast.makeText(activity, "not null", Toast.LENGTH_SHORT).show()
-////                updateProfile(photoUri)
-//            }
-//            else {
-//                Toast.makeText(activity, "null", Toast.LENGTH_SHORT).show()
-//            }
         }
         else if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
             if (data != null) {
@@ -210,10 +168,6 @@ class UserProfileFragment : Fragment() {
 
             firebaseUser.updateProfile(updates)
                 .addOnSuccessListener {
-                    Snackbar
-                        .make(rootLayout, "Successfully updated picture", Snackbar.LENGTH_LONG)
-                        .show()
-
                     loadData()
                 }
                 .addOnFailureListener {
@@ -256,18 +210,4 @@ class UserProfileFragment : Fragment() {
         binding.pbUserProfile.visibility = View.INVISIBLE
         binding.llUserProfileFragment.visibility = View.VISIBLE
     }
-
-//    private fun showProgressDialog() {
-//        binding.pbUserProfile.visibility = View.VISIBLE
-//        binding.btnUserProfileSave.text = null
-//        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
-//        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-//    }
-//
-//    private fun hideProgressDialog() {
-//        binding.pbUserProfile.visibility = View.INVISIBLE
-//        binding.btnUserProfileSave.text = getString(R.string.save_changes)
-//        binding.btnUserProfileSave.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
-//        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-//    }
 }

@@ -6,4 +6,5 @@ data class Category(
     val category_nature: Int? = null,
     val category_color: String? = null,
     val category_icon: String? = null,
+    val category_allocated: Boolean = false
 )

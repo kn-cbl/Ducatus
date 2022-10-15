@@ -54,6 +54,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         loadData()
 
         binding.ibAddCategory.setOnClickListener {
+            toolbar.title = "Add Category"
             val action = CategoriesFragmentDirections.actionCategoriesFragmentToCategoryAddFragment()
             findNavController().navigate(action)
         }
@@ -64,7 +65,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         return activity
     }
 
-    override fun showPopup(view: View) {
+    override fun showPopup(view: View, position: Int) {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -75,7 +76,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                     true
                 }
                 R.id.optionDelete-> {
-                    confirmDelete(view.tag.toString())
+                    confirmDelete(view.tag.toString(), position)
                     true
                 }
                 else -> false
@@ -83,34 +84,6 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         }
         popup.menuInflater.inflate(R.menu.edit_options_2_menu, popup.menu)
         popup.show()
-    }
-
-    private fun confirmDelete(categoryId: String) {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.delete_category_mark))
-            .setMessage(resources.getString(R.string.delete_category_confirm))
-            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteCategory(categoryId) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
-            .show()
-    }
-
-    private fun deleteCategory(categoryId: String) {
-        databaseReference = databaseReference.child(categoryId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                Snackbar
-                    .make(rootLayout, "Successfully deleted category", Snackbar.LENGTH_LONG)
-                    .show()
-
-                loadData()
-                hideProgressDialog()
-            }
-            .addOnFailureListener {
-                Snackbar
-                    .make(rootLayout, "Failed to delete category", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteCategory(categoryId) }
-                    .show()
-            }
     }
 
     private fun loadData() {
@@ -123,37 +96,71 @@ class CategoriesFragment : Fragment(), CategoryInterface {
 
             database = Firebase.database
             databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId)
-            loadCategories(currentAccountId)
+            loadCategories()
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadCategories(currentAccountId: String) {
+    private fun loadCategories() {
+        showProgressDialog()
         categoryAdapter = CategoryAdapter(mutableListOf(), this)
         binding.rvCategories.adapter = categoryAdapter
         binding.rvCategories.layoutManager = LinearLayoutManager(activity)
 
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val categories = mutableListOf<Category>()
                 for (child in snapshot.children) {
                     val category = child.getValue<Category>()
                     if (category != null) {
-                        categoryAdapter.addCategory(category)
+                        categories.add(category)
                     }
+                }
+
+                // sort categories
+                categories.sortBy { it.category_name }
+                for (item in categories) {
+                    categoryAdapter.addCategory(item)
                 }
 
                 hideProgressDialog()
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Failed to load data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadCategories(currentAccountId) }
+                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { loadCategories() }
                     .show()
             }
-        })
+
+        if (categoryAdapter.itemCount >= 20) {
+            binding.ibAddCategory.visibility = View.GONE
+        }
+    }
+
+    private fun confirmDelete(categoryId: String, position: Int) {
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.delete_category_mark))
+            .setMessage(resources.getString(R.string.delete_category_confirm))
+            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteCategory(categoryId, position) }
+            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .show()
+    }
+
+    private fun deleteCategory(categoryId: String, position: Int) {
+        databaseReference = databaseReference.child(categoryId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                categoryAdapter.removeCategory(position)
+                hideProgressDialog()
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, "Unable to delete category", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { deleteCategory(categoryId, position) }
+                    .show()
+            }
     }
 
     private fun sessionExpired() {

@@ -11,7 +11,7 @@
         android:layout_width="58dp"
         android:layout_height="58dp"
         android:layout_centerVertical="true"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         app:srcCompat="@drawable/ic_account_circle"
         app:tint="@color/white"
         android:contentDescription="@string/account_icon" />
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_toEndOf="@+id/ivHeaderImage"
         android:orientation="vertical">
 

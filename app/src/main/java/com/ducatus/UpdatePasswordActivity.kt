@@ -106,7 +106,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
 
     private fun confirmUpdate(newPassword: String, currentPassword: String) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(resources.getString(R.string.change_password_mark))
+            .setTitle(resources.getString(R.string.update_password_mark))
             .setPositiveButton(resources.getString(R.string.change)) { _, _ -> reauthenticateUser(newPassword, currentPassword) }
             .setNegativeButton(resources.getString(R.string.no)) { _, _ -> } // do nothing
             .show()
@@ -125,7 +125,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
                 .addOnFailureListener {
                     hideProgressDialog()
                     Snackbar
-                        .make(binding.llUpdatePassword, "Failed to reauthenticate user", Snackbar.LENGTH_INDEFINITE)
+                        .make(binding.llUpdatePassword, it.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.retry)) { reauthenticateUser(newPassword, currentPassword) }
                         .show()
                 }
@@ -154,24 +154,12 @@ class UpdatePasswordActivity : AppCompatActivity() {
                 databaseReference.setValue(crypto.encrypt(newPassword).toString())
 
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llUpdatePassword, "Successfully updated password", Snackbar.LENGTH_LONG)
-                    .show()
-
-                // add 3 second delay
-                object : CountDownTimer(3000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        // do nothing
-                    }
-                    override fun onFinish() {
-                        onBackPressed()
-                    }
-                }.start()
+                onBackPressed()
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(binding.llUpdatePassword, "Failed to update password", Snackbar.LENGTH_INDEFINITE)
+                    .make(binding.llUpdatePassword, "Unable to update password", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { updatePassword(firebaseUser, newPassword) }
                     .show()
             }
@@ -186,7 +174,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
 
     private fun hideProgressDialog() {
         binding.pbUpdatePassword.visibility = View.INVISIBLE
-        binding.btnUpdatePassword.text = getString(R.string.change_password)
+        binding.btnUpdatePassword.text = getString(R.string.update_password_small)
         binding.btnUpdatePassword.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.green_primary)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }

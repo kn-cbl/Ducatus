@@ -23,7 +23,6 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class ResetPasswordEmailActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityResetPasswordEmailBinding
     private lateinit var appExecutors: AppExecutors
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
@@ -81,8 +80,8 @@ class ResetPasswordEmailActivity : AppCompatActivity() {
         val email = binding.tfResetPasswordEmail.editText?.text.toString().trim {it <= ' '}
         if (emailRegex.toRegex().matches(email)) {
             showProgressDialog()
-            auth = Firebase.auth
-            FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
+            val auth = Firebase.auth
+            auth.fetchSignInMethodsForEmail(email)
                 .addOnSuccessListener {
                     if(!it.signInMethods?.isEmpty()!!) {
                         appExecutors = AppExecutors()

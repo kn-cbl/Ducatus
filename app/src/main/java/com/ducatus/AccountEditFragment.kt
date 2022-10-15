@@ -7,18 +7,18 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentAccountEditBinding
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -28,18 +28,17 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class AccountEditFragment : Fragment() {
+class AccountEditFragment : DialogFragment() {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentAccountEditBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
-    private lateinit var toolbar: MaterialToolbar
     private var currentName: String? = null
     private var currentBudget: Double? = null
     private var currentColor: String? = null
-    private var colorNames: List<String> = listOf()
+    private var colors: List<String> = listOf()
     private val args: AccountEditFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -48,10 +47,6 @@ class AccountEditFragment : Fragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llAccounts)
-        toolbar = activity.findViewById(R.id.tbAccounts)
-        toolbar.title = getString(R.string.edit_account)
-        toolbar.inflateMenu(R.menu.check_menu)
-
         binding = FragmentAccountEditBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -68,7 +63,7 @@ class AccountEditFragment : Fragment() {
                 val gradientDrawable = GradientDrawable()
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -82,14 +77,12 @@ class AccountEditFragment : Fragment() {
             }
         }
 
-        toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.done -> {
-                    validateChanges()
-                    true
-                }
-                else -> false
-            }
+        binding.btnEditAccountCancel.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnEditAccountSave.setOnClickListener {
+            validateData()
         }
     }
 
@@ -99,8 +92,11 @@ class AccountEditFragment : Fragment() {
             else binding.tfEditAccountName.error = null
         }
         binding.tfEditAccountBudget.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty() || text.toString().toDouble() == 0.0) binding.tfEditAccountBudget.error = getString(R.string.monthly_budget_empty)
+            if (text == null || text.isEmpty()) binding.tfEditAccountBudget.error = getString(R.string.monthly_budget_empty)
             else binding.tfEditAccountBudget.error = null
+        }
+        binding.tfEditAccountBudget.editText?.doAfterTextChanged { text ->
+            if (text.toString().startsWith("0")) text?.clear()
         }
     }
 
@@ -113,9 +109,9 @@ class AccountEditFragment : Fragment() {
 
             database = Firebase.database
             databaseReference = database.getReference("accounts").child(firebaseUser.uid).child(args.accountId)
-            databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val account = snapshot.getValue<Account>()
+            databaseReference.get()
+                .addOnSuccessListener {
+                    val account = it.getValue<Account>()
                     if (account != null) {
                         currentName = account.account_name.toString()
                         currentBudget = account.account_monthly_budget
@@ -124,20 +120,18 @@ class AccountEditFragment : Fragment() {
                         binding.tfEditAccountName.editText?.setText(currentName)
                         binding.tfEditAccountBudget.editText?.setText(currentBudget?.toInt().toString())
 
-                        val index = colorNames.indexOf(account.account_color)
+                        val index = colors.indexOf(account.account_color)
                         binding.spEditColor.setSelection(index)
 
                         hideLoadingData()
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
+                .addOnFailureListener {
                     Snackbar
-                        .make(rootLayout, "Unable to load data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                        .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.retry)) { loadData() }
                         .show()
                 }
-            })
         }
         else {
             sessionExpired()
@@ -145,28 +139,21 @@ class AccountEditFragment : Fragment() {
     }
 
     private fun loadColors() {
-        colorNames = listOf(
-            "color_one", "color_two", "color_three", "color_four", "color_five",
-            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
-            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
-            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
-            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colorNames) {
+        colors = AppResources().getColors()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
-                val color = view.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable: GradientDrawable = color.background as GradientDrawable
+                val itemView = view.findViewById<View>(R.id.viewHelperItem)
+                val gradientDrawable: GradientDrawable = itemView.background as GradientDrawable
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
 
                 gradientDrawable.setColor(activity.getColor(iconColor))
-                color.background = gradientDrawable
+                itemView.background = gradientDrawable
                 return view
             }
         }
@@ -174,7 +161,7 @@ class AccountEditFragment : Fragment() {
         binding.spEditColor.adapter = adapter
     }
 
-    private fun validateChanges() {
+    private fun validateData() {
         // hide keyboard
         try {
             val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -190,46 +177,31 @@ class AccountEditFragment : Fragment() {
             activity.onBackPressed()
         }
         else {
-            if (TextUtils.isEmpty(accountName) || TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toDouble() == 0.0) {
+            if (TextUtils.isEmpty(accountName) || TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toDouble() < 1) {
                 if (TextUtils.isEmpty(accountName)) binding.tfEditAccountName.error = getString(R.string.account_name_empty)
                 if (TextUtils.isEmpty(accountMonthlyBudget)) binding.tfEditAccountBudget.error = getString(R.string.monthly_budget_empty)
+                if (accountMonthlyBudget.startsWith("0")) binding.tfEditAccountBudget.error = getString(R.string.budget_amount_0)
             }
             else {
-                updateAccount(accountName, accountMonthlyBudget.toDouble(), accountColor)
+                updateAccount(args.accountId.toInt(), accountName, accountMonthlyBudget.toDouble(), accountColor)
             }
         }
     }
 
-    private fun updateAccount(accountName: String, accountMonthlyBudget: Double, accountColor: String) {
+    private fun updateAccount(accountId: Int, accountName: String, accountMonthlyBudget: Double, accountColor: String) {
         showProgressDialog()
-
-        val account = Account(0, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
+        val account = Account(accountId, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
         databaseReference.setValue(account)
             .addOnSuccessListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, "Successfully updated account", Snackbar.LENGTH_LONG)
-                    .show()
-
-                // add 3 second delay
-                object : CountDownTimer(3000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        // do nothing
-                    }
-                    override fun onFinish() {
-                        try {
-                            val action = AccountEditFragmentDirections.actionAccountEditFragmentToAccountsFragment()
-                            findNavController().navigate(action)
-                        }
-                        catch (e: Exception) {}
-                    }
-                }.start()
+                val action = AccountEditFragmentDirections.actionAccountEditFragmentToAccountsFragment()
+                findNavController().navigate(action)
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
                     .make(rootLayout, "Unable to update account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { updateAccount(accountName, accountMonthlyBudget, accountColor) }
+                    .setAction(getString(R.string.retry)) { updateAccount(accountId, accountName, accountMonthlyBudget, accountColor) }
                     .show()
             }
     }
@@ -264,12 +236,12 @@ class AccountEditFragment : Fragment() {
     }
 
     private fun showProgressDialog() {
-        binding.pbEditAccountLoad.visibility = View.VISIBLE
+        binding.pbEditAccount.visibility = View.VISIBLE
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.pbEditAccountLoad.visibility = View.INVISIBLE
+        binding.pbEditAccount.visibility = View.INVISIBLE
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

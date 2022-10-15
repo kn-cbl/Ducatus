@@ -19,7 +19,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/username"
+            android:text="@string/update_username"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -27,6 +27,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pbUpdateUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:indicatorColor="@color/green_primary" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfUpdateUsername"
@@ -45,9 +54,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
                 android:inputType="text"
-                android:maxLength="255"
+                android:maxLength="30"
                 android:textColor="@color/black"
-                android:textSize="16sp"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,17 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/pbUpdateUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:indicatorColor="@color/green_primary" />
-
         <LinearLayout
-            android:id="@+id/llUpdateUsernameButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -80,20 +78,21 @@
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary"
-                android:textSize="16sp" />
+                android:textColor="@color/green_primary" />
 
             <Button
-                android:id="@+id/btnUpdateUsernameSave"
+                android:id="@+id/btnUpdateUsernameConfirm"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/inter_medium"
-                android:text="@string/save"
+                android:text="@string/confirm"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary"
-                android:textSize="16sp" />
+                android:textColor="@color/green_primary" />
         </LinearLayout>
+
     </LinearLayout>
+
 </RelativeLayout>

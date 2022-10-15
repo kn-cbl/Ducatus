@@ -19,7 +19,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/category_name"
+            android:text="@string/edit_category_name"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -27,6 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pbEditCategoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:indicatorColor="@color/green_primary" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfEditCategoryName"
@@ -48,7 +56,7 @@
                 android:maxLength="50"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                tools:ignore="TextContrastCheck" />
+                tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.divider.MaterialDivider
@@ -68,10 +76,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
+                android:letterSpacing="0.04"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary"
-                android:textSize="16sp" />
+                android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnEditCategoryNameSave"
@@ -79,11 +87,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/inter_medium"
-                android:text="@string/save"
+                android:letterSpacing="0.04"
+                android:text="@string/confirm"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary"
-                android:textSize="16sp" />
+                android:textColor="@color/green_primary" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

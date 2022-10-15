@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout4"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp">
 
     <ImageView
-        android:id="@+id/ivAccountImage"
+        android:id="@+id/ivItemAccountImage"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerVertical="true"
@@ -20,12 +21,12 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:layout_toStartOf="@id/ibAccountEdit"
-        android:layout_toEndOf="@+id/ivAccountImage"
+        android:layout_toStartOf="@id/ibItemAccountEdit"
+        android:layout_toEndOf="@+id/ivItemAccountImage"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvAccountName"
+            android:id="@+id/tvItemAccountName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_medium"
@@ -34,7 +35,7 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/tvAccountBudget"
+            android:id="@+id/tvItemAccountBudget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
@@ -44,14 +45,13 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/ibAccountEdit"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:id="@+id/ibItemAccountEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:background="@drawable/ic_more"
         android:contentDescription="@string/edit"
-        android:scaleX="0.5"
-        android:scaleY="0.5" />
+        tools:ignore="TouchTargetSizeCheck" />
 </RelativeLayout>

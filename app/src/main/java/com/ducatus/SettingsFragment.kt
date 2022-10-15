@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.ducatus.databinding.FragmentSettingsBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -14,6 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SettingsFragment : Fragment() {
     private lateinit var activity: Activity
@@ -32,6 +35,7 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isGoogleOnly()
 
         binding.rlUserProfile.setOnClickListener {
             activityIntent(Intent(activity, UserProfileActivity::class.java), false)
@@ -66,6 +70,21 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    private fun isGoogleOnly() {
+        val auth = Firebase.auth
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            val providers = mutableListOf<String>()
+            for (item in firebaseUser.providerData) {
+                providers.add(item.providerId)
+            }
+
+            if (!providers.contains("password")) {
+                binding.rlUpdatePassword.isEnabled = false
+            }
+        }
+    }
+
     private fun activityIntent(intent: Intent, finish: Boolean) {
         startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -73,26 +92,21 @@ class SettingsFragment : Fragment() {
         if (finish) {
             val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
             if (firebaseUser != null) {
-                // require internet connection before signing out
-                NetworkConnectivityObserver(activity).observe(viewLifecycleOwner) {
-                    if (it == NetworkStatus.Available) {
-                        FirebaseAuth.getInstance().signOut()
+                FirebaseAuth.getInstance().signOut()
 
-                        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestEmail()
-                            .build()
+                gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build()
 
-                        gsc = GoogleSignIn.getClient(requireActivity(), gso)
+                gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
-                        val googleSignInAccount: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(activity)
-                        if (googleSignInAccount != null) {
-                            gsc.signOut()
-                        }
-
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        activity.finish()
-                    }
+                val googleSignInAccount: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(activity)
+                if (googleSignInAccount != null) {
+                    gsc.signOut()
                 }
+
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                activity.finish()
             }
         }
     }

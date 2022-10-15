@@ -37,7 +37,7 @@ class AccountAdapter(
                 activity.packageName
             )
 
-            findViewById<ImageView>(R.id.ivAccountImage).setColorFilter(
+            findViewById<ImageView>(R.id.ivItemAccountImage).setColorFilter(
                 ResourcesCompat.getColor(
                     resources,
                     imageColor,
@@ -45,10 +45,14 @@ class AccountAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvAccountName).text = currentAccount.account_name
-            findViewById<TextView>(R.id.tvAccountBudget).text = "₱" + String.format("%,.2f", currentAccount.account_monthly_budget)
-            findViewById<ImageView>(R.id.ibAccountEdit).tag = currentAccount.account_id
-            findViewById<ImageView>(R.id.ibAccountEdit).setOnClickListener {
+
+            findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.account_name
+
+            val budget = "₱" + String.format("%,.2f", currentAccount.account_monthly_budget)
+            findViewById<TextView>(R.id.tvItemAccountBudget).text = budget
+
+            findViewById<ImageView>(R.id.ibItemAccountEdit).tag = currentAccount.account_id
+            findViewById<ImageView>(R.id.ibItemAccountEdit).setOnClickListener {
                 listener.showPopup(it, 2)
             }
         }

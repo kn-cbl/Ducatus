@@ -5,5 +5,5 @@ import android.view.View
 
 interface SubcategoryInterface {
     fun getActivityInterface(): Activity
-    fun showPopup(view: View)
+    fun showPopup(view: View, position: Int)
 }

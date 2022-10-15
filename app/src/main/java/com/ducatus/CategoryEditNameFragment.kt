@@ -2,7 +2,6 @@ package com.ducatus
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -32,7 +31,6 @@ class CategoryEditNameFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private val args: CategoryEditNameFragmentArgs by navArgs()
-    private var updated: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,17 +53,7 @@ class CategoryEditNameFragment : DialogFragment() {
         }
 
         binding.btnEditCategoryNameSave.setOnClickListener {
-            validateInput()
-        }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        if (updated) {
-            val fragment = parentFragmentManager.findFragmentById(R.id.fcCategories)
-            if (fragment is DialogInterface.OnDismissListener) {
-                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
-            }
+            validateData()
         }
     }
 
@@ -76,7 +64,7 @@ class CategoryEditNameFragment : DialogFragment() {
         }
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         // hide keyboard
         try {
             val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -93,38 +81,63 @@ class CategoryEditNameFragment : DialogFragment() {
             binding.tfEditCategoryName.error = getString(R.string.category_name_empty)
         }
         else {
-            saveChanges(categoryName)
+            auth = Firebase.auth
+            val firebaseUser: FirebaseUser? = auth.currentUser
+            if (firebaseUser != null) {
+                val sharedPreferences = SharedPreferences(activity)
+                val currentAccountId = sharedPreferences.accountId.toString()
+                categoryExists(firebaseUser.uid, currentAccountId, categoryName)
+            }
+            else {
+                sessionExpired()
+            }
         }
     }
 
+    private fun categoryExists(uid: String, accountId: String, categoryName: String) {
+        showProgressDialog()
+        database = Firebase.database
+        databaseReference = database.getReference("categories").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener {
+                var nameKey = false
+                for (child in it.children) {
+                    if (categoryName == child.child("category_name").value.toString()) {
+                        nameKey = true
+                        break
+                    }
+                }
+
+                if (!nameKey) {
+                    saveChanges(categoryName)
+                }
+                else {
+                    binding.tfEditCategoryName.error = getString(R.string.category_name_exists)
+                }
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { categoryExists(uid, accountId, categoryName) }
+                    .show()
+            }
+    }
+
     private fun saveChanges(categoryName: String) {
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val sharedPreferences = SharedPreferences(activity)
-            val currentAccountId = sharedPreferences.accountId.toString()
-
-            database = Firebase.database
-            databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId).child("category_name")
-            databaseReference.setValue(categoryName)
-                .addOnSuccessListener {
-                    Snackbar
-                        .make(rootLayout, "Successfully saved changes", Snackbar.LENGTH_LONG)
-                        .show()
-
-                    updated = true
-                    dismiss()
-                }
-                .addOnFailureListener {
-                    Snackbar
-                        .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                        .setAction(getString(R.string.retry)) { saveChanges(categoryName) }
-                        .show()
-                }
-        }
-        else {
-            sessionExpired()
-        }
+        showProgressDialog()
+        databaseReference.child(args.categoryId).child("category_name").setValue(categoryName)
+            .addOnSuccessListener {
+                hideProgressDialog()
+                dismiss()
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { saveChanges(categoryName) }
+                    .show()
+            }
     }
 
     private fun sessionExpired() {
@@ -146,4 +159,11 @@ class CategoryEditNameFragment : DialogFragment() {
         }.start()
     }
 
+    private fun showProgressDialog() {
+        binding.pbEditCategoryName.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressDialog() {
+        binding.pbEditCategoryName.visibility = View.INVISIBLE
+    }
 }

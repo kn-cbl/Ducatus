@@ -23,11 +23,10 @@
     <string name="log_in_to_your_account">Log in to your account</string>
     <string name="email">Email</string>
     <string name="new_email">New Email</string>
-    <string name="change_email">Change Email</string>
-    <string name="change_email_mark">Change Email?</string>
-    <string name="change_email_confirm">Change your email?</string>
+    <string name="update_email">Update email</string>
+    <string name="update_email_mark">Update your email?</string>
     <string name="username">Username</string>
-    <string name="edit_username">Edit username</string>
+    <string name="update_username">Update username</string>
     <string name="email_username">Email or Username</string>
     <string name="log_in">Log In</string>
     <string name="continue_with_google">Continue with Google</string>
@@ -43,9 +42,9 @@
     <string name="create_new_password">Create New\nPassword</string>
     <string name="set_a_new_password_for_your_account">Set a new password for your account</string>
     <string name="current_password">Current Password</string>
-    <string name="change_password">Change Password</string>
-    <string name="change_password_mark">Change Password?</string>
-    <string name="change_password_confirm">Change your password?</string>
+    <string name="update_password">Update Password</string>
+    <string name="update_password_small">Update password</string>
+    <string name="update_password_mark">Update your password?</string>
     <string name="new_password">New Password</string>
     <string name="confirm_new_password">Confirm New Password</string>
     <string name="reset_password">Reset Password</string>
@@ -70,6 +69,7 @@
     <string name="resend_in_60">Resend in 60</string>
     <string name="resend_verification_code">Resend verification code</string>
     <string name="mobile_number">Mobile number</string>
+    <string name="update_mobile_number">Update mobile number</string>
     <string name="change_mobile_number">Change Mobile Number</string>
     <string name="background">background</string>
     <string name="resend_email_verification">Resend Email Verification</string>
@@ -81,7 +81,7 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="delete_user_data">Delete User Data</string>
     <string name="deactivate_account">Deactivate Account</string>
-    <string name="user_profile_description">Change Profile Photo, Email, or Mobile Number</string>
+    <string name="user_profile_description">Update Profile Photo, Email, or Mobile Number</string>
     <string name="general_settings">General Settings</string>
     <string name="accounts">Accounts</string>
     <string name="accounts_description">Manage user accounts, change color and descriptions</string>
@@ -100,6 +100,7 @@
     <string name="connection_unavailable">No connection available</string>
     <string name="save_changes">Save Changes</string>
     <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
     <string name="retry">Retry</string>
 
     <!--  Errors  -->
@@ -109,7 +110,7 @@
     <string name="new_email_empty">Enter your new email</string>
     <string name="new_email_same">New email must not be the same as current email</string>
     <string name="username_empty">Enter your username</string>
-    <string name="username_exists">Username already exists</string>
+    <string name="username_exists">Username is already taken</string>
     <string name="email_username_empty">Enter your email or username</string>
     <string name="user_does_not_exist">User does not exist</string>
     <string name="password_empty">Enter your password</string>
@@ -126,6 +127,18 @@
     <string name="mobile_number_exists">Mobile number is already being used by another user</string>
     <string name="mobile_auth_request_error">Too many requests, please try again</string>
     <string name="unknown_error">Unknown error occurred, please try again</string>
+    <string name="account_name_empty">Enter account name</string>
+    <string name="account_name_exists">Account already exists</string>
+    <string name="category_name_empty">Enter category name</string>
+    <string name="category_name_exists">Category already exists</string>
+    <string name="category_nature_empty">Select category nature</string>
+    <string name="subcategory_name_empty">Enter category name</string>
+    <string name="subcategory_name_exists">Subcategory already exists</string>
+    <string name="budget_name_empty">Enter budget name</string>
+    <string name="budget_name_exists">Budget already exists</string>
+    <string name="budget_category_empty">Select a category</string>
+    <string name="budget_amount_empty">Enter budget amount</string>
+    <string name="budget_amount_0">Amount must be greater than 0</string>
 
     <!-- Notifications -->
     <string name="expenses_reminder">Expenses Reminder</string>
@@ -138,8 +151,10 @@
     <string name="debts_and_loans_reminder_description">Reminder about upcoming debts and loans due dates</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="change">Change</string>
+    <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="update">Update</string>
     <string name="home">Home</string>
@@ -149,7 +164,10 @@
     <string name="transactions">Transactions</string>
     <string name="reports">Reports</string>
     <string name="planned_payments">Planned Payments</string>
+    <string name="budget">Budget</string>
     <string name="budgets">Budgets</string>
+    <string name="set_monthly_budget">Set monthly budget</string>
+    <string name="set_monthly_budget_mark">You have not set your monthly budget yet. Set now?</string>
     <string name="monthly_budget">Monthly Budget</string>
     <string name="monthly_budget_empty">Enter monthly budget</string>
     <string name="loans">Loans</string>
@@ -160,27 +178,26 @@
     <string name="color">Color</string>
     <string name="add_another_account">Add another account</string>
     <string name="account_name">Account Name</string>
-    <string name="account_name_empty">Enter account name</string>
     <string name="account_color">Account Color</string>
     <string name="account_icon">Account Icon</string>
     <string name="select_account">Select Account</string>
     <string name="add_account">Add Account</string>
-    <string name="edit_account">Edit Account</string>
+    <string name="edit_account">Edit account</string>
     <string name="delete_account">Delete Account</string>
-    <string name="delete_account_mark">Delete Account?</string>
+    <string name="delete_account_mark">Delete account?</string>
     <string name="delete_account_confirm">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
 
     <string name="essentials">Essentials</string>
     <string name="wants">Wants</string>
     <string name="savings">Savings</string>
     <string name="category_name">Category Name</string>
-    <string name="category_name_empty">Enter category name</string>
     <string name="category_nature">Category Nature</string>
-    <string name="category_nature_empty">Select category nature</string>
     <string name="category_color">Category Color</string>
     <string name="category_icon">Category Icon</string>
     <string name="add_category">Add Category</string>
+    <string name="add_category_small">Add category</string>
     <string name="edit_category">Edit Category</string>
+    <string name="edit_category_small">Edit category</string>
     <string name="edit_category_icon">Edit category icon</string>
     <string name="edit_category_name">Edit category name</string>
     <string name="edit_category_nature">Edit category nature</string>
@@ -193,7 +210,9 @@
     <string name="subcategory_icon">Subcategory Icon</string>
     <string name="subcategory_nature">Subcategory Nature</string>
     <string name="add_subcategory">Add Subcategory</string>
+    <string name="add_subcategory_small">Add subcategory</string>
     <string name="edit_subcategory">Edit Subcategory</string>
+    <string name="edit_subcategory_small">Edit subcategory</string>
     <string name="edit_subcategory_icon">Edit subcategory icon</string>
     <string name="edit_subcategory_name">Edit subcategory name</string>
     <string name="edit_subcategory_nature">Edit subcategory nature</string>
@@ -221,5 +240,11 @@
     <string name="amount_left">Amount Left</string>
     <string name="limit">Limit</string>
     <string name="budget_status">Budget status</string>
+    <string name="account">Account</string>
+    <string name="category">Category</string>
+    <string name="add_budget">Add Budget</string>
+    <string name="budgets_empty">No budgets allocated yet</string>
+    <string name="budget_detail">Budget Detail</string>
+    <string name="transaction_history">Transaction History</string>
 
 </resources>

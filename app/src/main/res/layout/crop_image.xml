@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/cropimage_menu"
-        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
         app:title="Crop Image"
         app:titleTextColor="#FFFFFF" />
 

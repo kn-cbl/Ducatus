@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentCategoryAddBinding
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -36,8 +37,9 @@ class CategoryAddFragment : Fragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
-    private var colorNames: List<String> = listOf()
-    private var iconNames: List<String> = listOf()
+    private lateinit var toolbar: MaterialToolbar
+    private var colors: List<String> = listOf()
+    private var icons: List<String> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +47,9 @@ class CategoryAddFragment : Fragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llCategories)
+        toolbar = activity.findViewById(R.id.tbCategories)
+        toolbar.inflateMenu(R.menu.check_menu)
+
         binding = FragmentCategoryAddBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -61,7 +66,7 @@ class CategoryAddFragment : Fragment() {
                 val gradientDrawable = GradientDrawable()
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -81,7 +86,7 @@ class CategoryAddFragment : Fragment() {
                 val itemView = selectedView.findViewById<View>(R.id.viewHelperItemIcon)
 
                 val icon = resources.getIdentifier(
-                    iconNames[position],
+                    icons[position],
                     "drawable",
                     activity.packageName
                 )
@@ -94,8 +99,14 @@ class CategoryAddFragment : Fragment() {
             }
         }
 
-        binding.btnAddCategory.setOnClickListener {
-            validateInput()
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.done -> {
+                    validateData()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -112,22 +123,15 @@ class CategoryAddFragment : Fragment() {
     }
 
     private fun loadColors() {
-        colorNames = listOf(
-            "color_one", "color_two", "color_three", "color_four", "color_five",
-            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
-            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
-            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
-            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colorNames) {
+        colors = AppResources().getColors()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
                 val itemView = view.findViewById<View>(R.id.viewHelperItem)
                 val gradientDrawable: GradientDrawable = itemView.background as GradientDrawable
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -142,20 +146,14 @@ class CategoryAddFragment : Fragment() {
     }
 
     private fun loadIcons() {
-        iconNames = listOf(
-            "ic_baseline_devices_24", "ic_baseline_wallet_24", "ic_baseline_fastfood_24",
-            "ic_baseline_home_24", "investment", "ic_baseline_videogame_asset_24",
-            "ic_outline_shopping_bag_24", "ic_baseline_directions_bus_24", "ic_baseline_directions_car_24",
-            "ic_baseline_more_horiz_24"
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, iconNames) {
+        icons = AppResources().getIcons()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, icons) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
                 val itemView = view.findViewById<View>(R.id.viewHelperItemIcon)
 
                 val icon = resources.getIdentifier(
-                    iconNames[position],
+                    icons[position],
                     "drawable",
                     activity.packageName
                 )
@@ -179,7 +177,7 @@ class CategoryAddFragment : Fragment() {
         }
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         // hide keyboard
         try {
             val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -187,19 +185,19 @@ class CategoryAddFragment : Fragment() {
         }
         catch (e: Exception){}
 
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val categoryName = binding.tfAddCategoryName.editText?.text.toString().trim {it <= ' '}
-            val categoryNature = binding.tfAddCategoryNature.editText?.text.toString().trim {it <= ' '}
-            val categoryColor = binding.spAddCategoryColor.selectedItem.toString()
-            val categoryIcon = binding.spAddCategoryIcon.selectedItem.toString()
+        val categoryName = binding.tfAddCategoryName.editText?.text.toString().trim {it <= ' '}
+        val categoryNature = binding.tfAddCategoryNature.editText?.text.toString().trim {it <= ' '}
+        val categoryColor = binding.spAddCategoryColor.selectedItem.toString()
+        val categoryIcon = binding.spAddCategoryIcon.selectedItem.toString()
 
-            if (TextUtils.isEmpty(categoryName) || TextUtils.isEmpty(categoryNature)) {
-                if (TextUtils.isEmpty(categoryName)) binding.tfAddCategoryName.error = getString(R.string.category_name_empty)
-                if (TextUtils.isEmpty(categoryNature)) binding.tfAddCategoryNature.error = getString(R.string.category_nature_empty)
-            }
-            else {
+        if (TextUtils.isEmpty(categoryName) || TextUtils.isEmpty(categoryNature)) {
+            if (TextUtils.isEmpty(categoryName)) binding.tfAddCategoryName.error = getString(R.string.category_name_empty)
+            if (TextUtils.isEmpty(categoryNature)) binding.tfAddCategoryNature.error = getString(R.string.category_nature_empty)
+        }
+        else {
+            auth = Firebase.auth
+            val firebaseUser: FirebaseUser? = auth.currentUser
+            if (firebaseUser != null) {
                 // parse selected nature
                 val nature = when (categoryNature) {
                     "Essentials" -> 0
@@ -210,64 +208,62 @@ class CategoryAddFragment : Fragment() {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
 
-                addCategory(firebaseUser.uid, accountId, categoryName, nature, categoryColor, categoryIcon)
+                categoryExists(firebaseUser.uid, accountId, categoryName, nature, categoryColor, categoryIcon)
             }
-        }
-        else {
-            sessionExpired()
+            else {
+                sessionExpired()
+            }
         }
     }
 
-    private fun addCategory(uid: String, accountId: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
+    private fun categoryExists(uid: String, accountId: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("categories").child(uid).child(accountId)
-        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var lastId = 0
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                var nameKey = false
                 for (child in snapshot.children) {
-                    lastId = child.child("category_id").value.toString().toInt() + 1
+                    if (categoryName == child.child("category_name").value.toString()) {
+                        nameKey = true
+                        break
+                    }
                 }
 
-                val category = Category(lastId, categoryName, categoryNature, categoryColor, categoryIcon)
-                databaseReference.child(lastId.toString()).setValue(category)
-                    .addOnSuccessListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(rootLayout, "Successfully added category", Snackbar.LENGTH_LONG)
-                            .show()
-
-                        // add 3 second delay
-                        object : CountDownTimer(3000, 1000) {
-                            override fun onTick(millisUntilFinished: Long) {
-                                // do nothing
-                            }
-                            override fun onFinish() {
-                                try {
-                                    val action = CategoryAddFragmentDirections.actionCategoryAddFragmentToCategoriesFragment()
-                                    findNavController().navigate(action)
-                                }
-                                catch (e: Exception) {}
-                            }
-                        }.start()
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(rootLayout, "Unable to add category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                            .setAction(getString(R.string.retry)) { addCategory(uid, accountId, categoryName, categoryNature, categoryColor, categoryIcon) }
-                            .show()
-                    }
+                if (!nameKey) {
+                    val lastId = snapshot.childrenCount.toInt()
+                    addCategory(lastId, uid, categoryName, categoryNature, categoryColor, categoryIcon)
+                }
+                else {
+                    hideProgressDialog()
+                    binding.tfAddCategoryName.error = getString(R.string.category_name_exists)
+                }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add category, ${error.message}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { addCategory(uid, accountId, categoryName, categoryNature, categoryColor, categoryIcon) }
+                    .make(rootLayout, "Unable to add category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { categoryExists(uid, accountId, categoryName, categoryNature, categoryColor, categoryIcon) }
                     .show()
             }
-        })
+    }
+
+    private fun addCategory(id: Int, uid: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
+        showProgressDialog()
+        val category = Category(id, categoryName, categoryNature, categoryColor, categoryIcon)
+        databaseReference.child(id.toString()).setValue(category)
+            .addOnSuccessListener {
+                hideProgressDialog()
+                val action = CategoryAddFragmentDirections.actionCategoryAddFragmentToCategoriesFragment()
+                findNavController().navigate(action)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to add category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { addCategory(id, uid, categoryName, categoryNature, categoryColor, categoryIcon) }
+                    .show()
+            }
     }
 
     private fun sessionExpired() {
@@ -291,15 +287,11 @@ class CategoryAddFragment : Fragment() {
 
     private fun showProgressDialog() {
         binding.pbAddCategory.visibility = View.VISIBLE
-        binding.btnAddCategory.text = null
-        binding.btnAddCategory.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
         binding.pbAddCategory.visibility = View.INVISIBLE
-        binding.btnAddCategory.text = getString(R.string.add_category)
-        binding.btnAddCategory.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

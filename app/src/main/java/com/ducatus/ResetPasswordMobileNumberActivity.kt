@@ -17,8 +17,6 @@ import com.google.firebase.ktx.Firebase
 
 class ResetPasswordMobileNumberActivity : AppCompatActivity() {
     private lateinit var binding: ActivityResetPasswordMobileNumberBinding
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
     private var mobileNumberRegex = "^[89][0-9]{9}$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,13 +79,13 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
     }
 
     private fun mobileNumberExists(mobileNumber: String) {
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        val database = Firebase.database
+        val databaseReference = database.getReference("users")
+        databaseReference.get()
+            .addOnSuccessListener {
                 var mobileNumberExists = false
 
-                for (child in snapshot.children) {
+                for (child in it.children) {
                     if(mobileNumber == child.child("mobile_number").value.toString()) {
                         mobileNumberExists = true
                         break
@@ -105,11 +103,10 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
                     binding.tvResetPasswordMobileErrorAuth.text = getString(R.string.user_does_not_exist)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
-                binding.tvResetPasswordMobileErrorAuth.text = error.message
+                binding.tvResetPasswordMobileErrorAuth.text = it.localizedMessage
             }
-        })
     }
 
     private fun showProgressDialog() {

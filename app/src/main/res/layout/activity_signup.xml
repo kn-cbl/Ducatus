@@ -43,16 +43,6 @@
         android:textColor="#ff0000"
         android:textSize="12sp" />
 
-    <!--    <com.google.android.material.progressindicator.CircularProgressIndicator-->
-    <!--        android:id="@+id/pbSignup"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:layout_marginTop="-48dp"-->
-    <!--        android:indeterminate="true"-->
-    <!--        android:visibility="invisible"-->
-    <!--        app:indicatorColor="@color/green_secondary" />-->
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfSignupEmail"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -130,12 +120,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/green_button"
-        android:fontFamily="@font/inter_bold"
+        android:fontFamily="@font/inter_medium"
         android:letterSpacing="0.04"
         android:text="@string/create_account"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textColor="@color/white" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbSignup"
@@ -165,10 +154,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:fontFamily="@font/inter_semi_bold"
+            android:fontFamily="@font/inter_medium"
             android:text="@string/or"
             android:textAlignment="center"
-            android:textColor="#818284" />
+            android:textColor="@color/darker_gray" />
     </FrameLayout>
 
     <FrameLayout
@@ -185,11 +174,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawablePadding="8dp"
-            android:fontFamily="@font/inter_semi_bold"
+            android:fontFamily="@font/inter_medium"
             android:text="@string/continue_with_google"
             android:textAllCaps="false"
             android:textColor="#545454"
-            android:textSize="14sp"
             app:drawableStartCompat="@drawable/google_wrap" />
     </FrameLayout>
 
@@ -204,7 +192,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:fontFamily="@font/inter_semi_bold"
+            android:fontFamily="@font/inter_medium"
             android:text="@string/already_have_an_account"
             android:textAlignment="textEnd"
             android:textColor="@color/darker_gray"

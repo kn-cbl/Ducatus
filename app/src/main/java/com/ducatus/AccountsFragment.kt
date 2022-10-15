@@ -24,7 +24,6 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.text.DateFormat
 
 class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var accountAdapter: AccountAdapter
@@ -38,11 +37,21 @@ class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var toolbar: MaterialToolbar
     private var firebaseUser: FirebaseUser? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity = requireActivity()
+        auth = Firebase.auth
+        firebaseUser = auth.currentUser
+        database = Firebase.database
+        databaseReference = database.getReference("accounts").child(firebaseUser!!.uid)
+        sharedPreferences = SharedPreferences(activity)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llAccounts)
         toolbar = activity.findViewById(R.id.tbAccounts)
         toolbar.title = getString(R.string.accounts)
@@ -66,6 +75,17 @@ class AccountsFragment : Fragment(), AccountInterface {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val intent = activity.intent
+        val fragment = intent.extras?.getString("setBudget")
+        if (fragment == "set") {
+            val accountId = intent.extras?.getString("accountId").toString()
+            val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditFragment(accountId)
+            findNavController().navigate(action)
+        }
+    }
+
     // get activity to be used in adapter
     override fun getActivityInterface(): Activity {
         return activity
@@ -76,7 +96,8 @@ class AccountsFragment : Fragment(), AccountInterface {
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.optionSelect -> {
-                    selectAccount(view.tag.toString())
+                    val currentAccountId = sharedPreferences.accountId.toString()
+                    deselectAccount(currentAccountId, view.tag.toString())
                     true
                 }
                 R.id.optionEdit -> {
@@ -99,67 +120,10 @@ class AccountsFragment : Fragment(), AccountInterface {
         popup.show()
     }
 
-    private fun selectAccount(accountId: String) {
-        databaseReference = database.getReference("accounts").child(firebaseUser!!.uid).child(accountId)
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val account = snapshot.getValue<Account>()
-                sharedPreferences.accountId = accountId.toInt()
-                sharedPreferences.accountName = account?.account_name
-                sharedPreferences.accountColor = account?.account_color
-                loadData()
-                hideProgressDialog()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Snackbar
-                    .make(rootLayout, "Unable to select account, ${error.message}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { selectAccount(accountId) }
-                    .show()
-            }
-        })
-    }
-
-    private fun confirmDelete(accountId: String) {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.delete_account_mark))
-            .setMessage(resources.getString(R.string.delete_account_confirm))
-            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteAccount(accountId) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
-            .show()
-    }
-
-    private fun deleteAccount(accountId: String) {
-        showProgressDialog()
-        databaseReference = databaseReference.child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                Snackbar
-                    .make(rootLayout, "Successfully deleted account", Snackbar.LENGTH_LONG)
-                    .show()
-
-                loadData()
-                hideProgressDialog()
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, "Unable to delete account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteAccount(accountId) }
-                    .show()
-            }
-    }
-
     private fun loadData() {
         showProgressDialog()
-        auth = Firebase.auth
-        firebaseUser = auth.currentUser
         if (firebaseUser != null) {
-            sharedPreferences = SharedPreferences(activity)
             val currentAccountId = sharedPreferences.accountId.toString()
-
-            database = Firebase.database
-            databaseReference = database.getReference("accounts").child(firebaseUser!!.uid)
             loadAccounts(currentAccountId)
             loadMainAccount(currentAccountId)
 
@@ -176,9 +140,9 @@ class AccountsFragment : Fragment(), AccountInterface {
         binding.rvAccounts.adapter = accountAdapter
         binding.rvAccounts.layoutManager = LinearLayoutManager(activity)
 
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (child in snapshot.children) {
+        databaseReference.get()
+            .addOnSuccessListener {
+                for (child in it.children) {
                     if (child.key.toString() != currentAccountId) {
                         val account = child.getValue<Account>()
                         if (account != null) {
@@ -187,21 +151,18 @@ class AccountsFragment : Fragment(), AccountInterface {
                     }
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { loadAccounts(currentAccountId) }
                     .show()
             }
-        })
     }
 
     private fun loadMainAccount(currentAccountId: String) {
-        databaseReference = databaseReference.child(currentAccountId)
-        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val account = snapshot.getValue<Account>()
+        databaseReference.child(currentAccountId).get()
+            .addOnSuccessListener {
+                val account = it.getValue<Account>()
                 if (account != null) {
                     try {
                         val imageColor = resources.getIdentifier(
@@ -223,20 +184,84 @@ class AccountsFragment : Fragment(), AccountInterface {
                     val budget = "₱" + String.format("%,.2f", account.account_monthly_budget)
                     binding.tvSelectedAccountBudget.text = budget
                     binding.tvSelectedAccountName.text = account.account_name
-//                    binding.tvSelectedAccountBudget.text = "PHP " + (DecimalFormat("#,###.00").format(account.account_monthly_budget)).toString()
                     binding.ivEditSelectedAccount.tag = account.account_id
-
                     hideProgressDialog()
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { loadMainAccount(currentAccountId) }
                     .show()
             }
-        })
+    }
+
+    private fun deselectAccount(currentAccountId: String, selectedAccountId: String) {
+        showProgressDialog()
+        databaseReference.child(currentAccountId).child("selected").setValue(false)
+            .addOnSuccessListener {
+                selectAccount(selectedAccountId)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { deselectAccount(currentAccountId, selectedAccountId) }
+                    .show()
+            }
+    }
+
+    private fun selectAccount(accountId: String) {
+        showProgressDialog()
+        databaseReference.child(accountId).get()
+            .addOnSuccessListener { snapshot ->
+                databaseReference.child(accountId).child("selected").setValue(true)
+                    .addOnSuccessListener {
+                        val account = snapshot.getValue<Account>()
+                        sharedPreferences.accountId = accountId.toInt()
+                        sharedPreferences.accountName = account?.account_name
+                        sharedPreferences.accountColor = account?.account_color
+                        loadData()
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialog()
+                        Snackbar
+                            .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                            .setAction(getString(R.string.retry)) { selectAccount(accountId) }
+                            .show()
+                    }
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { selectAccount(accountId) }
+                    .show()
+            }
+    }
+
+    private fun confirmDelete(accountId: String) {
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.delete_account_mark))
+            .setMessage(resources.getString(R.string.delete_account_confirm))
+            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteAccount(accountId) }
+            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .show()
+    }
+
+    private fun deleteAccount(accountId: String) {
+        showProgressDialog()
+        databaseReference.child(accountId).removeValue()
+            .addOnSuccessListener {
+                loadData()
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to delete account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { deleteAccount(accountId) }
+                    .show()
+            }
     }
 
     private fun sessionExpired() {
@@ -267,44 +292,4 @@ class AccountsFragment : Fragment(), AccountInterface {
         binding.pbAccount.visibility = View.INVISIBLE
         binding.clAccount.visibility = View.VISIBLE
     }
-
-//    private fun storeDefaultAccount(firebaseUser: FirebaseUser, username: String) {
-//        showProgressDialog()
-//        databaseReference = database.getReference("accounts/" + firebaseUser.uid)
-//        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object:
-//            ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                var accountId = 0
-//                if (snapshot.exists()) {
-//                    for (child in snapshot.children) {
-//                        accountId = child.child("account_id").value.toString().toInt() + 1
-//                    }
-//                }
-//                else {
-//                    accountId = 0
-//                }
-//
-//                val account = Account(accountId, username, 0, "R.color.green_primary")
-//                databaseReference.child(accountId.toString()).setValue(account)
-//                    .addOnSuccessListener {
-//                        verifyEmail(firebaseUser.isEmailVerified)
-//                    }
-//                    .addOnFailureListener {
-//                        hideProgressDialog()
-//                        Snackbar
-//                            .make(findViewById(R.id.clSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
-//                            .setAction(getString(R.string.retry)) { storeDefaultAccount(firebaseUser, username) }
-//                            .show()
-//                    }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                hideProgressDialog()
-//                Snackbar
-//                    .make(findViewById(R.id.clSignup), "Failed to store user data", Snackbar.LENGTH_INDEFINITE)
-//                    .setAction(getString(R.string.retry)) { storeDefaultAccount(firebaseUser, username) }
-//                    .show()
-//            }
-//        })
-//    }
 }

@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".CategoryAddFragment">
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/pbAddCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:indicatorColor="@color/green_primary" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfAddCategoryName"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -51,32 +59,61 @@
             tools:ignore="LabelFor,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
-        android:orientation="horizontal">
+        android:background="@drawable/et_normal"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="3dp"
+            android:text="@string/color"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <Spinner
+            android:id="@+id/spAddCategoryColor"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_toStartOf="@+id/caHelper"
-            android:background="@drawable/et_normal"
-            android:orientation="vertical">
+            android:layout_height="20dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
+            android:dropDownWidth="wrap_content"
+            android:spinnerMode="dropdown"
+            android:textAlignment="center"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:text="@string/color"
-                android:textColor="#666666"
-                android:textSize="13sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/et_normal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="3dp"
+            android:text="@string/icon"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/spAddCategoryColor"
+                android:id="@+id/spAddCategoryIcon"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:layout_marginStart="5dp"
@@ -85,74 +122,8 @@
                 android:spinnerMode="dropdown"
                 android:textAlignment="center"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-        </LinearLayout>
+        </FrameLayout>
 
-        <View
-            android:id="@+id/caHelper"
-            android:layout_width="16dp"
-            android:layout_height="1dp"
-            android:layout_centerInParent="true" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_toEndOf="@+id/caHelper"
-            android:background="@drawable/et_normal"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:text="@string/icon"
-                android:textColor="#666666"
-                android:textSize="13sp" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spAddCategoryIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="2dp"
-                    android:dropDownWidth="wrap_content"
-                    android:spinnerMode="dropdown"
-                    android:textAlignment="center"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-            </FrameLayout>
-
-        </LinearLayout>
-    </RelativeLayout>
-
-    <Button
-        android:id="@+id/btnAddCategory"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/green_button"
-        android:fontFamily="@font/inter_bold"
-        android:text="@string/add_category"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:backgroundTint="@color/green_primary" />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/pbAddCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="-48dp"
-        android:elevation="10dp"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/white" />
+    </LinearLayout>
 
 </LinearLayout>

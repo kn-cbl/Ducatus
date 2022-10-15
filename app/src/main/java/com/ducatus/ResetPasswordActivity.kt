@@ -16,17 +16,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class ResetPasswordActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityResetPasswordBinding
-    private lateinit var crypto: Crypto
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +45,10 @@ class ResetPasswordActivity : AppCompatActivity() {
     private fun inputObserver() {
         binding.tfResetPasswordNew.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
+            else if (text.length < 8) binding.tfResetPasswordNew.error = getString(R.string.password_complexity)
             else  binding.tfResetPasswordNew.error = null
         }
+
         binding.tfResetPasswordConfirm.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
             else  binding.tfResetPasswordConfirm.error = null
@@ -94,14 +91,14 @@ class ResetPasswordActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             firebaseUser.updatePassword(newPassword)
                 .addOnSuccessListener {
-                    crypto = Crypto()
-                    database = Firebase.database
-                    databaseReference = database.getReference("users").child(firebaseUser.uid).child("password")
+                    val crypto = Crypto()
+                    val database = Firebase.database
+                    val databaseReference = database.getReference("users").child(firebaseUser.uid).child("password")
                     databaseReference.setValue(crypto.encrypt(newPassword).toString())
                     auth.signOut()
 
                     Snackbar
-                        .make(binding.llResetPassword, "Successfully reset password", Snackbar.LENGTH_LONG)
+                        .make(binding.llResetPassword, "Successfully reset password, please log in again", Snackbar.LENGTH_LONG)
                         .show()
 
                     // add 3 second delay

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.content.res.ResourcesCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.Navigation
 import com.ducatus.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -81,24 +82,22 @@ class HomeFragment : Fragment() {
 
         database = Firebase.database
         databaseReference = database.getReference("accounts").child(uid).child(currentAccountId)
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val account = snapshot.getValue<Account>()
+        databaseReference.get()
+            .addOnSuccessListener {
+                val account = it.getValue<Account>()
                 if (account != null) {
                     val budget = "₱" + String.format("%,.2f", account.account_remaining_budget)
                     binding.tvHomeAccountBalance.text = budget
                     hideProgressDialog()
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Failed to load data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Failed to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { loadAccount(uid) }
                     .show()
             }
-        })
     }
 
     private fun sessionExpired() {

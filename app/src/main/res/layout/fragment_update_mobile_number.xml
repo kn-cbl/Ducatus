@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,147 +7,179 @@
     tools:context=".UpdateMobileNumberFragment">
 
     <LinearLayout
-        android:id="@+id/llUpdateMobileNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
         android:orientation="vertical"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfUpdateMobileNumber"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/mobile_number"
-            app:endIconMode="clear_text"
-            app:errorEnabled="true"
-            app:prefixText="@string/_63">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="10"
-                android:textColor="@color/black"
-                tools:ignore="TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btnUpdateMobileNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/green_button"
-            android:fontFamily="@font/inter_bold"
-            android:letterSpacing="0.04"
-            android:text="@string/change"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            app:backgroundTint="@color/green_primary" />
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/pbUpdateMobileNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="-48dp"
-            android:elevation="10dp"
-            android:indeterminate="true"
-            android:visibility="invisible"
-            app:indicatorColor="@color/white" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/llVerifyMobileNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        tools:ignore="UselessParent">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/verification_code_sent"
-            android:textAlignment="center"
-            android:textColor="@color/darker_gray"
-            android:textSize="14sp" />
+            android:text="@string/update_mobile_number"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/tvUpdateMobileNumber"
+        <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_semi_bold"
-            android:text="@string/mobile_number"
-            android:textAlignment="center"
-            android:textColor="@color/green_secondary"
-            android:textSize="14sp" />
+            android:layout_marginTop="16dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfVerifyMobileNumber"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pbUpdateMobileNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/verification_code"
-            app:endIconMode="clear_text"
-            app:errorEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="6"
-                android:textColor="@color/black" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btnVerifyMobileNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/green_button"
-            android:fontFamily="@font/inter_bold"
-            android:letterSpacing="0.04"
-            android:text="@string/verify"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            app:backgroundTint="@color/green_primary" />
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/pbVerifyMobileNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="-48dp"
-            android:elevation="10dp"
+            android:layout_gravity="center_horizontal"
             android:indeterminate="true"
             android:visibility="invisible"
-            app:indicatorColor="@color/white" />
+            app:indicatorColor="@color/green_primary" />
 
-        <TextView
-            android:id="@+id/tvResendMobileNumberVerification"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/llUpdateMobileNumber"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="32dp"
-            android:enabled="false"
-            android:fontFamily="@font/inter_regular"
-            android:text="@string/resend_in_60"
-            android:textColor="@color/darker_gray"
-            android:textSize="14sp"
-            android:visibility="invisible" />
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tfUpdateMobileNumber"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/mobile_number"
+                app:endIconMode="clear_text"
+                app:errorEnabled="true"
+                app:prefixText="@string/_63">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:textColor="@color/black"
+                    tools:ignore="TextContrastCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <LinearLayout
+                android:id="@+id/llUpdateMobileNumberButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnUpdateMobileNumberCancel"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textColor="@color/green_primary" />
+
+                <Button
+                    android:id="@+id/btnUpdateMobileNumberConfirm"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/confirm"
+                    android:textAllCaps="false"
+                    android:textColor="@color/green_primary" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llVerifyMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/verification_code_sent"
+                android:textAlignment="center"
+                android:textColor="@color/darker_gray" />
+
+            <TextView
+                android:id="@+id/tvUpdateMobileNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_semi_bold"
+                android:text="@string/mobile_number"
+                android:textAlignment="center"
+                android:textColor="@color/green_secondary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tfVerifyMobileNumber"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/verification_code"
+                app:endIconMode="clear_text"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <Button
+                android:id="@+id/btnUpdateMobileVerify"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/verify"
+                android:textAllCaps="false"
+                android:textColor="@color/green_primary" />
+
+            <Button
+                android:id="@+id/btnUpdateMobileResendVerify"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/inter_regular"
+                android:letterSpacing="0.04"
+                android:text="@string/resend_in_60"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:textColor="@color/darker_gray" />
+        </LinearLayout>
+
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

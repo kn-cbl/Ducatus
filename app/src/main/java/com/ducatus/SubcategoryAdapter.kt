@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +40,7 @@ class SubcategoryAdapter(
                 activity.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flSubcategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemSubcategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             val icon = resources.getIdentifier(
                 currentSubcategory.subcategory_icon.toString(),
@@ -47,8 +48,8 @@ class SubcategoryAdapter(
                 activity.packageName
             )
 
-            findViewById<ImageView>(R.id.ivSubcategoryIcon).setImageResource(icon)
-            findViewById<ImageView>(R.id.ivSubcategoryIcon).setColorFilter(
+            findViewById<ImageView>(R.id.ivItemSubcategoryIcon).setImageResource(icon)
+            findViewById<ImageView>(R.id.ivItemSubcategoryIcon).setColorFilter(
                 ResourcesCompat.getColor(
                     resources,
                     R.color.white,
@@ -56,9 +57,10 @@ class SubcategoryAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvSubcategoryName).text = currentSubcategory.subcategory_name
-            findViewById<ImageView>(R.id.ivSubcategoryEdit).setOnClickListener {
-                listener.showPopup(it)
+            findViewById<TextView>(R.id.tvItemSubcategoryName).text = currentSubcategory.subcategory_name
+            findViewById<ImageView>(R.id.ibItemSubcategoryEdit).tag = currentSubcategory.subcategory_id
+            findViewById<ImageView>(R.id.ibItemSubcategoryEdit).setOnClickListener {
+                listener.showPopup(it, position)
             }
         }
     }
@@ -67,8 +69,14 @@ class SubcategoryAdapter(
         return subcategories.size
     }
 
-    fun addSubcategory(category: Subcategory) {
-        subcategories.add(category)
+    fun addSubcategory(subcategory: Subcategory) {
+        subcategories.add(subcategory)
         notifyItemInserted(subcategories.size - 1)
+    }
+
+    fun removeSubcategory(position: Int) {
+        subcategories.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, subcategories.size)
     }
 }

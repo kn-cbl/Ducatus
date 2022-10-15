@@ -45,6 +45,8 @@ class SignupActivity : AppCompatActivity() {
         setContentView(view)
 
         inputObserver()
+        auth = Firebase.auth
+        database = Firebase.database
 
         binding.tvLoginLink.setOnClickListener {
             clearErrors()
@@ -113,13 +115,12 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun usernameExists(username: String, email: String, password: String) {
-        database = Firebase.database
         databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        databaseReference.get()
+            .addOnSuccessListener {
                 var usernameKey = false
 
-                for (child in snapshot.children) {
+                for (child in it.children) {
                     if(username == child.child("username").value.toString()) {
                         usernameKey = true
                         break
@@ -134,16 +135,13 @@ class SignupActivity : AppCompatActivity() {
                     binding.tfSignupUsername.error = getString(R.string.username_exists)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
-                binding.tvSignupErrorAuth.text = error.message
+                binding.tvSignupErrorAuth.text = it.localizedMessage
             }
-        })
     }
 
     private fun createUser(username: String, email: String, password: String) {
-        auth = Firebase.auth
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener {
                 val firebaseUser: FirebaseUser? = it.user
@@ -168,6 +166,29 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
+    private fun checkSelectedAccount(firebaseUser: FirebaseUser) {
+        database = Firebase.database
+        databaseReference = database.getReference("accounts").child(firebaseUser.uid)
+        databaseReference.get()
+            .addOnSuccessListener {
+                for(child in it.children) {
+                    if (child.child("selected").value.toString() == "true") {
+                        val sharedPreferences = SharedPreferences(applicationContext)
+                        sharedPreferences.accountId = child.child("account_id").value.toString().toInt()
+                        sharedPreferences.accountName = child.child("account_name").value.toString()
+                        sharedPreferences.accountColor = child.child("account_color").value.toString()
+                        break
+                    }
+                }
+
+                verifyEmail(firebaseUser.isEmailVerified)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                binding.tvSignupErrorAuth.text = it.localizedMessage
+            }
+    }
+
     private fun storeData(firebaseUser: FirebaseUser, password: String?, username: String) {
         showProgressDialog()
         crypto = Crypto()
@@ -175,29 +196,40 @@ class SignupActivity : AppCompatActivity() {
         val user = if (password != null) User(firebaseUser.email, crypto.encrypt(password), username, null)
         else User(firebaseUser.email, null, username, null)
 
-        database = Firebase.database
-        databaseReference = database.getReference("users")
-        databaseReference.child(firebaseUser.uid).setValue(user)
-            .addOnSuccessListener {
-                createDefaultAccount(firebaseUser, username)
+        databaseReference = database.getReference("users").child(firebaseUser.uid)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    databaseReference.setValue(user)
+                        .addOnSuccessListener {
+                            createDefaultAccount(firebaseUser, username)
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialog()
+                            Snackbar
+                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                                .setAction(getString(R.string.retry)) { storeData(firebaseUser, password, username) }
+                                .show()
+                        }
+                }
+                else {
+                    createDefaultAccount(firebaseUser, username)
+                }
             }
             .addOnFailureListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { storeData(firebaseUser, password, username) }
-                    .show()
+                binding.tvSignupErrorAuth.text = it.localizedMessage
             }
     }
 
     private fun createDefaultAccount(firebaseUser: FirebaseUser, username: String) {
         showProgressDialog()
         databaseReference = database.getReference("accounts").child(firebaseUser.uid)
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) { // check if path exists
                     val randomColor = generateRandomColor()
-                    val account = Account(0, username, resources.getResourceEntryName(randomColor), 0.0, 0.0)
+                    val account = Account(0, username, resources.getResourceEntryName(randomColor), 0.0, 0.0, true)
                     databaseReference.child("0").setValue(account)
                         .addOnSuccessListener {
                             val sharedPreferences = SharedPreferences(applicationContext)
@@ -209,89 +241,55 @@ class SignupActivity : AppCompatActivity() {
                         .addOnFailureListener {
                             hideProgressDialog()
                             Snackbar
-                                .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                                 .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
                                 .show()
                         }
                 }
                 else {
-                    verifyEmail(firebaseUser.isEmailVerified)
+                    createDefaultCategories(firebaseUser)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
                     .show()
             }
-        })
     }
 
     private fun createDefaultCategories(firebaseUser: FirebaseUser) {
         showProgressDialog()
         databaseReference = database.getReference("categories").child(firebaseUser.uid).child("0")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (!snapshot.exists()) { // check if path exists
-                    val categoryNames = listOf(
-                        "Electronics", "Financial Expenses", "Food and Drinks",
-                        "Housing", "Investments", "Life and Entertainment",
-                        "Shopping", "Transportation", "Vehicle",
-                        "Others"
-                    )
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    val categories = AppResources().getDefaultCategories()
 
-                    val categoryNatures = listOf(
-                        1, 0, 0,
-                        0, 0, 1,
-                        1, 0, 1,
-                        1
-                    )
-
-                    val categoryColors= listOf(
-                        "dark_blue", "dark_yellow", "bright_red",
-                        "dark_green", "orange", "cyan",
-                        "light_pink", "dark_brown", "purple",
-                        "light_gray"
-                    )
-
-                    val categoryIcons = listOf(
-                        "ic_baseline_devices_24", "ic_baseline_wallet_24", "ic_baseline_fastfood_24",
-                        "ic_baseline_home_24", "investment", "ic_baseline_videogame_asset_24",
-                        "ic_outline_shopping_bag_24", "ic_baseline_directions_bus_24", "ic_baseline_directions_car_24",
-                        "ic_baseline_more_horiz_24"
-                    )
-
-                    // loop through items and store values based on index
-                    for (i in categoryNames.indices) {
-                        val category = Category(i, categoryNames[i], categoryNatures[i], categoryColors[i], categoryIcons[i])
-                        databaseReference.child(i.toString()).setValue(category)
-                            .addOnSuccessListener {
-                                verifyEmail(firebaseUser.isEmailVerified)
-                            }
-                            .addOnFailureListener {
-                                hideProgressDialog()
-                                Snackbar
-                                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                    .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
-                                    .show()
-                            }
-                    }
+                    databaseReference.child("0").setValue(categories)
+                        .addOnSuccessListener {
+                            checkSelectedAccount(firebaseUser)
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialog()
+                            Snackbar
+                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                                .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
+                                .show()
+                        }
                 }
                 else {
-                    verifyEmail(firebaseUser.isEmailVerified)
+                    checkSelectedAccount(firebaseUser)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(findViewById(R.id.llSignup), "Failed to store user data, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
                     .show()
             }
-        })
     }
 
     // Google Sign In
@@ -334,7 +332,6 @@ class SignupActivity : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(googleSignInAccount: GoogleSignInAccount) {
         val firebaseCredential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
-        auth = Firebase.auth
         auth.signInWithCredential(firebaseCredential)
             .addOnSuccessListener {
                 val firebaseUser: FirebaseUser? = it.user
@@ -367,16 +364,9 @@ class SignupActivity : AppCompatActivity() {
 
     private fun generateRandomColor(): Int {
         // select random color from list
-        val colorList = listOf(
-            "color_one", "color_two", "color_three", "color_four", "color_five",
-            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
-            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
-            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
-            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
-        )
-
-        val randomIndex = floor(Math.random() * colorList.size).toInt()
-        return resources.getIdentifier(colorList[randomIndex], "color", packageName)
+        val colors = AppResources().getColors()
+        val randomIndex = floor(Math.random() * colors.size).toInt()
+        return resources.getIdentifier(colors[randomIndex], "color", packageName)
     }
 
     private fun showProgressDialog() {

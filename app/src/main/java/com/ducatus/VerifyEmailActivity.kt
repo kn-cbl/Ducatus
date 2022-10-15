@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.ducatus.databinding.ActivityVerifyEmailBinding
@@ -24,24 +23,10 @@ class VerifyEmailActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            if (!firebaseUser.isEmailVerified) {
-                sendEmail(firebaseUser)
-            }
-        }
-        else {
-            sessionExpired()
-        }
+        sendEmail()
 
         binding.btnResendEmail.setOnClickListener {
-            if (firebaseUser != null) {
-                resendEmail(firebaseUser)
-            }
-            else {
-                sessionExpired()
-            }
+            resendEmail()
         }
     }
 
@@ -55,28 +40,61 @@ class VerifyEmailActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun sendEmail(firebaseUser: FirebaseUser) {
-        firebaseUser.sendEmailVerification()
-            .addOnFailureListener {
-                binding.tvVerifyEmailError.text = it.localizedMessage
+    private fun sendEmail() {
+        showProgressDialogResend()
+        auth = Firebase.auth
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            if (firebaseUser.isEmailVerified) {
+                verified()
             }
-        hideProgressDialog()
+            else {
+                firebaseUser.sendEmailVerification()
+                    .addOnSuccessListener {
+                        startTimer()
+                    }
+                    .addOnFailureListener {
+                        binding.tvVerifyEmailError.text = it.localizedMessage
+                    }
+            }
+        }
+        else {
+            sessionExpired()
+        }
+        hideProgressDialogResend()
     }
 
     // reload email verified status of user
     private fun reloadUser() {
-        binding.pbVerifyEmail.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
+        showProgressDialogVerify()
         var firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             firebaseUser.reload()
                 .addOnSuccessListener {
                     firebaseUser = auth.currentUser
-                    isEmailVerified(firebaseUser!!)
+                    if (firebaseUser?.isEmailVerified == true) verified()
                 }
                 .addOnFailureListener {
-                    hideProgressDialog()
+                    binding.tvVerifyEmailError.text = it.localizedMessage
+                }
+        }
+        else {
+            sessionExpired()
+        }
+        hideProgressDialogVerify()
+    }
+
+    private fun resendEmail() {
+        showProgressDialogResend()
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            firebaseUser.sendEmailVerification()
+                .addOnSuccessListener {
+                    hideProgressDialogResend()
+                    startTimer()
+                }
+                .addOnFailureListener {
+                    hideProgressDialogResend()
                     binding.tvVerifyEmailError.text = it.localizedMessage
                 }
         }
@@ -85,24 +103,31 @@ class VerifyEmailActivity : AppCompatActivity() {
         }
     }
 
-    private fun resendEmail(firebaseUser: FirebaseUser) {
-        showProgressDialog()
-        sendEmail(firebaseUser)
+    private fun startTimer() {
+        binding.btnResendEmail.isEnabled = false
+        object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val message = "Resend in " + millisUntilFinished / 1000
+                binding.btnResendEmail.text = message
+            }
+            override fun onFinish() {
+                binding.btnResendEmail.text = getString(R.string.resend_email_verification)
+                binding.btnResendEmail.isEnabled = true
+            }
+        }.start()
     }
 
-    private fun isEmailVerified(firebaseUser: FirebaseUser) {
-        if (firebaseUser.isEmailVerified) {
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-        hideProgressDialog()
+    private fun verified() {
+        hideProgressDialogVerify()
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        finish()
     }
 
     private fun sessionExpired() {
-        hideProgressDialog()
+        hideProgressDialogVerify()
         Snackbar
             .make(binding.clVerifyEmail, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
             .show()
@@ -121,16 +146,24 @@ class VerifyEmailActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun showProgressDialog() {
+    private fun showProgressDialogVerify() {
+        binding.pbVerifyEmail.visibility = View.VISIBLE
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun hideProgressDialogVerify() {
+        binding.pbVerifyEmail.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun showProgressDialogResend() {
         binding.pbResendEmailVerification.visibility = View.VISIBLE
         binding.btnResendEmail.text = null
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
-    private fun hideProgressDialog() {
-        binding.pbVerifyEmail.visibility = View.INVISIBLE
+    private fun hideProgressDialogResend() {
         binding.pbResendEmailVerification.visibility = View.INVISIBLE
-        binding.btnResendEmail.text = getString(R.string.resend_email_verification)
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

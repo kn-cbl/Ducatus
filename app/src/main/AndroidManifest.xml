@@ -20,7 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Material.App"
         tools:targetApi="31">
-
+        <activity
+            android:name=".BudgetAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BudgetDetailActivity"
+            android:exported="false" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:exported="true"

@@ -5,7 +5,8 @@
     <item
         android:id="@+id/done"
         android:contentDescription="@string/done"
-        android:icon="@drawable/ic_baseline_check_24_white"
+        android:icon="@drawable/ic_baseline_check_24"
         android:title="@string/done"
+        app:iconTint="@color/white"
         app:showAsAction="ifRoom" />
 </menu>

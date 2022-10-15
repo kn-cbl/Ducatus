@@ -13,7 +13,7 @@
         android:layout_marginTop="8dp">
 
         <FrameLayout
-            android:id="@+id/flCategoryIcon"
+            android:id="@+id/flItemCategoryIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -21,7 +21,7 @@
             android:backgroundTint="@color/dark_blue">
 
             <ImageView
-                android:id="@+id/ivCategoryIcon"
+                android:id="@+id/ivItemCategoryIcon"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
@@ -30,29 +30,27 @@
         </FrameLayout>
 
         <TextView
-            android:id="@+id/tvCategoryName"
+            android:id="@+id/tvItemCategoryName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toStartOf="@id/ibCategoryEdit"
-            android:layout_toEndOf="@+id/flCategoryIcon"
+            android:layout_toStartOf="@id/ibItemCategoryEdit"
+            android:layout_toEndOf="@+id/flItemCategoryIcon"
             android:fontFamily="@font/inter_medium"
             android:text="@string/category_name"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
         <ImageButton
-            android:id="@+id/ibCategoryEdit"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/ibItemCategoryEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ic_more"
             android:contentDescription="@string/edit"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
             tools:ignore="TouchTargetSizeCheck" />
     </RelativeLayout>
 

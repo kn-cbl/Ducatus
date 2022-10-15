@@ -21,29 +21,17 @@
             app:destination="@id/updateUsernameFragment" />
     </fragment>
 
-    <fragment
+    <dialog
         android:id="@+id/updateMobileNumberFragment"
         android:name="com.ducatus.UpdateMobileNumberFragment"
         android:label="fragment_update_mobile_number"
-        tools:layout="@layout/fragment_update_mobile_number">
-        <action
-            android:id="@+id/action_updateMobileNumberFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment"
-            app:popUpTo="@id/user_profile"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_update_mobile_number" />
 
-    <fragment
+    <dialog
         android:id="@+id/updateEmailFragment"
         android:name="com.ducatus.UpdateEmailFragment"
         android:label="fragment_update_email"
-        tools:layout="@layout/fragment_update_email">
-        <action
-            android:id="@+id/action_updateEmailFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment"
-            app:popUpTo="@id/user_profile"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_update_email" />
     <dialog
         android:id="@+id/updateUsernameFragment"
         android:name="com.ducatus.UpdateUsernameFragment"

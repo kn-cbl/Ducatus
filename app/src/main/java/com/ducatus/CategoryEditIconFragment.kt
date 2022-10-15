@@ -1,7 +1,6 @@
 package com.ducatus
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -20,8 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -33,9 +31,8 @@ class CategoryEditIconFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private val args: CategoryEditIconFragmentArgs by navArgs()
-    private var colorNames: List<String> = listOf()
-    private var iconNames: List<String> = listOf()
-    private var updated: Boolean = false
+    private var colors: List<String> = listOf()
+    private var icons: List<String> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +55,7 @@ class CategoryEditIconFragment : DialogFragment() {
                 val gradientDrawable = GradientDrawable()
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -78,7 +75,7 @@ class CategoryEditIconFragment : DialogFragment() {
                 val itemView = selectedView.findViewById<View>(R.id.viewHelperItemIcon)
 
                 val icon = resources.getIdentifier(
-                    iconNames[position],
+                    icons[position],
                     "drawable",
                     activity.packageName
                 )
@@ -96,17 +93,7 @@ class CategoryEditIconFragment : DialogFragment() {
         }
 
         binding.btnEditCategoryIconSave.setOnClickListener {
-            validateInput()
-        }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        if (updated) {
-            val fragment = parentFragmentManager.findFragmentById(R.id.fcCategories)
-            if (fragment is DialogInterface.OnDismissListener) {
-                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
-            }
+            validateData()
         }
     }
 
@@ -116,22 +103,15 @@ class CategoryEditIconFragment : DialogFragment() {
     }
 
     private fun loadColors() {
-        colorNames = listOf(
-            "color_one", "color_two", "color_three", "color_four", "color_five",
-            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
-            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
-            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
-            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colorNames) {
+        colors = AppResources().getColors()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
                 val itemView = view.findViewById<View>(R.id.viewHelperItem)
                 val gradientDrawable: GradientDrawable = itemView.background as GradientDrawable
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -143,23 +123,18 @@ class CategoryEditIconFragment : DialogFragment() {
         }
 
         binding.spEditCategoryColor.adapter = adapter
+        binding.spEditCategoryColor.setSelection(colors.indexOf(args.categoryColor))
     }
 
     private fun loadIcons() {
-        iconNames = listOf(
-            "ic_baseline_devices_24", "ic_baseline_wallet_24", "ic_baseline_fastfood_24",
-            "ic_baseline_home_24", "investment", "ic_baseline_videogame_asset_24",
-            "ic_outline_shopping_bag_24", "ic_baseline_directions_bus_24", "ic_baseline_directions_car_24",
-            "ic_baseline_more_horiz_24"
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, iconNames) {
+        icons = AppResources().getIcons()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, icons) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
                 val itemView = view.findViewById<View>(R.id.viewHelperItemIcon)
 
                 val icon = resources.getIdentifier(
-                    iconNames[position],
+                    icons[position],
                     "drawable",
                     activity.packageName
                 )
@@ -170,9 +145,10 @@ class CategoryEditIconFragment : DialogFragment() {
         }
 
         binding.spEditCategoryIcon.adapter = adapter
+        binding.spEditCategoryIcon.setSelection(icons.indexOf(args.categoryIcon))
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         val categoryColor = binding.spEditCategoryColor.selectedItem.toString()
         val categoryIcon = binding.spEditCategoryIcon.selectedItem.toString()
 
@@ -186,6 +162,7 @@ class CategoryEditIconFragment : DialogFragment() {
     }
 
     private fun saveColor(categoryColor: String, categoryIcon: String) {
+        showProgressDialog()
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
@@ -199,6 +176,7 @@ class CategoryEditIconFragment : DialogFragment() {
                     saveIcon(firebaseUser.uid, currentAccountId, categoryIcon)
                 }
                 .addOnFailureListener {
+                    hideProgressDialog()
                     Snackbar
                         .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.retry)) { saveColor(categoryColor, categoryIcon) }
@@ -206,23 +184,22 @@ class CategoryEditIconFragment : DialogFragment() {
                 }
         }
         else {
+            hideProgressDialog()
             sessionExpired()
         }
     }
 
     private fun saveIcon(uid: String, currentAccountId: String, categoryIcon: String) {
+        showProgressDialog()
         databaseReference = database.getReference("categories").child(uid).child(currentAccountId).child(args.categoryId)
         databaseReference.child("category_icon").setValue(categoryIcon)
             .addOnSuccessListener {
-                Snackbar
-                    .make(rootLayout, "Successfully saved changes", Snackbar.LENGTH_LONG)
-                    .show()
-
-                updated = true
+                hideProgressDialog()
                 dismiss()
             }
 
             .addOnFailureListener {
+                hideProgressDialog()
                 Snackbar
                     .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { saveIcon(uid, currentAccountId, categoryIcon) }
@@ -247,5 +224,13 @@ class CategoryEditIconFragment : DialogFragment() {
                 activity.finish()
             }
         }.start()
+    }
+
+    private fun showProgressDialog() {
+        binding.pbEditCategoryIcon.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressDialog() {
+        binding.pbEditCategoryIcon.visibility = View.INVISIBLE
     }
 }

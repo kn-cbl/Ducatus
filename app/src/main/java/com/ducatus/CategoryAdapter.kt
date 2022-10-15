@@ -39,7 +39,7 @@ class CategoryAdapter(
                 activity.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             val icon = resources.getIdentifier(
                 currentCategory.category_icon.toString(),
@@ -47,8 +47,8 @@ class CategoryAdapter(
                 activity.packageName
             )
 
-            findViewById<ImageView>(R.id.ivCategoryIcon).setImageResource(icon)
-            findViewById<ImageView>(R.id.ivCategoryIcon).setColorFilter(
+            findViewById<ImageView>(R.id.ivItemCategoryIcon).setImageResource(icon)
+            findViewById<ImageView>(R.id.ivItemCategoryIcon).setColorFilter(
                 ResourcesCompat.getColor(
                     resources,
                     R.color.white,
@@ -56,10 +56,10 @@ class CategoryAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvCategoryName).text = currentCategory.category_name
-            findViewById<ImageView>(R.id.ibCategoryEdit).tag = currentCategory.category_id
-            findViewById<ImageView>(R.id.ibCategoryEdit).setOnClickListener {
-                listener.showPopup(it)
+            findViewById<TextView>(R.id.tvItemCategoryName).text = currentCategory.category_name
+            findViewById<ImageView>(R.id.ibItemCategoryEdit).tag = currentCategory.category_id
+            findViewById<ImageView>(R.id.ibItemCategoryEdit).setOnClickListener {
+                listener.showPopup(it, position)
             }
         }
     }
@@ -71,5 +71,11 @@ class CategoryAdapter(
     fun addCategory(category: Category) {
         categories.add(category)
         notifyItemInserted(categories.size - 1)
+    }
+
+    fun removeCategory(position: Int) {
+        categories.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, categories.size)
     }
 }

@@ -172,7 +172,7 @@
                     android:layout_marginEnd="16dp"
                     android:text="CONTINUE"
                     android:textStyle="bold"
-                    android:textColor="@color/blue"/>
+                    android:textColor="@color/bright_blue"/>
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
@@ -261,7 +261,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="GET STARTED"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/bright_blue"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -333,7 +333,7 @@
                     android:layout_marginEnd="16dp"
                     android:text="GET STARTED"
                     android:textStyle="bold"
-                    android:textColor="@color/blue"/>
+                    android:textColor="@color/bright_blue"/>
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

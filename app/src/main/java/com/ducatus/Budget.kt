@@ -8,7 +8,9 @@ data class Budget(
     val budget_name: String? = null,
     val budget_amount_total: Double? = null,
     val budget_amount_spent: Double? = null,
-    val budget_created_at: Date? = null,
-    val account_id: Int? = null,
+    val budget_created_at: String? = null,
     val category_id: Int? = null,
+    val category_name: String? = null,
+    val category_color: String? = null,
+    val category_icon: String? = null
 )

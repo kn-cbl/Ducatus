@@ -16,6 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 
 class HomeActivity : AppCompatActivity() {
@@ -33,15 +35,9 @@ class HomeActivity : AppCompatActivity() {
         networkObserver()
 
         setSupportActionBar(binding.tbHome)
-
         binding.tbHome.setNavigationOnClickListener {
             binding.dlHome.open()
         }
-
-//        if (savedInstanceState == null) {
-//            supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HomeFragment()).commit()
-//            binding.nvHome.setCheckedItem(R.id.nav_home)
-//        }
 
         binding.nvHome.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -152,6 +148,7 @@ class HomeActivity : AppCompatActivity() {
                 null
             )
         )
+
         headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(ContextCompat.getColor(this, imageColor))
         headerView.findViewById<TextView>(R.id.tvHeaderName).text = currentAccountName
 
@@ -159,34 +156,30 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun networkObserver() {
-        var connectionStatus: Boolean = true
-//        val snackbarAvailable = Snackbar.make(binding.dlHome, getString(R.string.connection_available), Snackbar.LENGTH_LONG)
-        val snackbarUnavailable = Snackbar.make(binding.dlHome, getString(R.string.connection_unavailable), Snackbar.LENGTH_INDEFINITE)
+        var activityStarted: Boolean = false
 
-        NetworkConnectivityObserver(this).observe(this) {
-            if (it == NetworkStatus.Available) {
-                // connection status prevents continuous display of snackbar
-                if (!connectionStatus) {
-                    connectionStatus = true
-                    snackbarUnavailable.dismiss()
-//                    snackbarAvailable.show()
-                }
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
             }
-            else if (it == NetworkStatus.Unavailable) {
-                connectionStatus = false
-                snackbarUnavailable.show()
+            override fun onFinish() {
+                activityStarted = true
+            }
+        }.start()
 
-                // add 3 second delay to double check network connectivity
-//                object : CountDownTimer(3000, 1000) {
-//                    override fun onTick(millisUntilFinished: Long) {
-//                        // do nothing
-//                    }
-//                    override fun onFinish() {
-//                        if (it == NetworkStatus.Unavailable) {
-//
-//                        }
-//                    }
-//                }.start()
+        if (activityStarted) {
+            val snackbarAvailable = Snackbar.make(binding.dlHome, getString(R.string.connection_available), Snackbar.LENGTH_LONG)
+            val snackbarUnavailable = Snackbar.make(binding.dlHome, getString(R.string.connection_unavailable), Snackbar.LENGTH_INDEFINITE)
+
+            NetworkConnectivityObserver(this).observe(this) {
+                if (it == NetworkStatus.Available) {
+                    snackbarUnavailable.dismiss()
+                    snackbarAvailable.show()
+                }
+                else if (it == NetworkStatus.Unavailable) {
+                    snackbarUnavailable.show()
+                }
             }
         }
     }

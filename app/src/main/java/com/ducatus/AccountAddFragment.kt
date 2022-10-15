@@ -16,7 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentAccountAddBinding
@@ -37,7 +37,7 @@ class AccountAddFragment : Fragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private lateinit var toolbar: MaterialToolbar
-    private var colorNames: List<String> = listOf()
+    private var colors: List<String> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +47,7 @@ class AccountAddFragment : Fragment() {
         rootLayout = activity.findViewById(R.id.llAccounts)
         toolbar = activity.findViewById(R.id.tbAccounts)
         toolbar.title = getString(R.string.add_account)
+        toolbar.inflateMenu(R.menu.check_menu)
 
         binding = FragmentAccountAddBinding.inflate(inflater, container, false)
         return binding.root
@@ -64,7 +65,7 @@ class AccountAddFragment : Fragment() {
                 val gradientDrawable = GradientDrawable()
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -78,28 +79,27 @@ class AccountAddFragment : Fragment() {
             }
         }
 
-        binding.btnAddAccount.setOnClickListener {
-            validateInput()
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.done -> {
+                    validateData()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
     private fun loadColors() {
-        colorNames = listOf(
-            "color_one", "color_two", "color_three", "color_four", "color_five",
-            "color_six", "color_seven", "color_eight", "color_nine", "color_ten",
-            "color_eleven", "color_twelve", "color_thirteen", "color_fourteen", "color_fifteen",
-            "color_sixteen", "color_seventeen", "color_eighteen", "color_nineteen", "color_twenty",
-            "color_twenty_one", "color_twenty_two", "color_twenty_three", "color_twenty_four", "color_twenty_five",
-        )
-
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colorNames) {
+        colors = AppResources().getColors()
+        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = getView(position, convertView, parent)
                 val color = view.findViewById<View>(R.id.viewHelperItem)
                 val gradientDrawable: GradientDrawable = color.background as GradientDrawable
 
                 val iconColor = resources.getIdentifier(
-                    colorNames[position],
+                    colors[position],
                     "color",
                     activity.packageName
                 )
@@ -119,12 +119,15 @@ class AccountAddFragment : Fragment() {
             else binding.tfAddAccountName.error = null
         }
         binding.tfAddAccountBudget.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty() || text.toString().toDouble() == 0.0) binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
+            if (text == null || text.isEmpty()) binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
             else binding.tfAddAccountBudget.error = null
+        }
+        binding.tfAddAccountBudget.editText?.doAfterTextChanged { text ->
+            if (text.toString().startsWith("0")) text?.clear()
         }
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         // hide keyboard
         try {
             val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -132,77 +135,136 @@ class AccountAddFragment : Fragment() {
         }
         catch (e: Exception){}
 
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val accountName = binding.tfAddAccountName.editText?.text.toString().trim {it <= ' '}
-            val accountMonthlyBudget = binding.tfAddAccountBudget.editText?.text.toString().trim {it <= ' '}
-            val accountColor = binding.spAddAccountColor.selectedItem.toString()
+        val accountName = binding.tfAddAccountName.editText?.text.toString().trim {it <= ' '}
+        val accountMonthlyBudget = binding.tfAddAccountBudget.editText?.text.toString().trim {it <= ' '}
+        val accountColor = binding.spAddAccountColor.selectedItem.toString()
 
-            if (TextUtils.isEmpty(accountName) || TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toDouble() == 0.0) {
-                if (TextUtils.isEmpty(accountName)) binding.tfAddAccountName.error = getString(R.string.account_name_empty)
-                if (TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toInt() == 0) binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
-            }
-            else {
-                addAccount(firebaseUser.uid, accountName, accountMonthlyBudget.toDouble(), accountColor)
-            }
+        if (TextUtils.isEmpty(accountName) || TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toDouble() < 1) {
+            if (TextUtils.isEmpty(accountName)) binding.tfAddAccountName.error = getString(R.string.account_name_empty)
+            if (TextUtils.isEmpty(accountMonthlyBudget)) binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
+            if (accountMonthlyBudget.startsWith("0")) binding.tfAddAccountBudget.error = getString(R.string.budget_amount_0)
         }
         else {
-            sessionExpired()
+            auth = Firebase.auth
+            val firebaseUser: FirebaseUser? = auth.currentUser
+            if (firebaseUser != null) {
+                accountExists(firebaseUser.uid, accountName, accountMonthlyBudget.toDouble(), accountColor)
+            }
+            else {
+                sessionExpired()
+            }
         }
     }
 
-    private fun addAccount(uid: String, accountName: String, accountMonthlyBudget: Double, accountColor: String) {
+    private fun accountExists(uid: String, accountName: String, accountMonthlyBudget: Double, accountColor: String) {
         showProgressDialog()
-
         database = Firebase.database
         databaseReference = database.getReference("accounts").child(uid)
-        databaseReference.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var lastId = 0
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                var nameKey = false
+
                 for (child in snapshot.children) {
-                    lastId = child.child("account_id").value.toString().toInt() + 1
+                    if (accountName == child.child("account_name").value.toString()) {
+                        nameKey = true
+                        break
+                    }
                 }
 
-                val account = Account(lastId, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
-                databaseReference.child(lastId.toString()).setValue(account)
-                    .addOnSuccessListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(rootLayout, "Successfully added account", Snackbar.LENGTH_LONG)
-                            .show()
+                if (!nameKey) {
+                    val lastId = snapshot.childrenCount.toInt()
+                    val account = Account(lastId, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
+                    addAccount(lastId.toString(), uid, account)
+                }
+                else {
+                    hideProgressDialog()
+                    binding.tfAddAccountName.error = getString(R.string.account_name_exists)
+                }
 
-                        // add 3 second delay
-                        object : CountDownTimer(3000, 1000) {
-                            override fun onTick(millisUntilFinished: Long) {
-                                // do nothing
-                            }
-                            override fun onFinish() {
-                                try {
-                                    val action = AccountAddFragmentDirections.actionAccountAddFragmentToAccountsFragment()
-                                    findNavController().navigate(action)
-                                }
-                                catch (e: Exception) {}
-                            }
-                        }.start()
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                            .setAction(getString(R.string.retry)) { addAccount(uid, accountName, accountMonthlyBudget, accountColor) }
-                            .show()
-                    }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add account, ${error.message}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { addAccount(uid, accountName, accountMonthlyBudget, accountColor) }
+                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { accountExists(uid, accountName, accountMonthlyBudget, accountColor) }
                     .show()
             }
-        })
+    }
+
+    private fun addAccount(id: String, uid: String, account: Account) {
+        showProgressDialog()
+        databaseReference.child(id).setValue(account)
+            .addOnSuccessListener {
+                createCategories(uid, id)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { addAccount(id, uid, account) }
+                    .show()
+            }
+    }
+
+    private fun createCategories(uid: String, accountId: String) {
+        showProgressDialog()
+        databaseReference = database.getReference("categories").child(uid).child(accountId)
+
+        val categories = mapOf(
+            "0" to Category(
+                0, "Electronics", 1,
+                "blue", "ic_baseline_devices_24"),
+
+            "1" to Category(
+                1, "Financial Expenses", 0,
+                "material_dark_yellow_a400", "ic_baseline_wallet_24"),
+
+            "2" to Category(
+                2, "Food and Drinks", 0,
+                "material_bright_red_a400", "ic_baseline_fastfood_24"),
+
+            "3" to Category(
+                3, "Housing", 0,
+                "material_orange_a400", "ic_baseline_home_24"),
+
+            "4" to Category(
+                4, "Investments", 0,
+                "dark_green", "ic_local_investment_24"),
+
+            "5" to Category(
+                5, "Life and Entertainment", 1,
+                "material_cyan_a400", "ic_baseline_videogame_asset_24"),
+
+            "6" to Category(
+                6, "Shopping", 1,
+                "dark_pink", "ic_outline_shopping_bag_24"),
+
+            "7" to Category(
+                7, "Transportation", 0,
+                "dark_brown", "ic_baseline_directions_bus_24"),
+
+            "8" to Category(
+                8, "Vehicle", 1,
+                "material_dark_purple_a400", "ic_baseline_directions_car_24"),
+
+            "9" to Category(
+                9, "Others", 1,
+                "light_gray", "ic_baseline_more_horiz_24"),
+        )
+
+        databaseReference.setValue(categories)
+            .addOnSuccessListener {
+                hideProgressDialog()
+                val action = AccountAddFragmentDirections.actionAccountAddFragmentToAccountsFragment()
+                findNavController().navigate(action)
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.retry)) { createCategories(uid, accountId) }
+                    .show()
+            }
     }
 
     private fun sessionExpired() {
@@ -226,15 +288,11 @@ class AccountAddFragment : Fragment() {
 
     private fun showProgressDialog() {
         binding.pbAddAccount.visibility = View.VISIBLE
-        binding.btnAddAccount.text = null
-        binding.btnAddAccount.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
         binding.pbAddAccount.visibility = View.INVISIBLE
-        binding.btnAddAccount.text = getString(R.string.add_account)
-        binding.btnAddAccount.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

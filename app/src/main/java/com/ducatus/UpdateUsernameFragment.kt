@@ -2,8 +2,8 @@ package com.ducatus
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
@@ -33,6 +33,7 @@ class UpdateUsernameFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private val args: UpdateUsernameFragmentArgs by navArgs()
+    private var updated: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +41,7 @@ class UpdateUsernameFragment : DialogFragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llUserProfile)
+
         binding = FragmentUpdateUsernameBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,8 +56,18 @@ class UpdateUsernameFragment : DialogFragment() {
             dismiss()
         }
 
-        binding.btnUpdateUsernameSave.setOnClickListener {
-            validateInput()
+        binding.btnUpdateUsernameConfirm.setOnClickListener {
+            validateData()
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (updated) {
+            val fragment = parentFragmentManager.findFragmentById(R.id.fcUserProfile)
+            if (fragment is DialogInterface.OnDismissListener) {
+                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
+            }
         }
     }
 
@@ -66,7 +78,7 @@ class UpdateUsernameFragment : DialogFragment() {
         }
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         // hide keyboard
         try {
             val imm: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -74,24 +86,23 @@ class UpdateUsernameFragment : DialogFragment() {
         }
         catch (e: Exception){}
 
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val username = binding.tfUpdateUsername.editText?.text.toString().trim {it <= ' '}
-
-            if (username == args.username) {
-                // no changes were made
-                dismiss()
-            }
-            else if (TextUtils.isEmpty(username)) {
-                binding.tfUpdateUsername.error = getString(R.string.username_empty)
-            }
-            else {
-                usernameExists(firebaseUser, username)
-            }
+        val username = binding.tfUpdateUsername.editText?.text.toString().trim {it <= ' '}
+        if (username == args.username) {
+            // no changes were made
+            dismiss()
+        }
+        else if (TextUtils.isEmpty(username)) {
+            binding.tfUpdateUsername.error = getString(R.string.username_empty)
         }
         else {
-            sessionExpired()
+            auth = Firebase.auth
+            val firebaseUser: FirebaseUser? = auth.currentUser
+            if (firebaseUser != null) {
+                usernameExists(firebaseUser, username)
+            }
+            else {
+                sessionExpired()
+            }
         }
     }
 
@@ -99,11 +110,11 @@ class UpdateUsernameFragment : DialogFragment() {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("users")
-        databaseReference.addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        databaseReference.get()
+            .addOnSuccessListener {
                 var usernameKey = false
 
-                for (child in snapshot.children) {
+                for (child in it.children) {
                     if(username == child.child("username").value.toString()) {
                         usernameKey = true
                         break
@@ -118,14 +129,13 @@ class UpdateUsernameFragment : DialogFragment() {
                     binding.tfUpdateUsername.error = getString(R.string.username_exists)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to update username, ${error.message}", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Unable to update username, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { usernameExists(firebaseUser, username )}
                     .show()
             }
-        })
     }
 
     private fun updateDB(firebaseUser: FirebaseUser, username: String) {
@@ -154,10 +164,7 @@ class UpdateUsernameFragment : DialogFragment() {
         firebaseUser.updateProfile(updates)
             .addOnSuccessListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, "Successfully saved changes", Snackbar.LENGTH_LONG)
-                    .show()
-
+                updated = true
                 dismiss()
             }
             .addOnFailureListener {
@@ -190,12 +197,10 @@ class UpdateUsernameFragment : DialogFragment() {
 
     private fun showProgressDialog() {
         binding.pbUpdateUsername.visibility = View.VISIBLE
-        binding.llUpdateUsernameButtons.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
-        binding.pbUpdateUsername.visibility = View.GONE
-        binding.llUpdateUsernameButtons.visibility = View.VISIBLE
+        binding.pbUpdateUsername.visibility = View.INVISIBLE
     }
 
 }

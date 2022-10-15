@@ -37,12 +37,24 @@
         <action
             android:id="@+id/action_categoryEditFragment_to_categoryEditIconFragment"
             app:destination="@id/categoryEditIconFragment" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_subcategoryAddFragment"
+            app:destination="@id/subcategoryAddFragment" />
     </fragment>
     <fragment
         android:id="@+id/subcategoryEditFragment"
         android:name="com.ducatus.SubcategoryEditFragment"
         android:label="fragment_subcategory_edit"
         tools:layout="@layout/fragment_subcategory_edit">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_subcategoryEditFragment_to_subcategoryEditIconFragment"
+            app:destination="@id/subcategoryEditIconFragment" />
+        <action
+            android:id="@+id/action_subcategoryEditFragment_to_subcategoryEditNameFragment"
+            app:destination="@id/subcategoryEditNameFragment" />
         <argument
             android:name="subcategoryId"
             app:argType="string" />
@@ -82,7 +94,7 @@
             android:name="categoryNature"
             app:argType="string" />
     </dialog>
-    <fragment
+    <dialog
         android:id="@+id/categoryEditIconFragment"
         android:name="com.ducatus.CategoryEditIconFragment"
         android:label="fragment_category_edit_icon"
@@ -95,5 +107,47 @@
         <argument
             android:name="categoryIcon"
             app:argType="string" />
-    </fragment>
+    </dialog>
+    <dialog
+        android:id="@+id/subcategoryAddFragment"
+        android:name="com.ducatus.SubcategoryAddFragment"
+        android:label="fragment_subcategory_add"
+        tools:layout="@layout/fragment_subcategory_add" >
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/subcategoryEditIconFragment"
+        android:name="com.ducatus.SubcategoryEditIconFragment"
+        android:label="fragment_subcategory_edit_icon"
+        tools:layout="@layout/fragment_subcategory_edit_icon" >
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryColor"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryIcon"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/subcategoryEditNameFragment"
+        android:name="com.ducatus.SubcategoryEditNameFragment"
+        android:label="fragment_subcategory_edit_name"
+        tools:layout="@layout/fragment_subcategory_edit_name" >
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryName"
+            app:argType="string" />
+    </dialog>
 </navigation>

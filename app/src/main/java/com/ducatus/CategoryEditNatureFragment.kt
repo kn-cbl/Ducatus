@@ -1,7 +1,6 @@
 package com.ducatus
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -33,7 +32,6 @@ class CategoryEditNatureFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private val args: CategoryEditNatureFragmentArgs by navArgs()
-    private var updated: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,24 +53,16 @@ class CategoryEditNatureFragment : DialogFragment() {
         }
 
         binding.btnEditCategoryNatureSave.setOnClickListener {
-            validateInput()
-        }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        if (updated) {
-            val fragment = parentFragmentManager.findFragmentById(R.id.fcCategories)
-            if (fragment is DialogInterface.OnDismissListener) {
-                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
-            }
+            validateData()
         }
     }
 
     private fun loadNatures() {
         val natures = listOf("Essentials", "Wants", "Savings")
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, natures)
-        (binding.tfEditCategoryNature.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        val spinner = (binding.tfEditCategoryNature.editText as? AutoCompleteTextView)
+        spinner?.setAdapter(adapter)
+        spinner?.setText(args.categoryNature, false)
     }
 
     private fun inputObserver() {
@@ -82,7 +72,7 @@ class CategoryEditNatureFragment : DialogFragment() {
         }
     }
 
-    private fun validateInput() {
+    private fun validateData() {
         val categoryNature = binding.tfEditCategoryNature.editText?.text.toString().trim {it <= ' '}
         if (categoryNature == args.categoryNature) {
             // no changes were made
@@ -105,6 +95,7 @@ class CategoryEditNatureFragment : DialogFragment() {
     }
 
     private fun saveChanges(categoryNature: Int) {
+        showProgressDialog()
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
@@ -112,17 +103,14 @@ class CategoryEditNatureFragment : DialogFragment() {
             val currentAccountId = sharedPreferences.accountId.toString()
 
             database = Firebase.database
-            databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId).child("category_nature")
-            databaseReference.setValue(categoryNature)
+            databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
+            databaseReference.child("category_nature").setValue(categoryNature)
                 .addOnSuccessListener {
-                    Snackbar
-                        .make(rootLayout, "Successfully saved changes", Snackbar.LENGTH_LONG)
-                        .show()
-
-                    updated = true
+                    hideProgressDialog()
                     dismiss()
                 }
                 .addOnFailureListener {
+                    hideProgressDialog()
                     Snackbar
                         .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.retry)) { saveChanges(categoryNature) }
@@ -130,6 +118,7 @@ class CategoryEditNatureFragment : DialogFragment() {
                 }
         }
         else {
+            hideProgressDialog()
             sessionExpired()
         }
     }
@@ -151,5 +140,13 @@ class CategoryEditNatureFragment : DialogFragment() {
                 activity.finish()
             }
         }.start()
+    }
+
+    private fun showProgressDialog() {
+        binding.pbEditCategoryNature.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressDialog() {
+        binding.pbEditCategoryNature.visibility = View.INVISIBLE
     }
 }

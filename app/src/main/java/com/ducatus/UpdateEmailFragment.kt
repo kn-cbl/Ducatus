@@ -2,11 +2,12 @@ package com.ducatus
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
-import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUpdateEmailBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -28,7 +28,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class UpdateEmailFragment : Fragment() {
+class UpdateEmailFragment : DialogFragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var activity: Activity
     private lateinit var binding: FragmentUpdateEmailBinding
@@ -38,6 +38,7 @@ class UpdateEmailFragment : Fragment() {
     private lateinit var rootLayout: LinearLayout
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
     private var status: Boolean = false
+    private var updated: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,12 +54,16 @@ class UpdateEmailFragment : Fragment() {
         rootLayout = activity.findViewById(R.id.llUserProfile)
         inputObserver()
 
-        binding.btnUpdateEmail.setOnClickListener {
+        binding.btnUpdateEmailCancel.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnUpdateEmailConfirm.setOnClickListener {
             // validate credentials -> show confirmation -> reauthenticate -> update email -> send email verification
             validateCredentials()
         }
 
-        binding.tvResendEmailVerification.setOnClickListener {
+        binding.btnUpdateEmailResendEmail.setOnClickListener {
             resendEmail()
         }
     }
@@ -66,6 +71,16 @@ class UpdateEmailFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (status) reloadUser()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (updated) {
+            val fragment = parentFragmentManager.findFragmentById(R.id.fcUserProfile)
+            if (fragment is DialogInterface.OnDismissListener) {
+                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
+            }
+        }
     }
 
     private fun inputObserver() {
@@ -114,7 +129,7 @@ class UpdateEmailFragment : Fragment() {
 
     private fun confirmUpdate(firebaseUser: FirebaseUser, email: String, password: String) {
         MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.change_email_mark))
+            .setTitle(resources.getString(R.string.update_email_mark))
             .setPositiveButton(resources.getString(R.string.change)) { _, _ -> reauthenticateUser(firebaseUser, email, password) }
             .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
             .show()
@@ -191,13 +206,13 @@ class UpdateEmailFragment : Fragment() {
         showProgressDialog()
         firebaseUser.sendEmailVerification()
             .addOnSuccessListener {
-                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
-                binding.tvResendEmailVerification.isEnabled = false
-                binding.tvResendEmailVerification.visibility = View.VISIBLE
+                disableResendbutton()
+                binding.btnUpdateEmailResendEmail.visibility = View.VISIBLE
                 status = true
+                updated = true
 
                 hideProgressDialog()
-                startTimer(false)
+                startTimer()
 
                 Snackbar
                     .make(rootLayout, "Successfully updated email, email verification has been sent", Snackbar.LENGTH_LONG)
@@ -218,11 +233,10 @@ class UpdateEmailFragment : Fragment() {
         if (firebaseUser != null) {
             firebaseUser.sendEmailVerification()
                 .addOnSuccessListener {
-                    binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
-                    binding.tvResendEmailVerification.isEnabled = false
-
+                    disableResendbutton()
                     hideProgressDialog()
-                    startTimer(false)
+                    startTimer()
+
                     Snackbar
                         .make(rootLayout, "Resent email verification", Snackbar.LENGTH_LONG)
                         .show()
@@ -257,43 +271,24 @@ class UpdateEmailFragment : Fragment() {
     private fun isEmailVerified(firebaseUser: FirebaseUser) {
         if (firebaseUser.isEmailVerified) {
             hideProgressDialog()
-            startTimer(true)
-
             Snackbar
                 .make(rootLayout, "Successfully verified email", Snackbar.LENGTH_LONG)
                 .show()
 
-            // add 3 second delay
-            object : CountDownTimer(3000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    // do nothing
-                }
-                override fun onFinish() {
-                    try {
-                        val action = UpdateEmailFragmentDirections.actionUpdateEmailFragmentToUserProfileFragment()
-                        findNavController().navigate(action)
-                    }
-                    catch (e: Exception) {}
-                }
-            }.start()
+            dismiss()
         }
     }
 
-    private fun startTimer(finish: Boolean) {
-        val timer: CountDownTimer = object: CountDownTimer(60000, 1000) {
+    private fun startTimer() {
+        object: CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val message = "Resend in " + millisUntilFinished / 1000
-                binding.tvResendEmailVerification.text = message
+                binding.btnUpdateEmailResendEmail.text = message
             }
             override fun onFinish() {
-                binding.tvResendEmailVerification.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
-                binding.tvResendEmailVerification.setText(R.string.resend_email_verification)
-                binding.tvResendEmailVerification.isEnabled = true
+                enableResendButton()
             }
-        }
-
-        if (finish) timer.cancel()
-        else timer.start()
+        }.start()
     }
 
     private fun sessionExpired() {
@@ -317,14 +312,23 @@ class UpdateEmailFragment : Fragment() {
     }
 
     private fun showProgressDialog() {
-        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         binding.pbUpdateEmail.visibility = View.VISIBLE
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
-        binding.btnUpdateEmail.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         binding.pbUpdateEmail.visibility = View.INVISIBLE
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun enableResendButton() {
+        binding.btnUpdateEmailResendEmail.setTextColor(ContextCompat.getColor(activity,R.color.green_primary))
+        binding.btnUpdateEmailResendEmail.setText(R.string.resend_email_verification)
+        binding.btnUpdateEmailResendEmail.isEnabled = true
+    }
+
+    private fun disableResendbutton() {
+        binding.btnUpdateEmailResendEmail.setTextColor(ContextCompat.getColor(activity,R.color.darker_gray))
+        binding.btnUpdateEmailResendEmail.isEnabled = false
     }
 }
