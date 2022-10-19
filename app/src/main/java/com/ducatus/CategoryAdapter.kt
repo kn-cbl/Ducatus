@@ -57,9 +57,8 @@ class CategoryAdapter(
             )
 
             findViewById<TextView>(R.id.tvItemCategoryName).text = currentCategory.category_name
-            findViewById<ImageView>(R.id.ibItemCategoryEdit).tag = currentCategory.category_id
             findViewById<ImageView>(R.id.ibItemCategoryEdit).setOnClickListener {
-                listener.showPopup(it, position)
+                listener.showPopup(it, position, currentCategory.category_id.toString())
             }
         }
     }

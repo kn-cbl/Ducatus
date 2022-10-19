@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import java.text.DateFormat
+import java.util.*
 
 class BudgetAdapter(
     private val budgets: MutableList<Budget>,
@@ -34,6 +36,28 @@ class BudgetAdapter(
         val currentBudget = budgets[position]
 
         holder.itemView.apply {
+            val currentBudgetDate =
+                DateFormat
+                    .getDateInstance(DateFormat.MEDIUM, Locale.US)
+                    .format(Date(currentBudget.budget_created_at!!.toLong() * 1000))
+
+            if (position > 0) {
+                val previousBudgetDate =
+                    DateFormat
+                        .getDateInstance(DateFormat.MEDIUM, Locale.US)
+                        .format(Date(budgets[position - 1].budget_created_at!!.toLong() * 1000))
+
+                if (previousBudgetDate == currentBudgetDate) {
+                    findViewById<TextView>(R.id.tvItemBudgetDate).visibility = View.GONE
+                }
+                else {
+                    findViewById<TextView>(R.id.tvItemBudgetDate).text = currentBudgetDate
+                }
+            }
+            else {
+                findViewById<TextView>(R.id.tvItemBudgetDate).text = currentBudgetDate
+            }
+
             val iconColor = resources.getIdentifier(
                 currentBudget.category_color,
                 "color",
@@ -60,26 +84,33 @@ class BudgetAdapter(
             findViewById<TextView>(R.id.tvItemBudgetName).text = currentBudget.budget_name
             findViewById<TextView>(R.id.tvItemBudgetCategory).text = currentBudget.category_name
 
-            val budgetTotal = currentBudget.budget_amount_total
-            val budgetSpent = currentBudget.budget_amount_spent
-            val budgetLeft = budgetTotal?.minus(budgetSpent!!)
+            val budgetTotal = currentBudget.budget_amount_total.toString().toDouble()
+            val budgetSpent = currentBudget.budget_amount_spent.toString().toDouble()
+            val budgetLeft = budgetTotal.minus(budgetSpent)
 
             val spentText = "₱" + String.format("%,.2f", budgetSpent)
             findViewById<TextView>(R.id.tvItemBudgetSpent).text = spentText
-            findViewById<TextView>(R.id.tvItemBudgetSpent).setTextColor(ContextCompat.getColor(activity, iconColor))
+            findViewById<TextView>(R.id.tvItemBudgetSpent).setTextColor(
+                ContextCompat.getColor(activity, iconColor)
+            )
 
             val budgetLeftText = "₱" + String.format("%,.2f", budgetLeft)
             findViewById<TextView>(R.id.tvItemBudgetLeft).text = budgetLeftText
-            findViewById<TextView>(R.id.tvItemBudgetLeft).setTextColor(ContextCompat.getColor(activity, iconColor))
+            findViewById<TextView>(R.id.tvItemBudgetLeft).setTextColor(
+                ContextCompat.getColor(activity, iconColor)
+            )
 
             val budgetTotalText = "₱" + String.format("%,.2f", budgetTotal)
             findViewById<TextView>(R.id.tvItemBudgetLimit).text = budgetTotalText
-            findViewById<TextView>(R.id.tvItemBudgetLimit).setTextColor(ContextCompat.getColor(activity, iconColor))
+            findViewById<TextView>(R.id.tvItemBudgetLimit).setTextColor(
+                ContextCompat.getColor(activity, iconColor)
+            )
 
-            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress
+            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress = ((budgetSpent / budgetTotal) * 100).toInt()
+            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).setIndicatorColor(ContextCompat.getColor(activity, iconColor))
             findViewById<ImageView>(R.id.ibViewItemBudget).tag = currentBudget.budget_id
             findViewById<ImageView>(R.id.ibViewItemBudget).setOnClickListener {
-                listener.viewItem()
+                listener.viewItem(currentBudget.budget_id.toString())
             }
         }
     }

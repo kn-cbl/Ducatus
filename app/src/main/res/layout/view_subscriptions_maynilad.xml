@@ -136,7 +136,7 @@
             android:layout_height="15dp"
             android:layout_below="@id/textView127"
             android:layout_marginLeft="10dp"
-            app:srcCompat="@drawable/ic_baseline_warning_24" />
+            app:srcCompat="@drawable/ic_baseline_warning_24_red" />
 
         <TextView
             android:id="@+id/textView128"

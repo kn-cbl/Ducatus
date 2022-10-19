@@ -1,149 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context=".SubcategoryAddFragment">
 
-    <LinearLayout
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/pbAddSubcategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:indicatorColor="@color/green_primary" />
 
-        <TextView
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tfAddSubcategoryName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:hint="@string/subcategory_name"
+        app:endIconMode="clear_text"
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/add_subcategory_small"
+            android:fontFamily="@font/inter_regular"
+            android:inputType="text"
+            android:maxLength="50"
             android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textSize="14sp"
+            tools:ignore="TextContrastCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfAddSubcategoryName"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/tfAddSubcategoryColor"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:hint="@string/subcategory_name"
-            app:endIconMode="clear_text"
-            app:errorEnabled="true">
+            android:hint="@string/color"
+            app:errorEnabled="true"
+            app:expandedHintEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
-                android:inputType="text"
-                android:maxLength="50"
-                android:textColor="@color/black"
+                android:inputType="none"
                 android:textSize="14sp"
-                tools:ignore="TextContrastCheck" />
+                tools:ignore="LabelFor,TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
+        <View
+            android:id="@+id/viewAddSubcategorySelectedColor"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/et_normal"
-            android:layout_marginTop="8dp"
+            android:layout_height="24dp"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="42dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:text="@string/color"
-                android:textColor="#666666"
-                android:textSize="13sp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp">
 
-            <Spinner
-                android:id="@+id/spAddSubcategoryColor"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="2dp"
-                android:dropDownWidth="wrap_content"
-                android:spinnerMode="dropdown"
-                android:textAlignment="center"
-                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/et_normal"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:text="@string/icon"
-                android:textColor="#666666"
-                android:textSize="13sp" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spAddSubcategoryIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="2dp"
-                    android:dropDownWidth="wrap_content"
-                    android:spinnerMode="dropdown"
-                    android:textAlignment="center"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-            </FrameLayout>
-
-        </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfAddSubcategoryIcon"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp" />
+            android:hint="@string/icon"
+            app:errorEnabled="true"
+            app:expandedHintEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/btnAddSubcategory"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_margin="16dp"
-            android:background="@drawable/green_button"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/add_subcategory_small"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            app:backgroundTint="@color/green_primary" />
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="none"
+                android:textSize="14sp"
+                tools:ignore="LabelFor,TextContrastCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/pbAddSubcategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="-48dp"
-            android:elevation="10dp"
-            android:indeterminate="true"
-            android:visibility="invisible"
-            app:indicatorColor="@color/white" />
-    </LinearLayout>
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/ivAddSubcategorySelectedIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:contentDescription="@string/category_icon"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

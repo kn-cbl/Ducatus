@@ -13,14 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentCategoryAddBinding
+import com.ducatus.viewmodel.ColorViewModel
+import com.ducatus.viewmodel.IconViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -38,8 +38,8 @@ class CategoryAddFragment : Fragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private lateinit var toolbar: MaterialToolbar
-    private var colors: List<String> = listOf()
-    private var icons: List<String> = listOf()
+    private val colorViewModel: ColorViewModel by activityViewModels()
+    private val iconViewModel: IconViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,52 +56,33 @@ class CategoryAddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
+        loadNatures()
         inputObserver()
 
-        binding.spAddCategoryColor.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedView = binding.spAddCategoryColor.selectedView
-                val itemView = selectedView.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable = GradientDrawable()
-
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
-                )
-
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                itemView.background = gradientDrawable
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing
-            }
+        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+            setColor(selectedColor)
         }
 
-        binding.spAddCategoryIcon.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedView = binding.spAddCategoryIcon.selectedView
-                val itemView = selectedView.findViewById<View>(R.id.viewHelperItemIcon)
+        iconViewModel.selectedIcon.observe(viewLifecycleOwner) { selectedIcon ->
+            setIcon(selectedIcon)
+        }
 
-                val icon = resources.getIdentifier(
-                    icons[position],
-                    "drawable",
-                    activity.packageName
-                )
+        binding.tfAddCategoryColor.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = ColorDialogFragment()
+            newFragment.show(fragmentManager, "dialog")
+        }
 
-                itemView.setBackgroundResource(icon)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing
-            }
+        binding.tfAddCategoryIcon.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = IconDialogFragment()
+            newFragment.show(fragmentManager, "dialog")
         }
 
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.done -> {
+                    // validate data -> check if category exists -> add category
                     validateData()
                     true
                 }
@@ -110,60 +91,46 @@ class CategoryAddFragment : Fragment() {
         }
     }
 
-    private fun loadData() {
-        loadNatures()
-        loadColors()
-        loadIcons()
+    private fun setColor(selectedColor: String) {
+        val color = resources.getIdentifier(
+            selectedColor,
+            "color",
+            activity.packageName
+        )
+
+        val gradientDrawable = GradientDrawable()
+        gradientDrawable.setColor(activity.getColor(color))
+        gradientDrawable.cornerRadius = 16f
+
+        binding.viewAddCategorySelectedColor.background = gradientDrawable
+        binding.tfAddCategoryColor.tag = selectedColor
+        binding.tfAddCategoryColor.error = null
+    }
+
+    private fun setIcon(selectedIcon: String) {
+        val icon = resources.getIdentifier(
+            selectedIcon,
+            "drawable",
+            activity.packageName
+        )
+
+        binding.ivAddCategorySelectedIcon.setImageResource(icon)
+        binding.ivAddCategorySelectedIcon.setColorFilter(
+            ResourcesCompat.getColor(
+                resources,
+                R.color.darker_gray,
+                null
+            )
+        )
+
+        binding.tfAddCategoryIcon.tag = selectedIcon
+        binding.tfAddCategoryIcon.error = null
     }
 
     private fun loadNatures() {
         val natures = listOf("Essentials", "Wants", "Savings")
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, natures)
         (binding.tfAddCategoryNature.editText as? AutoCompleteTextView)?.setAdapter(adapter)
-    }
-
-    private fun loadColors() {
-        colors = AppResources().getColors()
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = getView(position, convertView, parent)
-                val itemView = view.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable: GradientDrawable = itemView.background as GradientDrawable
-
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
-                )
-
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                itemView.background = gradientDrawable
-                return view
-            }
-        }
-
-        binding.spAddCategoryColor.adapter = adapter
-    }
-
-    private fun loadIcons() {
-        icons = AppResources().getIcons()
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, icons) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = getView(position, convertView, parent)
-                val itemView = view.findViewById<View>(R.id.viewHelperItemIcon)
-
-                val icon = resources.getIdentifier(
-                    icons[position],
-                    "drawable",
-                    activity.packageName
-                )
-
-                itemView.background = ContextCompat.getDrawable(activity, icon)
-                return view
-            }
-        }
-
-        binding.spAddCategoryIcon.adapter = adapter
     }
 
     private fun inputObserver() {
@@ -187,14 +154,28 @@ class CategoryAddFragment : Fragment() {
 
         val categoryName = binding.tfAddCategoryName.editText?.text.toString().trim {it <= ' '}
         val categoryNature = binding.tfAddCategoryNature.editText?.text.toString().trim {it <= ' '}
-        val categoryColor = binding.spAddCategoryColor.selectedItem.toString()
-        val categoryIcon = binding.spAddCategoryIcon.selectedItem.toString()
+        val categoryColor = binding.tfAddCategoryColor.tag
+        val categoryIcon = binding.tfAddCategoryIcon.tag
+        var errors = 0
 
-        if (TextUtils.isEmpty(categoryName) || TextUtils.isEmpty(categoryNature)) {
-            if (TextUtils.isEmpty(categoryName)) binding.tfAddCategoryName.error = getString(R.string.category_name_empty)
-            if (TextUtils.isEmpty(categoryNature)) binding.tfAddCategoryNature.error = getString(R.string.category_nature_empty)
+        if (TextUtils.isEmpty(categoryName)) {
+            binding.tfAddCategoryName.error = getString(R.string.category_name_empty)
+            errors++
         }
-        else {
+        if (TextUtils.isEmpty(categoryNature)) {
+            binding.tfAddCategoryNature.error = getString(R.string.category_nature_empty)
+            errors++
+        }
+        if (categoryColor == null) {
+            binding.tfAddCategoryColor.error = getString(R.string.select_a_color)
+            errors++
+        }
+        if (categoryIcon == null) {
+            binding.tfAddCategoryIcon.error = getString(R.string.select_an_icon)
+            errors++
+        }
+
+        if (errors == 0) {
             auth = Firebase.auth
             val firebaseUser: FirebaseUser? = auth.currentUser
             if (firebaseUser != null) {
@@ -208,7 +189,14 @@ class CategoryAddFragment : Fragment() {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
 
-                categoryExists(firebaseUser.uid, accountId, categoryName, nature, categoryColor, categoryIcon)
+                categoryExists(
+                    firebaseUser.uid,
+                    accountId,
+                    categoryName,
+                    nature,
+                    categoryColor.toString(),
+                    categoryIcon.toString()
+                )
             }
             else {
                 sessionExpired()
@@ -277,10 +265,13 @@ class CategoryAddFragment : Fragment() {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }

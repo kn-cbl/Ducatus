@@ -14,7 +14,7 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_clear_24"
+        app:navigationIcon="@drawable/ic_baseline_clear_24_white"
         app:title="Edit Budget"
         app:titleTextColor="#FFFFFF"
         app:menu="@menu/editbudget_menu"

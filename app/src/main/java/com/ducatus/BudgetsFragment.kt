@@ -43,7 +43,6 @@ class BudgetsFragment : Fragment(), BudgetInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
 
         binding.ibAddBudget.setOnClickListener {
             startActivity(Intent(activity, BudgetAddActivity::class.java))
@@ -51,13 +50,21 @@ class BudgetsFragment : Fragment(), BudgetInterface {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadData()
+    }
+
     // get activity to be used in adapter
     override fun getActivityInterface(): Activity {
         return activity
     }
 
-    override fun viewItem() {
-        TODO()
+    override fun viewItem(budgetId: String) {
+        val intent = Intent(activity, BudgetDetailActivity::class.java)
+        intent.putExtra("budgetId", budgetId)
+        startActivity(intent)
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun loadData() {
@@ -115,10 +122,13 @@ class BudgetsFragment : Fragment(), BudgetInterface {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }
@@ -127,10 +137,12 @@ class BudgetsFragment : Fragment(), BudgetInterface {
         binding.cvBudgetsEmpty.visibility = View.GONE
         binding.pbBudgets.visibility = View.VISIBLE
         binding.rvBudgets.visibility = View.GONE
+        binding.ibAddBudget.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbBudgets.visibility = View.INVISIBLE
         binding.rvBudgets.visibility = View.VISIBLE
+        binding.ibAddBudget.visibility = View.VISIBLE
     }
 }

@@ -16,6 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -107,8 +108,8 @@ class UpdatePasswordActivity : AppCompatActivity() {
     private fun confirmUpdate(newPassword: String, currentPassword: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.update_password_mark))
-            .setPositiveButton(resources.getString(R.string.change)) { _, _ -> reauthenticateUser(newPassword, currentPassword) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> } // do nothing
+            .setPositiveButton(resources.getString(R.string.update)) { _, _ -> reauthenticateUser(newPassword, currentPassword) }
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> } // do nothing
             .show()
     }
 
@@ -119,28 +120,23 @@ class UpdatePasswordActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             val credential = EmailAuthProvider.getCredential(firebaseUser.email.toString(), currentPassword)
             firebaseUser.reauthenticate(credential)
-                .addOnSuccessListener {
-                    updatePassword(firebaseUser, newPassword)
-                }
-                .addOnFailureListener {
-                    hideProgressDialog()
-                    Snackbar
-                        .make(binding.llUpdatePassword, it.localizedMessage!!, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(getString(R.string.retry)) { reauthenticateUser(newPassword, currentPassword) }
-                        .show()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        updatePassword(firebaseUser, newPassword)
+                    }
+                    else {
+                        hideProgressDialog()
+                        val exception = task.exception as FirebaseAuthException
+                        when (exception.errorCode) {
+                            "ERROR_WRONG_PASSWORD" -> binding.tfUpdatePasswordCurrent.error = getString(R.string.password_invalid)
+                            else -> binding.tfUpdatePasswordCurrent.error = exception.localizedMessage
+                        }
+                    }
                 }
         }
         else {
             hideProgressDialog()
-            Snackbar
-                .make(binding.llUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-                .show()
-
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
+            sessionExpired()
         }
     }
 
@@ -148,21 +144,64 @@ class UpdatePasswordActivity : AppCompatActivity() {
         showProgressDialog()
         firebaseUser.updatePassword(newPassword)
             .addOnSuccessListener {
-                crypto = Crypto()
-                database = Firebase.database
-                databaseReference = database.getReference("users").child(firebaseUser.uid).child("password")
-                databaseReference.setValue(crypto.encrypt(newPassword).toString())
-
-                hideProgressDialog()
-                onBackPressed()
+                updateDB(firebaseUser.uid, newPassword)
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(binding.llUpdatePassword, "Unable to update password", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { updatePassword(firebaseUser, newPassword) }
+                    .make(binding.llUpdatePassword, it.localizedMessage!!.toString(), Snackbar.LENGTH_LONG)
                     .show()
             }
+    }
+
+    private fun updateDB(uid: String, newPassword: String) {
+        crypto = Crypto()
+        database = Firebase.database
+        databaseReference = database.getReference("users").child(uid).child("password")
+        databaseReference.setValue(crypto.encrypt(newPassword).toString())
+            .addOnSuccessListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(binding.llUpdatePassword, "Password updated", Snackbar.LENGTH_SHORT)
+                    .show()
+
+                // add 1.5 second delay
+                object : CountDownTimer(1500, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        // do nothing
+                    }
+
+                    override fun onFinish() {
+                        onBackPressed()
+                    }
+                }.start()
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(binding.llUpdatePassword, it.localizedMessage!!.toString(), Snackbar.LENGTH_LONG)
+                    .show()
+            }
+    }
+
+    private fun sessionExpired() {
+        hideProgressDialog()
+        Snackbar
+            .make(binding.llUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+            .show()
+
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(applicationContext, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {

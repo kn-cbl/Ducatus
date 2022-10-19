@@ -4,15 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".AccountEditFragment">
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/pbEditAccountLoad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminate="true"
-        app:indicatorColor="@color/green_secondary" />
+    tools:context=".AccountEditDialogFragment">
 
     <LinearLayout
         android:id="@+id/llEditAccount"
@@ -24,7 +16,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UselessParent">
 
         <TextView
             android:layout_width="match_parent"
@@ -95,35 +88,48 @@
                 tools:ignore="LabelFor,TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/et_normal"
-            android:orientation="vertical">
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:text="@string/color"
-                android:textColor="#666666"
-                android:textSize="13sp" />
-
-            <Spinner
-                android:id="@+id/spEditColor"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tfEditAccountColor"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="2dp"
-                android:dropDownWidth="wrap_content"
-                android:spinnerMode="dropdown"
-                android:textAlignment="center"
-                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:hint="@string/color"
+                app:errorEnabled="true"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:inputType="none"
+                    android:textSize="14sp"
+                    tools:ignore="LabelFor,TextContrastCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/viewEditAccountSelectedColor"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="42dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -141,11 +147,11 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_regular"
                 android:letterSpacing="0.04"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary" />
+                android:textColor="@color/darker_gray" />
 
             <Button
                 android:id="@+id/btnEditAccountSave"

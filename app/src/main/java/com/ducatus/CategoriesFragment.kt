@@ -65,18 +65,18 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         return activity
     }
 
-    override fun showPopup(view: View, position: Int) {
+    override fun showPopup(view: View, position: Int, categoryId: String) {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.optionEdit -> {
                     toolbar.title = getString(R.string.edit_category)
-                    val action = CategoriesFragmentDirections.actionCategoriesFragmentToCategoryEditFragment(view.tag.toString())
+                    val action = CategoriesFragmentDirections.actionCategoriesFragmentToCategoryEditFragment(categoryId)
                     findNavController().navigate(action)
                     true
                 }
                 R.id.optionDelete-> {
-                    confirmDelete(view.tag.toString(), position)
+                    confirmDelete(categoryId, position)
                     true
                 }
                 else -> false
@@ -120,7 +120,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 }
 
                 // sort categories
-                categories.sortBy { it.category_name }
+                categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.category_name.toString() })
                 for (item in categories) {
                     categoryAdapter.addCategory(item)
                 }
@@ -144,7 +144,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             .setTitle(resources.getString(R.string.delete_category_mark))
             .setMessage(resources.getString(R.string.delete_category_confirm))
             .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteCategory(categoryId, position) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 
@@ -157,7 +157,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to delete category", Snackbar.LENGTH_INDEFINITE)
+                    .make(rootLayout, "Unable to delete category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
                     .setAction(getString(R.string.retry)) { deleteCategory(categoryId, position) }
                     .show()
             }
@@ -174,10 +174,13 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }
@@ -185,10 +188,12 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     private fun showProgressDialog() {
         binding.pbCategories.visibility = View.VISIBLE
         binding.rvCategories.visibility = View.GONE
+        binding.ibAddCategory.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbCategories.visibility = View.INVISIBLE
         binding.rvCategories.visibility = View.VISIBLE
+        binding.ibAddCategory.visibility = View.VISIBLE
     }
 }

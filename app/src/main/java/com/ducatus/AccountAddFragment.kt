@@ -13,13 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentAccountAddBinding
+import com.ducatus.viewmodel.ColorViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -37,7 +37,7 @@ class AccountAddFragment : Fragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private lateinit var toolbar: MaterialToolbar
-    private var colors: List<String> = listOf()
+    private val colorViewModel: ColorViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,33 +55,22 @@ class AccountAddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadColors()
         inputObserver()
 
-        binding.spAddAccountColor.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedView = binding.spAddAccountColor.selectedView
-                val color = selectedView.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable = GradientDrawable()
+        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+            setColor(selectedColor)
+        }
 
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
-                )
-
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                color.background = gradientDrawable
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing
-            }
+        binding.tfAddAccountColor.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = ColorDialogFragment()
+            newFragment.show(fragmentManager, "dialog")
         }
 
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.done -> {
+                    // validate data -> check if account exists -> add account, create categories
                     validateData()
                     true
                 }
@@ -90,27 +79,20 @@ class AccountAddFragment : Fragment() {
         }
     }
 
-    private fun loadColors() {
-        colors = AppResources().getColors()
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = getView(position, convertView, parent)
-                val color = view.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable: GradientDrawable = color.background as GradientDrawable
+    private fun setColor(selectedColor: String) {
+        val color = resources.getIdentifier(
+            selectedColor,
+            "color",
+            activity.packageName
+        )
 
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
-                )
+        val gradientDrawable = GradientDrawable()
+        gradientDrawable.setColor(activity.getColor(color))
+        gradientDrawable.cornerRadius = 16f
 
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                color.background = gradientDrawable
-                return view
-            }
-        }
-
-        binding.spAddAccountColor.adapter = adapter
+        binding.viewAddAccountSelectedColor.background = gradientDrawable
+        binding.tfAddAccountColor.tag = selectedColor
+        binding.tfAddAccountColor.error = null
     }
 
     private fun inputObserver() {
@@ -137,18 +119,36 @@ class AccountAddFragment : Fragment() {
 
         val accountName = binding.tfAddAccountName.editText?.text.toString().trim {it <= ' '}
         val accountMonthlyBudget = binding.tfAddAccountBudget.editText?.text.toString().trim {it <= ' '}
-        val accountColor = binding.spAddAccountColor.selectedItem.toString()
+        val accountColor = binding.tfAddAccountColor.tag
+        var errors = 0
 
-        if (TextUtils.isEmpty(accountName) || TextUtils.isEmpty(accountMonthlyBudget) || accountMonthlyBudget.toDouble() < 1) {
-            if (TextUtils.isEmpty(accountName)) binding.tfAddAccountName.error = getString(R.string.account_name_empty)
-            if (TextUtils.isEmpty(accountMonthlyBudget)) binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
-            if (accountMonthlyBudget.startsWith("0")) binding.tfAddAccountBudget.error = getString(R.string.budget_amount_0)
+        if (TextUtils.isEmpty(accountName)) {
+            binding.tfAddAccountName.error = getString(R.string.account_name_empty)
+            errors++
         }
-        else {
+        if (TextUtils.isEmpty(accountMonthlyBudget)) {
+            binding.tfAddAccountBudget.error = getString(R.string.monthly_budget_empty)
+            errors++
+        }
+        if (accountMonthlyBudget.startsWith("0")) {
+            binding.tfAddAccountBudget.error = getString(R.string.budget_amount_0)
+            errors++
+        }
+        if (accountColor == null) {
+            binding.tfAddAccountColor.error = getString(R.string.select_a_color)
+            errors++
+        }
+
+        if (errors == 0) {
             auth = Firebase.auth
             val firebaseUser: FirebaseUser? = auth.currentUser
             if (firebaseUser != null) {
-                accountExists(firebaseUser.uid, accountName, accountMonthlyBudget.toDouble(), accountColor)
+                accountExists(
+                    firebaseUser.uid,
+                    accountName,
+                    accountMonthlyBudget.toDouble(),
+                    accountColor.toString()
+                )
             }
             else {
                 sessionExpired()
@@ -208,50 +208,9 @@ class AccountAddFragment : Fragment() {
 
     private fun createCategories(uid: String, accountId: String) {
         showProgressDialog()
+        val categories = AppResources().getDefaultCategories()
+
         databaseReference = database.getReference("categories").child(uid).child(accountId)
-
-        val categories = mapOf(
-            "0" to Category(
-                0, "Electronics", 1,
-                "blue", "ic_baseline_devices_24"),
-
-            "1" to Category(
-                1, "Financial Expenses", 0,
-                "material_dark_yellow_a400", "ic_baseline_wallet_24"),
-
-            "2" to Category(
-                2, "Food and Drinks", 0,
-                "material_bright_red_a400", "ic_baseline_fastfood_24"),
-
-            "3" to Category(
-                3, "Housing", 0,
-                "material_orange_a400", "ic_baseline_home_24"),
-
-            "4" to Category(
-                4, "Investments", 0,
-                "dark_green", "ic_local_investment_24"),
-
-            "5" to Category(
-                5, "Life and Entertainment", 1,
-                "material_cyan_a400", "ic_baseline_videogame_asset_24"),
-
-            "6" to Category(
-                6, "Shopping", 1,
-                "dark_pink", "ic_outline_shopping_bag_24"),
-
-            "7" to Category(
-                7, "Transportation", 0,
-                "dark_brown", "ic_baseline_directions_bus_24"),
-
-            "8" to Category(
-                8, "Vehicle", 1,
-                "material_dark_purple_a400", "ic_baseline_directions_car_24"),
-
-            "9" to Category(
-                9, "Others", 1,
-                "light_gray", "ic_baseline_more_horiz_24"),
-        )
-
         databaseReference.setValue(categories)
             .addOnSuccessListener {
                 hideProgressDialog()
@@ -278,10 +237,13 @@ class AccountAddFragment : Fragment() {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }

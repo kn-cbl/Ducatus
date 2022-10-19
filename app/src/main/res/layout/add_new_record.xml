@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/check_menu"
-        app:navigationIcon="@drawable/ic_baseline_clear_24"
+        app:navigationIcon="@drawable/ic_baseline_clear_24_white"
         app:title="Add New Record"
         app:titleTextColor="#FFFFFF" />
 

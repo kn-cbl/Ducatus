@@ -20,6 +20,7 @@ import javax.mail.internet.MimeMessage
 
 class VerifyOTPEmailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVerifyOtpEmailBinding
+    private lateinit var timer: CountDownTimer
     private var generatedOTP: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +29,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        startTimer()
+        setTimer()
 
         binding.tvVerifyOTPUserEmail.text = intent.getStringExtra("email").toString()
         generatedOTP = intent.getStringExtra("code").toString()
@@ -111,6 +112,8 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         val auth = Firebase.auth
         auth.signInWithEmailAndPassword(email, crypto.decrypt(password).toString())
             .addOnSuccessListener {
+                timer.cancel()
+
                 val intent = Intent(this, ResetPasswordActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
@@ -162,7 +165,8 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                     binding.tvResendOTPEmail.isEnabled = false
 
                     hideProgressDialog()
-                    startTimer()
+                    setTimer()
+                    timer.start()
                 }
             }
             catch (e: MessagingException) {
@@ -177,10 +181,10 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         return randomPin.toString()
     }
 
-    private fun startTimer() {
-        object : CountDownTimer(60000, 1000) {
+    private fun setTimer() {
+        timer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val message = "Resend in " + millisUntilFinished / 1000
+                val message = "Resend in " + millisUntilFinished / 1000 + "s"
                 binding.tvResendOTPEmail.text = message
             }
             override fun onFinish() {
@@ -188,7 +192,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
                 binding.tvResendOTPEmail.text = getString(R.string.resend_verification_code)
                 binding.tvResendOTPEmail.isEnabled = true
             }
-        }.start()
+        }
     }
 
     private fun showProgressDialog() {

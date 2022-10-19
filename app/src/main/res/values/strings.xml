@@ -66,7 +66,7 @@
     <string name="verification_code_sent">The verification code has been sent to</string>
     <string name="otp_sent">OTP has been sent to</string>
     <string name="verify">Verify</string>
-    <string name="resend_in_60">Resend in 60</string>
+    <string name="resend_in_60">Resend in 60s</string>
     <string name="resend_verification_code">Resend verification code</string>
     <string name="mobile_number">Mobile number</string>
     <string name="update_mobile_number">Update mobile number</string>
@@ -107,6 +107,7 @@
     <string name="session_expired">Session expired, please log-in again</string>
     <string name="email_empty">Enter your email</string>
     <string name="email_invalid">Enter a valid email</string>
+    <string name="email_exists">Email is already taken</string>
     <string name="new_email_empty">Enter your new email</string>
     <string name="new_email_same">New email must not be the same as current email</string>
     <string name="username_empty">Enter your username</string>
@@ -114,6 +115,7 @@
     <string name="email_username_empty">Enter your email or username</string>
     <string name="user_does_not_exist">User does not exist</string>
     <string name="password_empty">Enter your password</string>
+    <string name="password_invalid">Incorrect password</string>
     <string name="password_complexity">Password must be at least 8 characters</string>
     <string name="current_password_empty">Enter your current password</string>
     <string name="new_password_empty">Enter your new password</string>
@@ -139,6 +141,7 @@
     <string name="budget_category_empty">Select a category</string>
     <string name="budget_amount_empty">Enter budget amount</string>
     <string name="budget_amount_0">Amount must be greater than 0</string>
+    <string name="budget_amount_overflow">Amount must not be greater than the remaining budget</string>
 
     <!-- Notifications -->
     <string name="expenses_reminder">Expenses Reminder</string>
@@ -164,18 +167,13 @@
     <string name="transactions">Transactions</string>
     <string name="reports">Reports</string>
     <string name="planned_payments">Planned Payments</string>
-    <string name="budget">Budget</string>
-    <string name="budgets">Budgets</string>
-    <string name="set_monthly_budget">Set monthly budget</string>
-    <string name="set_monthly_budget_mark">You have not set your monthly budget yet. Set now?</string>
-    <string name="monthly_budget">Monthly Budget</string>
-    <string name="monthly_budget_empty">Enter monthly budget</string>
     <string name="loans">Loans</string>
     <string name="goals">Goals</string>
     <string name="challenges">Challenges</string>
     <string name="tips">Tips</string>
     <string name="help">Help</string>
     <string name="color">Color</string>
+
     <string name="add_another_account">Add another account</string>
     <string name="account_name">Account Name</string>
     <string name="account_color">Account Color</string>
@@ -186,6 +184,26 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_mark">Delete account?</string>
     <string name="delete_account_confirm">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
+
+    <string name="budget">Budget</string>
+    <string name="budgets">Budgets</string>
+    <string name="set_monthly_budget">Set monthly budget</string>
+    <string name="set_monthly_budget_mark">You have not set your monthly budget yet. Set now?</string>
+    <string name="monthly_budget">Monthly Budget</string>
+    <string name="monthly_budget_empty">Enter monthly budget</string>
+    <string name="add_budget">Add Budget</string>
+    <string name="edit_budget">Edit budget</string>
+    <string name="budgets_empty">No budgets allocated yet</string>
+    <string name="budget_detail">Budget Detail</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="budget_name">Budget Name</string>
+    <string name="view_budget">View Budget</string>
+    <string name="spent">Spent</string>
+    <string name="amount_left">Amount Left</string>
+    <string name="limit">Limit</string>
+    <string name="budget_status">Budget status</string>
+    <string name="delete_budget">Delete budget?</string>
+    <string name="delete_budget_confirm">All data associated with this budget will be gone forever. Do you still wish to proceed?</string>
 
     <string name="essentials">Essentials</string>
     <string name="wants">Wants</string>
@@ -202,7 +220,7 @@
     <string name="edit_category_name">Edit category name</string>
     <string name="edit_category_nature">Edit category nature</string>
     <string name="delete_category">Delete Category</string>
-    <string name="delete_category_mark">Delete Category?</string>
+    <string name="delete_category_mark">Delete category?</string>
     <string name="delete_category_confirm">All data associated with this category will be gone forever. Do you still wish to proceed?</string>
 
     <string name="subcategories">Subcategories</string>
@@ -217,8 +235,10 @@
     <string name="edit_subcategory_name">Edit subcategory name</string>
     <string name="edit_subcategory_nature">Edit subcategory nature</string>
     <string name="delete_subcategory">Delete Subcategory</string>
-    <string name="delete_subcategory_mark">Delete Subcategory?</string>
+    <string name="delete_subcategory_mark">Delete subcategory?</string>
     <string name="delete_subcategory_confirm">All data associated with this subcategory will be gone forever. Do you still wish to proceed?</string>
+    <string name="select_a_color">Select a color</string>
+    <string name="select_an_icon">Select an icon</string>
     <string name="select">Select</string>
     <string name="delete">Delete</string>
     <string name="check">Check</string>
@@ -234,17 +254,13 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="icon">Icon</string>
-    <string name="budget_name">Budget Name</string>
-    <string name="view_budget">View Budget</string>
-    <string name="spent">Spent</string>
-    <string name="amount_left">Amount Left</string>
-    <string name="limit">Limit</string>
-    <string name="budget_status">Budget status</string>
     <string name="account">Account</string>
     <string name="category">Category</string>
-    <string name="add_budget">Add Budget</string>
-    <string name="budgets_empty">No budgets allocated yet</string>
-    <string name="budget_detail">Budget Detail</string>
-    <string name="transaction_history">Transaction History</string>
+    <string name="breakdown">breakdown</string>
+    <string name="calendar_overview">calendar overview</string>
+    <string name="receipt">Receipt</string>
+    <string name="receipt_attached">Receipt attached</string>
+    <string name="no_receipt">No receipt</string>
+    <string name="payment_type">Payment Type</string>
 
 </resources>

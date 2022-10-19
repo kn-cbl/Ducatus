@@ -51,9 +51,8 @@ class AccountAdapter(
             val budget = "₱" + String.format("%,.2f", currentAccount.account_monthly_budget)
             findViewById<TextView>(R.id.tvItemAccountBudget).text = budget
 
-            findViewById<ImageView>(R.id.ibItemAccountEdit).tag = currentAccount.account_id
             findViewById<ImageView>(R.id.ibItemAccountEdit).setOnClickListener {
-                listener.showPopup(it, 2)
+                listener.showPopup(it, 2, currentAccount.account_id.toString())
             }
         }
     }

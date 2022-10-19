@@ -8,7 +8,6 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityLoginBinding
@@ -18,8 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -165,15 +164,22 @@ class LoginActivity : AppCompatActivity() {
     private fun login(email: String, password: String) {
         auth = Firebase.auth
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                val firebaseUser: FirebaseUser? = it.user
-                if (firebaseUser != null) {
-                    checkSelectedAccount(firebaseUser)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser: FirebaseUser? = task.result.user
+                    if (firebaseUser != null) {
+                        checkSelectedAccount(firebaseUser)
+                    }
                 }
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                binding.tvLoginErrorAuth.text = it.localizedMessage
+                else {
+                    hideProgressDialog()
+                    val exception = task.exception as FirebaseAuthException
+                    when (exception.errorCode) {
+                        "ERROR_WRONG_PASSWORD" -> binding.tvLoginErrorAuth.text = getString(R.string.password_invalid)
+                        "ERROR_USER_NOT_FOUND" -> binding.tvLoginErrorAuth.text = getString(R.string.user_does_not_exist)
+                        else -> binding.tvLoginErrorAuth.text = exception.localizedMessage
+                    }
+                }
             }
     }
 
@@ -199,7 +205,7 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun storeData(firebaseUser: FirebaseUser, googleSignInAccount: GoogleSignInAccount) {
+    private fun storeData(firebaseUser: FirebaseUser) {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("users").child(firebaseUser.uid)
@@ -213,10 +219,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llLogin, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { storeData(firebaseUser, googleSignInAccount) }
-                                .show()
+                            binding.tvLoginErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -247,10 +250,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llLogin, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
-                                .show()
+                            binding.tvLoginErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -259,10 +259,7 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llLogin, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
-                    .show()
+                binding.tvLoginErrorAuth.text = it.localizedMessage
             }
     }
 
@@ -280,10 +277,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llLogin, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
-                                .show()
+                            binding.tvLoginErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -292,10 +286,7 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llLogin, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
-                    .show()
+                binding.tvLoginErrorAuth.text = it.localizedMessage
             }
     }
 
@@ -357,7 +348,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 val firebaseUser: FirebaseUser? = it.user
                 if (firebaseUser != null) {
-                    storeData(firebaseUser, googleSignInAccount)
+                    storeData(firebaseUser)
                 }
             }
             .addOnFailureListener {

@@ -25,6 +25,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
     private lateinit var options: PhoneAuthOptions
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var storedVerificationId: String
+    private lateinit var timer: CountDownTimer
     private var status: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +34,9 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val mobileNumber = intent.getStringExtra("mobileNumber").toString()
-        binding.tvVerifyOTPUserMobile.text = "0$mobileNumber"
+        var mobileNumber = intent.getStringExtra("mobileNumber").toString()
+        mobileNumber = "0$mobileNumber"
+        binding.tvVerifyOTPUserMobile.text = mobileNumber
         sendVerificationCode(mobileNumber)
 
         binding.imgBtnVerifyOTPMobileBack.setOnClickListener {
@@ -75,6 +77,8 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
             val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, code)
             auth.signInWithCredential(credential)
                 .addOnSuccessListener {
+                    timer.cancel()
+
                     val intent = Intent(this, ResetPasswordActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
@@ -122,7 +126,8 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
                 status = true
 
                 hideProgressDialog()
-                startTimer()
+                setTimer()
+                timer.start()
             }
         }
 
@@ -157,17 +162,18 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
         hideProgressDialog()
     }
 
-    private fun startTimer() {
-        object : CountDownTimer(60000, 1000) {
+    private fun setTimer() {
+        timer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvResendOTPMobile.text = "Resend in " + millisUntilFinished / 1000
+                val message = "Resend in " + millisUntilFinished / 1000 + "s"
+                binding.tvResendOTPMobile.text = message
             }
             override fun onFinish() {
                 binding.tvResendOTPMobile.setTextColor(ContextCompat.getColor(applicationContext,R.color.green_primary))
                 binding.tvResendOTPMobile.text = getString(R.string.resend_verification_code)
                 binding.tvResendOTPMobile.isEnabled = true
             }
-        }.start()
+        }
     }
 
     private fun showProgressDialog() {

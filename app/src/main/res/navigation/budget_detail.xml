@@ -9,5 +9,33 @@
         android:id="@+id/budgetDetailFragment"
         android:name="com.ducatus.BudgetDetailFragment"
         android:label="fragment_budget_detail"
-        tools:layout="@layout/fragment_budget_detail" />
+        tools:layout="@layout/fragment_budget_detail">
+        <action
+            android:id="@+id/action_budgetDetailFragment_to_budgetEditDialogFragment"
+            app:destination="@id/budgetEditDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/budgetEditDialogFragment"
+        android:name="com.ducatus.BudgetEditDialogFragment"
+        android:label="fragment_budget_edit"
+        tools:layout="@layout/fragment_budget_edit_dialog">
+        <argument
+            android:name="budgetId"
+            app:argType="string" />
+        <argument
+            android:name="budgetName"
+            app:argType="string" />
+        <argument
+            android:name="budgetAmount"
+            app:argType="string" />
+        <argument
+            android:name="budgetSpent"
+            app:argType="string" />
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+    </dialog>
 </navigation>

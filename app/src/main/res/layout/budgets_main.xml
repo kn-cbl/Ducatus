@@ -548,7 +548,7 @@
                         android:layout_height="15dp"
                         android:layout_below="@id/progressBar3"
                         android:layout_marginLeft="20dp"
-                        app:srcCompat="@drawable/ic_baseline_warning_24" />
+                        app:srcCompat="@drawable/ic_baseline_warning_24_red" />
 
                     <TextView
                         android:id="@+id/textView97"

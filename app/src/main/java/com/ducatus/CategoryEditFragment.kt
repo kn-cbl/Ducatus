@@ -65,6 +65,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         rootLayout = activity.findViewById(R.id.llCategories)
         toolbar = activity.findViewById(R.id.tbCategories)
         toolbar.title = getString(R.string.edit_category)
+        toolbar.menu.clear()
 
         binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
         return binding.root
@@ -92,21 +93,22 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         super.onViewCreated(view, savedInstanceState)
 
         binding.ibEditCategoryIcon.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditIconFragment(args.categoryId, currentCategoryColor, currentCategoryIcon)
+            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditIconDialogFragment(args.categoryId, currentCategoryColor, currentCategoryIcon)
             findNavController().navigate(action)
         }
 
         binding.ibEditCategoryName.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNameFragment(args.categoryId, currentCategoryName)
+            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNameDialogFragment(args.categoryId, currentCategoryName)
             findNavController().navigate(action)
         }
 
         binding.ibEditCategoryNature.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNatureFragment(args.categoryId, currentCategoryNature)
+            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNatureDialogFragment(args.categoryId, currentCategoryNature)
             findNavController().navigate(action)
         }
 
         binding.ibAddSubcategory.setOnClickListener {
+            toolbar.title = getString(R.string.add_subcategory)
             val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToSubcategoryAddFragment(args.categoryId)
             findNavController().navigate(action)
         }
@@ -170,6 +172,10 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                     }
 
                     hideProgressDialog()
+                }
+
+                if (subcategoryAdapter.itemCount >= 20) {
+                    binding.ibAddSubcategory.visibility = View.GONE
                 }
             }
 
@@ -242,7 +248,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             .setTitle(resources.getString(R.string.delete_subcategory_mark))
             .setMessage(resources.getString(R.string.delete_subcategory_confirm))
             .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteSubcategory(subcategoryId, position) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 
@@ -270,10 +276,13 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }
@@ -282,11 +291,13 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         binding.pbCategoryEdit.visibility = View.VISIBLE
         binding.llCategoryEdit.visibility = View.GONE
         binding.rvSubcategories.visibility = View.GONE
+        binding.ibAddSubcategory.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbCategoryEdit.visibility = View.INVISIBLE
         binding.llCategoryEdit.visibility = View.VISIBLE
         binding.rvSubcategories.visibility = View.VISIBLE
+        binding.ibAddSubcategory.visibility = View.VISIBLE
     }
 }

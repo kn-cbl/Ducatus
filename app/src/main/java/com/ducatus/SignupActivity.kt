@@ -17,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -157,12 +156,6 @@ class SignupActivity : AppCompatActivity() {
             .addOnFailureListener {
                 hideProgressDialog()
                 binding.tvSignupErrorAuth.text = it.localizedMessage
-//                    try {
-//                        throw task.exception!!
-//                    }
-//                    catch(e: FirebaseAuthInvalidCredentialsException) {
-//                        binding.tvSignupErrorAuth.setText(R.string.email_invalid)
-//                    }
             }
     }
 
@@ -206,10 +199,7 @@ class SignupActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { storeData(firebaseUser, password, username) }
-                                .show()
+                            binding.tvSignupErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -240,10 +230,7 @@ class SignupActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
-                                .show()
+                            binding.tvSignupErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -252,16 +239,13 @@ class SignupActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { createDefaultAccount(firebaseUser, username) }
-                    .show()
+                binding.tvSignupErrorAuth.text = it.localizedMessage
             }
     }
 
     private fun createDefaultCategories(firebaseUser: FirebaseUser) {
         showProgressDialog()
-        databaseReference = database.getReference("categories").child(firebaseUser.uid).child("0")
+        databaseReference = database.getReference("categories").child(firebaseUser.uid)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
@@ -273,10 +257,7 @@ class SignupActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
-                            Snackbar
-                                .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                                .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
-                                .show()
+                            binding.tvSignupErrorAuth.text = it.localizedMessage
                         }
                 }
                 else {
@@ -285,10 +266,7 @@ class SignupActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llSignup, "Unable to store user data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { createDefaultCategories(firebaseUser) }
-                    .show()
+                binding.tvSignupErrorAuth.text = it.localizedMessage
             }
     }
 

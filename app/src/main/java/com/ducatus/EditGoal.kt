@@ -112,13 +112,13 @@ class EditGoal : AppCompatActivity() {
 
         icons.setOnClickListener {
             // do something when the corky2 is clicked
-            val dialog = IconDialog()
-            dialog.displayIcon = icons
+            val dialog = IconDialogFragment()
+//            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
         iconsDropdown.setOnClickListener{
-            val dialog = IconDialog()
-            dialog.displayIcon = icons
+            val dialog = IconDialogFragment()
+//            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
     }

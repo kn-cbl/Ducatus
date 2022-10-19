@@ -32,7 +32,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(view)
 
         loadData()
-        networkObserver()
+//        networkObserver()
 
         setSupportActionBar(binding.tbHome)
         binding.tbHome.setNavigationOnClickListener {
@@ -118,13 +118,10 @@ class HomeActivity : AppCompatActivity() {
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             loadAccount()
+            sessionExpired()
         }
         else {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
+            sessionExpired()
         }
     }
 
@@ -156,7 +153,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun networkObserver() {
-        var activityStarted: Boolean = false
+        var activityStarted = false
 
         // add 3 second delay
         object : CountDownTimer(3000, 1000) {
@@ -182,6 +179,27 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun sessionExpired() {
+        showProgressDialog()
+        Snackbar
+            .make(binding.dlHome, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+            .show()
+
+        // add 3 second delay
+        object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // do nothing
+            }
+            override fun onFinish() {
+                val intent = Intent(applicationContext, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                finish()
+            }
+        }.start()
     }
 
     private fun showProgressDialog() {

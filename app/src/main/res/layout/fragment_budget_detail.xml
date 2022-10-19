@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,34 +37,32 @@
             android:layout_marginEnd="16dp">
 
             <FrameLayout
-                android:id="@+id/flItemBudgetCategoryIcon"
+                android:id="@+id/flBudgetDetailCategoryIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_circle"
-                android:backgroundTint="@color/dark_blue">
+                android:backgroundTint="@color/lighter_gray">
 
                 <ImageView
-                    android:id="@+id/ivItemBudgetCategoryIcon"
+                    android:id="@+id/ivBudgetDetailCategoryIcon"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_gravity="center"
-                    android:contentDescription="@string/category_icon"
-                    app:srcCompat="@drawable/ic_baseline_devices_24"
-                    app:tint="@color/white" />
+                    android:contentDescription="@string/category_icon" />
             </FrameLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_toStartOf="@+id/ibViewItemBudget"
-                android:layout_toEndOf="@id/flItemBudgetCategoryIcon"
+                android:layout_toStartOf="@+id/ibBudgetDetailEdit"
+                android:layout_toEndOf="@id/flBudgetDetailCategoryIcon"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvItemBudgetName"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvBudgetDetailName"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/budget_name"
@@ -71,8 +70,8 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/tvItemBudgetCategory"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvBudgetDetailCategory"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
                     android:text="@string/category_name"
@@ -81,15 +80,13 @@
             </LinearLayout>
 
             <ImageButton
-                android:id="@+id/ibViewItemBudget"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:id="@+id/ibBudgetDetailEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/ic_baseline_arrow_forward_ios_25"
-                android:contentDescription="@string/view_budget"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
+                android:background="@drawable/ic_more"
+                android:contentDescription="@string/edit"
                 tools:ignore="TouchTargetSizeCheck" />
         </RelativeLayout>
 
@@ -119,12 +116,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvItemBudgetSpent"
+                android:id="@+id/tvBudgetDetailSpent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/spent"
-                android:textColor="@color/dark_blue"
+                android:textColor="@color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView69" />
@@ -142,15 +139,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvItemBudgetLeft"
+                android:id="@+id/tvBudgetDetailLeft"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/amount_left"
-                android:textColor="@color/dark_blue"
+                android:textColor="@color/darker_gray"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/tvItemBudgetLimit"
-                app:layout_constraintStart_toEndOf="@+id/tvItemBudgetSpent"
+                app:layout_constraintEnd_toStartOf="@+id/tvBudgetDetailLimit"
+                app:layout_constraintStart_toEndOf="@+id/tvBudgetDetailSpent"
                 app:layout_constraintTop_toBottomOf="@+id/textView70" />
 
             <TextView
@@ -165,19 +162,19 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvItemBudgetLimit"
+                android:id="@+id/tvBudgetDetailLimit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/limit"
-                android:textColor="@color/dark_blue"
+                android:textColor="@color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView5" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/pbItemBudget"
+            android:id="@+id/pbBudgetDetailStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -202,11 +199,10 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="@string/icon"
-                app:srcCompat="@drawable/ic_sharp_local_fire_department"
                 tools:ignore="ImageContrastCheck" />
 
             <TextView
-                android:id="@+id/tvItemBudgetStatus"
+                android:id="@+id/tvBudgetDetailStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -241,8 +237,9 @@
             app:dividerInsetStart="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTransactionHistory"
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

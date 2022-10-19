@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.core.content.res.ResourcesCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -43,7 +44,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadData()
-
     }
 
     private fun loadData() {
@@ -51,9 +51,6 @@ class HomeFragment : Fragment() {
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             loadAccount(firebaseUser.uid)
-        }
-        else {
-            sessionExpired()
         }
     }
 
@@ -98,25 +95,6 @@ class HomeFragment : Fragment() {
                     .setAction(getString(R.string.retry)) { loadAccount(uid) }
                     .show()
             }
-    }
-
-    private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
-
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
-            }
-        }.start()
     }
 
     private fun showProgressDialog() {

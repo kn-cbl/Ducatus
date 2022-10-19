@@ -56,17 +56,17 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
         }
 
         binding.ibUpdateUsername.setOnClickListener {
-            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateUsernameFragment(currentUsername)
+            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateUsernameDialogFragment(currentUsername)
             findNavController().navigate(action)
         }
 
         binding.tfUserProfileEmail.setEndIconOnClickListener {
-            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateEmailFragment()
+            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateEmailDialogFragment()
             findNavController().navigate(action)
         }
 
         binding.tfUserProfileMobileNumber.setEndIconOnClickListener {
-            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateMobileNumberFragment()
+            val action = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateMobileNumberDialogFragment()
             findNavController().navigate(action)
         }
     }
@@ -193,10 +193,13 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }

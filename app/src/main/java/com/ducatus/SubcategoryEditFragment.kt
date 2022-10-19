@@ -14,7 +14,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentSubcategoryEditBinding
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -73,16 +72,21 @@ class SubcategoryEditFragment : Fragment() {
         databaseReference.addValueEventListener(selectedSubcategoryListener)
     }
 
+    override fun onStop() {
+        super.onStop()
+        databaseReference.removeEventListener(selectedSubcategoryListener)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.ibEditSubcategoryIcon.setOnClickListener {
-            val action = SubcategoryEditFragmentDirections.actionSubcategoryEditFragmentToSubcategoryEditIconFragment(args.categoryId, args.subcategoryId, currentSubcategoryColor, currentSubcategoryIcon)
+            val action = SubcategoryEditFragmentDirections.actionSubcategoryEditFragmentToSubcategoryEditIconDialogFragment(args.categoryId, args.subcategoryId, currentSubcategoryColor, currentSubcategoryIcon)
             findNavController().navigate(action)
         }
 
         binding.ibEditSubcategoryName.setOnClickListener {
-            val action = SubcategoryEditFragmentDirections.actionSubcategoryEditFragmentToSubcategoryEditNameFragment(args.categoryId, args.subcategoryId, currentSubcategoryName)
+            val action = SubcategoryEditFragmentDirections.actionSubcategoryEditFragmentToSubcategoryEditNameDialogFragment(args.categoryId, args.subcategoryId, currentSubcategoryName)
             findNavController().navigate(action)
         }
     }
@@ -144,10 +148,13 @@ class SubcategoryEditFragment : Fragment() {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }

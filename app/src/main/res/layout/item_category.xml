@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,15 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:background="@drawable/bg_circle"
-            android:backgroundTint="@color/dark_blue">
+            android:backgroundTint="@color/lighter_gray">
 
             <ImageView
                 android:id="@+id/ivItemCategoryIcon"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
-                android:contentDescription="@string/category_icon"
-                app:srcCompat="@drawable/ic_baseline_devices_24_white" />
+                android:contentDescription="@string/category_icon"/>
         </FrameLayout>
 
         <TextView

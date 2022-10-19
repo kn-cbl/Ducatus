@@ -43,7 +43,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentBottom="true"
                 android:background="@color/material_on_background_disabled"
-                app:srcCompat="@drawable/ic_baseline_photo_camera_24" />
+                app:srcCompat="@drawable/ic_baseline_photo_camera_24_white" />
 
             <ImageButton
                 android:id="@+id/imageButton6"
@@ -52,7 +52,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:background="@color/material_on_background_disabled"
-                app:srcCompat="@drawable/ic_baseline_image_24" />
+                app:srcCompat="@drawable/ic_baseline_image_24_white" />
 
             <ImageButton
                 android:id="@+id/imageButton7"
@@ -65,7 +65,7 @@
                 android:layout_toStartOf="@+id/imageButton6"
                 android:layout_toEndOf="@+id/imageButton5"
                 android:background="@color/material_on_background_disabled"
-                app:srcCompat="@drawable/ic_baseline_circle_24" />
+                app:srcCompat="@drawable/ic_baseline_circle_24_white" />
         </RelativeLayout>
 
     </FrameLayout>

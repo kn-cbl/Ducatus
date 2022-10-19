@@ -14,7 +14,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_clear_24"
+        app:navigationIcon="@drawable/ic_baseline_clear_24_white"
         app:title="Edit Subscription"
         app:titleTextColor="#FFFFFF"
         app:menu="@menu/editbudget_menu"/>

@@ -11,9 +11,11 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.databinding.FragmentAccountsBinding
+import com.ducatus.viewmodel.AccountViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -35,7 +37,9 @@ class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var rootLayout: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
+    private val accountViewModel: AccountViewModel by activityViewModels()
     private var firebaseUser: FirebaseUser? = null
+    private var updated: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +47,15 @@ class AccountsFragment : Fragment(), AccountInterface {
         activity = requireActivity()
         auth = Firebase.auth
         firebaseUser = auth.currentUser
-        database = Firebase.database
-        databaseReference = database.getReference("accounts").child(firebaseUser!!.uid)
-        sharedPreferences = SharedPreferences(activity)
+
+        if (firebaseUser != null) {
+            database = Firebase.database
+            databaseReference = database.getReference("accounts").child(firebaseUser!!.uid)
+            sharedPreferences = SharedPreferences(activity)
+        }
+        else {
+            sessionExpired()
+        }
     }
 
     override fun onCreateView(
@@ -65,8 +75,9 @@ class AccountsFragment : Fragment(), AccountInterface {
         super.onViewCreated(view, savedInstanceState)
         loadData()
 
-        binding.ivEditSelectedAccount.setOnClickListener {
-            showPopup(it, 1)
+        accountViewModel.isUpdated.observe(viewLifecycleOwner) { isUpdated ->
+            updated = isUpdated
+            if (updated) loadData()
         }
 
         binding.rlAddAccount.setOnClickListener {
@@ -79,9 +90,9 @@ class AccountsFragment : Fragment(), AccountInterface {
         super.onResume()
         val intent = activity.intent
         val fragment = intent.extras?.getString("setBudget")
-        if (fragment == "set") {
+        if (fragment == "set" && !updated) {
             val accountId = intent.extras?.getString("accountId").toString()
-            val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditFragment(accountId)
+            val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditDialogFragment(accountId)
             findNavController().navigate(action)
         }
     }
@@ -91,22 +102,22 @@ class AccountsFragment : Fragment(), AccountInterface {
         return activity
     }
 
-    override fun showPopup(view: View, menu: Int) {
+    override fun showPopup(view: View, menu: Int, accountId: String) {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.optionSelect -> {
                     val currentAccountId = sharedPreferences.accountId.toString()
-                    deselectAccount(currentAccountId, view.tag.toString())
+                    deselectAccount(currentAccountId, accountId)
                     true
                 }
                 R.id.optionEdit -> {
-                    val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditFragment(view.tag.toString())
+                    val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditDialogFragment(accountId)
                     findNavController().navigate(action)
                     true
                 }
                 R.id.optionDelete -> {
-                    confirmDelete(view.tag.toString())
+                    confirmDelete(accountId)
                     true
                 }
                 else -> false
@@ -122,17 +133,12 @@ class AccountsFragment : Fragment(), AccountInterface {
 
     private fun loadData() {
         showProgressDialog()
-        if (firebaseUser != null) {
-            val currentAccountId = sharedPreferences.accountId.toString()
-            loadAccounts(currentAccountId)
-            loadMainAccount(currentAccountId)
+        val currentAccountId = sharedPreferences.accountId.toString()
+        loadAccounts(currentAccountId)
+        loadMainAccount(currentAccountId)
 
-            // limit accounts to 5 per user
-            if (accountAdapter.itemCount == 4) binding.rlAddAccount.visibility = View.GONE
-        }
-        else {
-            sessionExpired()
-        }
+        // limit accounts to 5 per user
+        if (accountAdapter.itemCount == 4) binding.rlAddAccount.visibility = View.GONE
     }
 
     private fun loadAccounts(currentAccountId: String) {
@@ -161,8 +167,8 @@ class AccountsFragment : Fragment(), AccountInterface {
 
     private fun loadMainAccount(currentAccountId: String) {
         databaseReference.child(currentAccountId).get()
-            .addOnSuccessListener {
-                val account = it.getValue<Account>()
+            .addOnSuccessListener { snapshot ->
+                val account = snapshot.getValue<Account>()
                 if (account != null) {
                     try {
                         val imageColor = resources.getIdentifier(
@@ -184,7 +190,10 @@ class AccountsFragment : Fragment(), AccountInterface {
                     val budget = "₱" + String.format("%,.2f", account.account_monthly_budget)
                     binding.tvSelectedAccountBudget.text = budget
                     binding.tvSelectedAccountName.text = account.account_name
-                    binding.ivEditSelectedAccount.tag = account.account_id
+                    binding.ivEditSelectedAccount.setOnClickListener {
+                        showPopup(it, 1, account.account_id.toString())
+                    }
+
                     hideProgressDialog()
                 }
             }
@@ -245,7 +254,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             .setTitle(resources.getString(R.string.delete_account_mark))
             .setMessage(resources.getString(R.string.delete_account_confirm))
             .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteAccount(accountId) }
-            .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 
@@ -275,10 +284,13 @@ class AccountsFragment : Fragment(), AccountInterface {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }

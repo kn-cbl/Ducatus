@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_budgetsFragment"
             app:destination="@id/budgetsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_iconDialog"
+            app:destination="@id/iconDialog" />
     </fragment>
 
     <fragment
@@ -28,5 +31,9 @@
         android:name="com.ducatus.BudgetsFragment"
         android:label="fragment_budgets"
         tools:layout="@layout/fragment_budgets" />
+    <dialog
+        android:id="@+id/iconDialog"
+        android:name="com.ducatus.IconDialogFragment"
+        android:label="IconDialog" />
 
 </navigation>

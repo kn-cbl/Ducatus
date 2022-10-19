@@ -98,31 +98,33 @@ class BudgetAddActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        hasSetBudget(firebaseUser!!.uid, selectedAccount)
+        loadAccounts(firebaseUser!!.uid, selectedAccount)
+        loadCategories(firebaseUser!!.uid, selectedAccount)
+    }
+
     private fun loadData() {
         auth = Firebase.auth
         firebaseUser = auth.currentUser
         if (firebaseUser != null) {
             val sharedPreferences = SharedPreferences(this)
             val currentAccountId = sharedPreferences.accountId.toString()
-            loadAccounts(firebaseUser!!.uid)
-            loadCategories(firebaseUser!!.uid, currentAccountId)
+            selectedAccount = currentAccountId
+            database = Firebase.database
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadAccounts(uid: String) {
+    private fun loadAccounts(uid: String, accountId: String) {
         showProgressDialog()
-        database = Firebase.database
         databaseReference = database.getReference("accounts").child(uid)
         databaseReference.get()
             .addOnSuccessListener {
-                val sharedPreferences = SharedPreferences(applicationContext)
-                // store account id
-                selectedAccount = sharedPreferences.accountId.toString()
-                hasSetBudget(uid, selectedAccount)
-
                 // get all accounts
                 val accounts = mutableListOf<StringWithTag>()
                 for (child in it.children) {
@@ -140,20 +142,20 @@ class BudgetAddActivity : AppCompatActivity() {
                 }
 
                 // set remaining budget
-                accountMonthlyBudget = accounts[selectedAccount.toInt()].tag3!!.toDouble()
-                accountRemainingBudget = accounts[selectedAccount.toInt()].tag2.toDouble()
+                accountMonthlyBudget = accounts[accountId.toInt()].tag3!!.toDouble()
+                accountRemainingBudget = accounts[accountId.toInt()].tag2.toDouble()
                 val text = "Remaining budget: ₱" + String.format("%,.2f", accountRemainingBudget)
                 binding.tfAddBudgetAccount.helperText = text
 
                 val adapter = ArrayAdapter(applicationContext, R.layout.list_item, accounts)
                 val spinner = (binding.tfAddBudgetAccount.editText as? AutoCompleteTextView)
                 spinner?.setAdapter(adapter)
-                spinner?.setText(accounts[selectedAccount.toInt()].string, false)
+                spinner?.setText(accounts[accountId.toInt()].string, false)
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clBudgetAdd, "Unable to load accounts, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { loadAccounts(uid) }
+                    .make(binding.clBudgetAdd, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { loadAccounts(uid, accountId) }
                     .show()
             }
     }
@@ -174,7 +176,7 @@ class BudgetAddActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clBudgetAdd, "Unable to load accounts, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .make(binding.clBudgetAdd, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
                     .setAction("Retry") { hasSetBudget(uid, accountId)}
                     .show()
             }
@@ -199,18 +201,18 @@ class BudgetAddActivity : AppCompatActivity() {
 
                 val categories = mutableListOf<StringWithTag>()
                 for (child in it.children) {
-                    // only add categories that have not been budgeted yet
-                    if (child.child("category_allocated").value.toString() == "false") {
-                        val category = child.getValue<Category>()
-                        if (category != null) {
-                            // count total number of each category nature to be used in determining
-                            // recommended budget
-                            when (category.category_nature) {
-                                0 -> essentialCategories++
-                                1 -> wantCategories++
-                                2 -> savingCategories++
-                            }
+                    val category = child.getValue<Category>()
+                    if (category != null) {
+                        // count total number of each category nature to be used in determining
+                        // recommended budget
+                        when (category.category_nature) {
+                            0 -> essentialCategories++
+                            1 -> wantCategories++
+                            2 -> savingCategories++
+                        }
 
+                        // only add categories that have not been budgeted yet
+                        if (category.category_allocated.toString() == "false") {
                             categories.add(
                                 StringWithTag(
                                     category.category_name.toString(),
@@ -245,9 +247,9 @@ class BudgetAddActivity : AppCompatActivity() {
     private fun determineRecommendedBudget(categoryNature: String) {
         var recommendedBudget = 0.0
         when (categoryNature) {
-            "0" -> recommendedBudget = (accountRemainingBudget * 0.50) / essentialCategories
-            "1" -> recommendedBudget = (accountRemainingBudget * 0.30) / wantCategories
-            "2" -> recommendedBudget = (accountRemainingBudget * 0.20) / savingCategories
+            "0" -> recommendedBudget = (accountMonthlyBudget * 0.50) / essentialCategories
+            "1" -> recommendedBudget = (accountMonthlyBudget * 0.30) / wantCategories
+            "2" -> recommendedBudget = (accountMonthlyBudget * 0.20) / savingCategories
         }
 
         val text = "Recommended budget for the selected category: ₱" + String.format("%,.2f", recommendedBudget)
@@ -256,18 +258,33 @@ class BudgetAddActivity : AppCompatActivity() {
 
     private fun inputObserver() {
         binding.tfAddBudgetName.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty()) binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
-            else binding.tfAddBudgetName.error = null
+            if (text == null || text.isEmpty()) {
+                binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
+            }
+            else {
+                binding.tfAddBudgetName.error = null
+            }
         }
         binding.tfAddBudgetAmount.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty()) binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_empty)
-            else binding.tfAddBudgetAmount.error = null
+            if (text == null || text.isEmpty()) {
+                binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_empty)
+            }
+            else if (text.toString().toDouble() > accountRemainingBudget) {
+                binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_overflow)
+            }
+            else {
+                binding.tfAddBudgetAmount.error = null
+            }
         }
         binding.tfAddBudgetAmount.editText?.doAfterTextChanged { text ->
-            if (text.toString().startsWith("0")) text?.clear()
+            if (text.toString().startsWith("0")) {
+                text?.clear()
+            }
         }
         binding.tfAddBudgetCategory.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text != null) binding.tfAddBudgetCategory.error = null
+            if (text != null) {
+                binding.tfAddBudgetCategory.error = null
+            }
         }
     }
 
@@ -282,15 +299,36 @@ class BudgetAddActivity : AppCompatActivity() {
         val budgetName =  binding.tfAddBudgetName.editText?.text.toString().trim { it <= ' ' }
         val budgetCategory = binding.tfAddBudgetCategory.editText?.text.toString().trim { it <= ' ' }
         val budgetAmount = binding.tfAddBudgetAmount.editText?.text.toString().trim { it <= ' ' }
+        var errors = 0
 
-        if (TextUtils.isEmpty(budgetName) || TextUtils.isEmpty(budgetCategory) || TextUtils.isEmpty(budgetAmount) || accountMonthlyBudget <= 0.0) {
-            if (TextUtils.isEmpty(budgetName)) binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
-            if (TextUtils.isEmpty(budgetCategory)) binding.tfAddBudgetCategory.error = getString(R.string.budget_category_empty)
-            if (TextUtils.isEmpty(budgetAmount)) binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_empty)
-            if (budgetAmount.startsWith("0")) binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_0)
-            if (accountMonthlyBudget <= 0.0) hasSetBudget(firebaseUser!!.uid, selectedAccount)
+        if (accountMonthlyBudget <= 0.0) {
+            hasSetBudget(firebaseUser!!.uid, selectedAccount)
+            errors++
+        }
+        if (TextUtils.isEmpty(budgetName)) {
+            binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
+            errors++
+        }
+        if (TextUtils.isEmpty(budgetCategory)) {
+            binding.tfAddBudgetCategory.error = getString(R.string.budget_category_empty)
+            errors++
+        }
+        if (TextUtils.isEmpty(budgetAmount)) {
+            binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_empty)
+            errors++
         }
         else {
+            if (budgetAmount.startsWith("0")) {
+                binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_0)
+                errors++
+            }
+            if (budgetAmount.toDouble() > accountRemainingBudget) {
+                binding.tfAddBudgetAmount.error = getString(R.string.budget_amount_overflow)
+                errors++
+            }
+        }
+
+        if (errors == 0) {
             budgetExists(firebaseUser!!.uid, budgetName, selectedCategory, selectedAccount, budgetAmount.toDouble())
         }
     }
@@ -352,9 +390,26 @@ class BudgetAddActivity : AppCompatActivity() {
             }
     }
 
-
     private fun setAllocated(uid: String, accountId: String, budget: Budget) {
         databaseReference.child("category_allocated").setValue(true)
+            .addOnSuccessListener {
+                decreaseRemainingBudget(uid, accountId, budget)
+            }
+            .addOnFailureListener {
+                hideProgressDialogAdd()
+                Snackbar
+                    .make(binding.clBudgetAdd, "Unable to add budget, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry") { setAllocated(uid, accountId, budget) }
+                    .show()
+            }
+    }
+
+    private fun decreaseRemainingBudget(uid: String, accountId: String, budget: Budget) {
+        showProgressDialogAdd()
+        val remainingBudget = accountRemainingBudget - budget.budget_amount_total
+
+        databaseReference = database.getReference("accounts").child(uid).child(accountId)
+        databaseReference.child("account_remaining_budget").setValue(remainingBudget)
             .addOnSuccessListener {
                 addBudget(uid, accountId, budget)
             }
@@ -362,7 +417,7 @@ class BudgetAddActivity : AppCompatActivity() {
                 hideProgressDialogAdd()
                 Snackbar
                     .make(binding.clBudgetAdd, "Unable to add budget, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { setAllocated(uid, accountId, budget) }
+                    .setAction("Retry") { decreaseRemainingBudget(uid, accountId, budget) }
                     .show()
             }
     }

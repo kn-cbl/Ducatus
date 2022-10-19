@@ -5,7 +5,7 @@
     android:id="@+id/clHomeFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darker_white"
+    android:background="@color/darker_white_2"
     android:elevation="0dp"
     android:orientation="vertical"
     tools:context=".HomeFragment">

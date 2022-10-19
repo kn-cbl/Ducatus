@@ -5,7 +5,6 @@
     android:id="@+id/clBudgetAdd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".BudgetAddActivity">
 
     <com.google.android.material.appbar.MaterialToolbar

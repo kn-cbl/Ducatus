@@ -7,19 +7,22 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentSubcategoryAddBinding
+import com.ducatus.viewmodel.ColorViewModel
+import com.ducatus.viewmodel.IconViewModel
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -28,16 +31,17 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class SubcategoryAddFragment : DialogFragment() {
+class SubcategoryAddFragment : Fragment() {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentSubcategoryAddBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
-    private var colors: List<String> = listOf()
-    private var icons: List<String> = listOf()
+    private lateinit var toolbar: MaterialToolbar
     private val args: SubcategoryAddFragmentArgs by navArgs()
+    private val colorViewModel: ColorViewModel by activityViewModels()
+    private val iconViewModel: IconViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,107 +49,75 @@ class SubcategoryAddFragment : DialogFragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llCategories)
+        toolbar = activity.findViewById(R.id.tbCategories)
+        toolbar.inflateMenu(R.menu.check_menu)
+
         binding = FragmentSubcategoryAddBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
         inputObserver()
 
-        binding.spAddSubcategoryColor.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedView = binding.spAddSubcategoryColor.selectedView
-                val itemView = selectedView.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable = GradientDrawable()
+        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+            val color = resources.getIdentifier(
+                selectedColor,
+                "color",
+                activity.packageName
+            )
 
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
+            val gradientDrawable = GradientDrawable()
+            gradientDrawable.setColor(activity.getColor(color))
+            gradientDrawable.cornerRadius = 16f
+
+            binding.viewAddSubcategorySelectedColor.background = gradientDrawable
+            binding.tfAddSubcategoryColor.tag = selectedColor
+            binding.tfAddSubcategoryColor.error = null
+        }
+
+        iconViewModel.selectedIcon.observe(viewLifecycleOwner) { selectedIcon ->
+            val icon = resources.getIdentifier(
+                selectedIcon,
+                "drawable",
+                activity.packageName
+            )
+
+            binding.ivAddSubcategorySelectedIcon.setImageResource(icon)
+            binding.ivAddSubcategorySelectedIcon.setColorFilter(
+                ResourcesCompat.getColor(
+                    resources,
+                    R.color.darker_gray,
+                    null
                 )
+            )
 
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                itemView.background = gradientDrawable
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing
-            }
+            binding.tfAddSubcategoryIcon.tag = selectedIcon
+            binding.tfAddSubcategoryIcon.error = null
         }
 
-        binding.spAddSubcategoryIcon.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedView = binding.spAddSubcategoryIcon.selectedView
-                val itemView = selectedView.findViewById<View>(R.id.viewHelperItemIcon)
-
-                val icon = resources.getIdentifier(
-                    icons[position],
-                    "drawable",
-                    activity.packageName
-                )
-
-                itemView.setBackgroundResource(icon)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // do nothing
-            }
+        binding.tfAddSubcategoryColor.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = ColorDialogFragment()
+            newFragment.show(fragmentManager, "dialog")
         }
 
-        binding.btnAddSubcategory.setOnClickListener {
-            validateData()
+        binding.tfAddSubcategoryIcon.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = IconDialogFragment()
+            newFragment.show(fragmentManager, "dialog")
         }
-    }
 
-    private fun loadData() {
-        loadColors()
-        loadIcons()
-    }
-
-    private fun loadColors() {
-        colors = AppResources().getColors()
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item, R.id.txt_bundle, colors) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = getView(position, convertView, parent)
-                val itemView = view.findViewById<View>(R.id.viewHelperItem)
-                val gradientDrawable: GradientDrawable = itemView.background as GradientDrawable
-
-                val iconColor = resources.getIdentifier(
-                    colors[position],
-                    "color",
-                    activity.packageName
-                )
-
-                gradientDrawable.setColor(activity.getColor(iconColor))
-                itemView.background = gradientDrawable
-                return view
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.done -> {
+                    // validate data -> check if subcategory exists -> add subcategory
+                    validateData()
+                    true
+                }
+                else -> false
             }
         }
-
-        binding.spAddSubcategoryColor.adapter = adapter
-    }
-
-    private fun loadIcons() {
-        icons = AppResources().getIcons()
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.spinner_item_icon, R.id.tvItemIcon, icons) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = getView(position, convertView, parent)
-                val itemView = view.findViewById<View>(R.id.viewHelperItemIcon)
-
-                val icon = resources.getIdentifier(
-                    icons[position],
-                    "drawable",
-                    activity.packageName
-                )
-
-                itemView.background = ContextCompat.getDrawable(activity, icon)
-                return view
-            }
-        }
-
-        binding.spAddSubcategoryIcon.adapter = adapter
     }
 
     private fun inputObserver() {
@@ -164,19 +136,36 @@ class SubcategoryAddFragment : DialogFragment() {
         catch (e: Exception){}
 
         val subcategoryName = binding.tfAddSubcategoryName.editText?.text.toString().trim {it <= ' '}
-        val subcategoryColor = binding.spAddSubcategoryColor.selectedItem.toString()
-        val subcategoryIcon = binding.spAddSubcategoryIcon.selectedItem.toString()
+        val subcategoryColor = binding.tfAddSubcategoryColor.tag
+        val subcategoryIcon = binding.tfAddSubcategoryIcon.tag
+        var errors = 0
 
         if (TextUtils.isEmpty(subcategoryName)) {
             binding.tfAddSubcategoryName.error = getString(R.string.category_name_empty)
+            errors++
         }
-        else {
+        if (subcategoryColor == null) {
+            binding.tfAddSubcategoryColor.error = getString(R.string.select_a_color)
+            errors++
+        }
+        if (subcategoryIcon == null) {
+            binding.tfAddSubcategoryIcon.error = getString(R.string.select_an_icon)
+            errors++
+        }
+
+        if (errors == 0) {
             auth = Firebase.auth
             val firebaseUser: FirebaseUser? = auth.currentUser
             if (firebaseUser != null) {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
-                subcategoryExists(firebaseUser.uid, accountId, subcategoryName, subcategoryColor, subcategoryIcon)
+                subcategoryExists(
+                    firebaseUser.uid,
+                    accountId,
+                    subcategoryName,
+                    subcategoryColor.toString(),
+                    subcategoryIcon.toString()
+                )
             }
             else {
                 sessionExpired()
@@ -222,7 +211,8 @@ class SubcategoryAddFragment : DialogFragment() {
         databaseReference.child(id.toString()).setValue(subcategory)
             .addOnSuccessListener {
                 hideProgressDialog()
-                dismiss()
+                val action = SubcategoryAddFragmentDirections.actionSubcategoryAddFragmentToCategoryEditFragment(args.categoryId)
+                findNavController().navigate(action)
             }
             .addOnFailureListener {
                 hideProgressDialog()
@@ -244,25 +234,24 @@ class SubcategoryAddFragment : DialogFragment() {
                 // do nothing
             }
             override fun onFinish() {
-                val intent = Intent(activity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                activity.finish()
+                try {
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    activity.finish()
+                }
+                catch (e: Exception) {}
             }
         }.start()
     }
 
     private fun showProgressDialog() {
         binding.pbAddSubcategory.visibility = View.VISIBLE
-        binding.btnAddSubcategory.text = null
-        binding.btnAddSubcategory.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.gray)
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun hideProgressDialog() {
         binding.pbAddSubcategory.visibility = View.INVISIBLE
-        binding.btnAddSubcategory.text = getString(R.string.add_category)
-        binding.btnAddSubcategory.backgroundTintList = ContextCompat.getColorStateList(activity, R.color.green_primary)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }
