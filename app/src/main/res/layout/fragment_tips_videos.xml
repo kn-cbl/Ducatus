@@ -36,7 +36,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video1"
@@ -59,7 +59,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video1"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName1"
@@ -104,7 +104,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video2"
@@ -127,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video2"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName2"
@@ -171,7 +171,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video3"
@@ -194,7 +194,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video3"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName3"
@@ -239,7 +239,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video4"
@@ -262,7 +262,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video4"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName4"
@@ -306,7 +306,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video5"
@@ -329,7 +329,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video5"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName5"
@@ -374,7 +374,7 @@
                         android:layout_height="100dp"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/shape_rectangle" />
+                        app:srcCompat="@drawable/shape_rectangle" />
 
                     <TextView
                         android:id="@+id/textView_video6"
@@ -397,7 +397,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_video6"
                         android:layout_margin="10dp"
-                        android:src="@drawable/ic_author" />
+                        app:srcCompat="@drawable/ic_author" />
 
                     <TextView
                         android:id="@+id/textView_artistName6"

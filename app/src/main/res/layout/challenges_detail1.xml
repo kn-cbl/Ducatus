@@ -11,7 +11,7 @@
         android:id="@+id/challenges_toolbar1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
@@ -27,7 +27,7 @@
         android:text="₱3,000 Savings in 30 Days"
         android:textStyle="bold"
         android:textSize="24sp"
-        android:textColor="#000000"
+        android:textColor="@color/black"
         android:layout_marginTop="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -611,7 +611,7 @@
             android:text="₱160"
             android:inputType="number"
             android:paddingStart="8dp"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16sp" />
     </LinearLayout>

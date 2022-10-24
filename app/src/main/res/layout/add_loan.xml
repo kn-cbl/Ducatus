@@ -11,7 +11,7 @@
         android:id="@+id/addLoan_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         app:menu="@menu/check_menu"
         app:navigationIcon="@drawable/ic_close"

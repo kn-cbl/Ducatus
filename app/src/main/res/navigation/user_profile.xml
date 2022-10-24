@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_profile"
+    app:startDestination="@id/userProfileFragment">
+
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.ducatus.UserProfileFragment"
+        android:label="fragment_user_profile"
+        tools:layout="@layout/fragment_user_profile">
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateMobileNumberDialogFragment"
+            app:destination="@id/updateMobileNumberDialogFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateEmailDialogFragment"
+            app:destination="@id/updateEmailDialogFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateUsernameDialogFragment"
+            app:destination="@id/updateUsernameDialogFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/updateMobileNumberDialogFragment"
+        android:name="com.ducatus.UpdateMobileNumberDialogFragment"
+        android:label="fragment_update_mobile_number"
+        tools:layout="@layout/fragment_update_mobile_number_dialog" />
+
+    <dialog
+        android:id="@+id/updateEmailDialogFragment"
+        android:name="com.ducatus.UpdateEmailDialogFragment"
+        android:label="fragment_update_email"
+        tools:layout="@layout/fragment_update_email_dialog" />
+    <dialog
+        android:id="@+id/updateUsernameDialogFragment"
+        android:name="com.ducatus.UpdateUsernameDialogFragment"
+        android:label="fragment_update_username"
+        tools:layout="@layout/fragment_update_username_dialog">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </dialog>
+
+</navigation>

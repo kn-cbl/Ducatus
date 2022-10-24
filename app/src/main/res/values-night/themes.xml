@@ -1,32 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Ducatus" parent="Theme.AppCompat.Light.NoActionBar">
+<resources>
+    <style name="Material.App" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green_primary</item>
         <item name="colorPrimaryVariant">@color/green_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/green_secondary</item>
+        <item name="colorSecondary">@color/very_dark_blue</item>
         <item name="colorSecondaryVariant">@color/green_tertiary</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/green_secondary</item>
         <!-- Status bar color. -->
-        <item name="android:windowTranslucentStatus" >true</item>
-        <item name="android:statusBarColor" >@android:color/transparent</item>
-        <!-- Customize your theme here. -->
-    </style>
-
-    <style name="floatingText.Ducatus" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/green_primary</item>
-        <item name="colorPrimaryVariant">@color/green_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">#033F63</item>
-        <item name="colorSecondaryVariant">@color/green_tertiary</item>
-        <item name="colorOnSecondary">#389583</item>
-        <!-- Status bar color. -->
-        <item name="android:windowTranslucentStatus" >true</item>
-        <item name="android:statusBarColor" >@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

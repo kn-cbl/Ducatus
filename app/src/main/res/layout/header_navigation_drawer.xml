@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlHeader"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@color/green_secondary">
+
+    <ImageView
+        android:id="@+id/ivHeaderImage"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        app:srcCompat="@drawable/ic_account_circle"
+        app:tint="@color/white"
+        android:contentDescription="@string/account_icon" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/ivHeaderImage"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvHeaderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_bold"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="@string/username"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:text="@string/my_wallet"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</RelativeLayout>

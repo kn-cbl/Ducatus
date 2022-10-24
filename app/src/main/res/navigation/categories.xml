@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/categories"
+    app:startDestination="@id/categoriesFragment">
+
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:name="com.ducatus.CategoriesFragment"
+        android:label="fragment_categories"
+        tools:layout="@layout/fragment_categories">
+        <action
+            android:id="@+id/action_categoriesFragment_to_categoryEditFragment"
+            app:destination="@id/categoryEditFragment" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_categoryAddFragment"
+            app:destination="@id/categoryAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryEditFragment"
+        android:name="com.ducatus.CategoryEditFragment"
+        android:label="fragment_category_edit"
+        tools:layout="@layout/fragment_category_edit">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_subcategoryEditFragment"
+            app:destination="@id/subcategoryEditFragment" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_categoryEditNameDialogFragment"
+            app:destination="@id/categoryEditNameFragment" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_categoryEditNatureDialogFragment"
+            app:destination="@id/categoryEditNatureDialogFragment" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_categoryEditIconDialogFragment"
+            app:destination="@id/categoryEditIconDialogFragment" />
+        <action
+            android:id="@+id/action_categoryEditFragment_to_subcategoryAddFragment"
+            app:destination="@id/subcategoryAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/subcategoryEditFragment"
+        android:name="com.ducatus.SubcategoryEditFragment"
+        android:label="fragment_subcategory_edit"
+        tools:layout="@layout/fragment_subcategory_edit">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_subcategoryEditFragment_to_subcategoryEditIconDialogFragment"
+            app:destination="@id/subcategoryEditIconDialogFragment" />
+        <action
+            android:id="@+id/action_subcategoryEditFragment_to_subcategoryEditNameDialogFragment"
+            app:destination="@id/subcategoryEditNameDialogFragment" />
+        <argument
+            android:name="subcategoryId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryAddFragment"
+        android:name="com.ducatus.CategoryAddFragment"
+        android:label="fragment_category_add"
+        tools:layout="@layout/fragment_category_add">
+        <action
+            android:id="@+id/action_categoryAddFragment_to_categoriesFragment"
+            app:destination="@id/categoriesFragment"
+            app:popUpTo="@id/categoriesFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/categoryEditNameFragment"
+        android:name="com.ducatus.CategoryEditNameDialogFragment"
+        android:label="fragment_category_edit_name_dialog"
+        tools:layout="@layout/fragment_category_edit_name_dialog">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/categoryEditNatureDialogFragment"
+        android:name="com.ducatus.CategoryEditNatureDialogFragment"
+        android:label="fragment_category_edit_nature_dialog"
+        tools:layout="@layout/fragment_category_edit_nature_dialog">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="categoryNature"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/categoryEditIconDialogFragment"
+        android:name="com.ducatus.CategoryEditIconDialogFragment"
+        android:label="fragment_category_edit_icon_dialog"
+        tools:layout="@layout/fragment_category_edit_icon_dialog">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="categoryColor"
+            app:argType="string" />
+        <argument
+            android:name="categoryIcon"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/subcategoryAddFragment"
+        android:name="com.ducatus.SubcategoryAddFragment"
+        android:label="fragment_subcategory_add"
+        tools:layout="@layout/fragment_subcategory_add">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_subcategoryAddFragment_to_categoryEditFragment"
+            app:destination="@id/categoryEditFragment"
+            app:popUpTo="@id/categoryEditFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/subcategoryEditIconDialogFragment"
+        android:name="com.ducatus.SubcategoryEditIconDialogFragment"
+        android:label="fragment_subcategory_edit_icon_dialog"
+        tools:layout="@layout/fragment_subcategory_edit_icon_dialog">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryColor"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryIcon"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/subcategoryEditNameDialogFragment"
+        android:name="com.ducatus.SubcategoryEditNameDialogFragment"
+        android:label="fragment_subcategory_edit_name_dialog"
+        tools:layout="@layout/fragment_subcategory_edit_name_dialog">
+        <argument
+            android:name="categoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryId"
+            app:argType="string" />
+        <argument
+            android:name="subcategoryName"
+            app:argType="string" />
+    </dialog>
+</navigation>

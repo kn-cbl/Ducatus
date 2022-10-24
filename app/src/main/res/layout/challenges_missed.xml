@@ -10,7 +10,7 @@
         android:id="@+id/challengesMissedToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_bg"
+        android:background="@color/green_primary"
         android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_menu"
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             app:layout_constraintTop_toTopOf="parent"
@@ -72,7 +72,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="75%"
-                    android:textColor="@color/green_cyan_text"
+                    android:textColor="@color/light_teal"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -97,7 +97,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="Earned"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/remaining_currentChallenges"
@@ -107,7 +107,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginTop="16dp"
                     android:text="Missed"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/goal_currentChallenges"
@@ -118,7 +118,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="Goal"
-                    android:textColor="@color/gray_text" />
+                    android:textColor="@color/darker_gray" />
 
                 <TextView
                     android:id="@+id/earnedAmount_currentChallenges"
@@ -138,7 +138,7 @@
                     android:layout_below="@id/earned_currentChallenges"
                     android:layout_centerInParent="true"
                     android:text="₱275"
-                    android:textColor="@color/red_text"
+                    android:textColor="@color/dark_red"
                     android:textStyle="bold" />
 
                 <TextView
@@ -174,7 +174,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="RESTART CHALLENGE"
-                    android:textColor="@color/blue_color"
+                    android:textColor="@color/bright_blue"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -205,7 +205,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             app:layout_constraintTop_toTopOf="parent"
@@ -237,7 +237,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="75%"
-                    android:textColor="@color/green_cyan_text"
+                    android:textColor="@color/light_teal"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -264,7 +264,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="GET STARTED"
-                    android:textColor="@color/blue_color"
+                    android:textColor="@color/bright_blue"
                     android:textStyle="bold" />
 
             </RelativeLayout>
@@ -275,7 +275,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@color/cardview_bg"
+            android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
             android:layout_column="0"
             android:layout_row="2"
@@ -308,7 +308,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="75%"
-                    android:textColor="@color/green_cyan_text"
+                    android:textColor="@color/light_teal"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -335,7 +335,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="GET STARTED"
-                    android:textColor="@color/blue_color"
+                    android:textColor="@color/bright_blue"
                     android:textStyle="bold" />
 
             </RelativeLayout>

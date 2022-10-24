@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/accounts"
+    app:startDestination="@id/accountsFragment">
+
+    <fragment
+        android:id="@+id/accountsFragment"
+        android:name="com.ducatus.AccountsFragment"
+        android:label="fragment_account_settings"
+        tools:layout="@layout/fragment_accounts">
+        <action
+            android:id="@+id/action_accountsFragment_to_accountEditDialogFragment"
+            app:destination="@id/accountEditDialogFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/accountEditDialogFragment"
+        android:name="com.ducatus.AccountEditDialogFragment"
+        android:label="fragment_account_settings"
+        tools:layout="@layout/fragment_account_edit">
+        <argument
+            android:name="accountId"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/accountAddFragment"
+        android:name="com.ducatus.AccountAddFragment"
+        android:label="fragment_accounts_add"
+        tools:layout="@layout/fragment_account_add">
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>
