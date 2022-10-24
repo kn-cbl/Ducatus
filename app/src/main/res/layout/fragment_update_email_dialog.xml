@@ -68,7 +68,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:hint="@string/password"
+            android:hint="@string/current_password"
             app:errorEnabled="true"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/darker_gray">
@@ -118,17 +118,6 @@
                 android:textAllCaps="false"
                 android:textColor="@color/green_primary" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvUpdateEmailResendEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/inter_medium"
-            android:text="@string/resend_in_60"
-            android:textColor="@color/darker_gray"
-            android:visibility="visible" />
 
     </LinearLayout>
 

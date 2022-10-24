@@ -18,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountAddBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.google.android.material.appbar.MaterialToolbar
@@ -172,9 +173,9 @@ class AccountAddFragment : Fragment() {
                 }
 
                 if (!nameKey) {
-                    val lastId = snapshot.childrenCount.toInt()
-                    val account = Account(lastId, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
-                    addAccount(lastId.toString(), uid, account)
+                    val key = databaseReference.push().key
+                    val account = Account(key, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
+                    addAccount(key!!, uid, account)
                 }
                 else {
                     hideProgressDialog()
@@ -185,8 +186,7 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { accountExists(uid, accountName, accountMonthlyBudget, accountColor) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }
@@ -200,16 +200,22 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { addAccount(id, uid, account) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }
 
     private fun createCategories(uid: String, accountId: String) {
         showProgressDialog()
-        val categories = AppResources().getDefaultCategories()
+        val keys = mutableListOf<String>()
 
+        val size = AppResources().getCategoryItemCount()
+        for (i in 0 until size) {
+            val key = databaseReference.push().key
+            keys.add(key!!)
+        }
+
+        val categories = AppResources().getCategories(keys)
         databaseReference = database.getReference("categories").child(uid).child(accountId)
         databaseReference.setValue(categories)
             .addOnSuccessListener {
@@ -220,8 +226,7 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { createCategories(uid, accountId) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }

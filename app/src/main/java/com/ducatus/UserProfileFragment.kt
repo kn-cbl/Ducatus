@@ -2,7 +2,6 @@ package com.ducatus
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
 import com.google.android.material.snackbar.Snackbar
@@ -28,10 +28,11 @@ import java.io.File
 import java.text.DateFormat
 import java.util.*
 
-class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
+class UserProfileFragment : Fragment() {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentUserProfileBinding
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
     private lateinit var currentUsername: String
     private val requestPickImage = 1
@@ -71,15 +72,27 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
         }
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        loadData()
+    override fun onResume() {
+        super.onResume()
+
+        var firebaseUser: FirebaseUser? = auth.currentUser
+        firebaseUser?.reload()?.addOnCompleteListener {
+            firebaseUser = auth.currentUser
+            if (firebaseUser == null) {
+                Snackbar
+                    .make(rootLayout, "Please log-in again", Snackbar.LENGTH_LONG)
+                    .show()
+
+                sessionExpired()
+            }
+        }
     }
 
     private fun loadData() {
         showProgressDialog()
         auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
             currentUsername = firebaseUser.displayName.toString()
             if (firebaseUser.photoUrl != null) {
                 Picasso.get()
@@ -88,7 +101,9 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
                     .into(binding.ivUserProfilePicture)
             }
 
-            binding.tvJoinDate.text = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US).format(Date(firebaseUser.metadata!!.creationTimestamp))
+            binding.tvJoinDate.text = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                .format(Date(firebaseUser.metadata!!.creationTimestamp))
+
             binding.tvUserProfileUsername.text = firebaseUser.displayName
             binding.tfUserProfileEmail.editText?.setText(firebaseUser.email)
             if (firebaseUser.phoneNumber?.isNotEmpty() == true) binding.tfUserProfileMobileNumber.editText?.setText(firebaseUser.phoneNumber)
@@ -97,6 +112,10 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
             hideProgressDialog()
         }
         else {
+            Snackbar
+                .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
+                .show()
+
             sessionExpired()
         }
     }
@@ -109,6 +128,7 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
 
         if (!providers.contains("password")) {
             binding.tfUserProfileEmail.endIconMode = END_ICON_NONE
+            binding.ibUpdateUsername.visibility = View.GONE
         }
     }
 
@@ -151,7 +171,7 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
             if (data != null) {
                 val error = UCrop.getError(data)
                 Snackbar
-                    .make(rootLayout, error.toString(), Snackbar.LENGTH_LONG)
+                    .make(rootLayout, error.toString(), 5000)
                     .show()
             }
         }
@@ -159,34 +179,23 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
 
     private fun updateProfile(photoUri: Uri?) {
         showProgressDialog()
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            val updates = UserProfileChangeRequest.Builder()
-                .setDisplayName(firebaseUser.displayName)
-                .setPhotoUri(photoUri)
-                .build()
+        val updates = UserProfileChangeRequest.Builder()
+            .setDisplayName(firebaseUser.displayName)
+            .setPhotoUri(photoUri)
+            .build()
 
-            firebaseUser.updateProfile(updates)
-                .addOnSuccessListener {
-                    loadData()
-                }
-                .addOnFailureListener {
-                    Snackbar
-                        .make(rootLayout, "Unable to save changes, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                        .setAction(getString(R.string.retry)) { updateProfile(photoUri) }
-                        .show()
-                }
-        }
-        else {
-            sessionExpired()
-        }
+        firebaseUser.updateProfile(updates)
+            .addOnSuccessListener {
+                loadData()
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .show()
+            }
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
-
         // add 3 second delay
         object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {

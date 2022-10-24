@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.ducatus.data.Subcategory
 import com.ducatus.databinding.FragmentSubcategoryEditBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -29,6 +30,7 @@ class SubcategoryEditFragment : Fragment() {
     private lateinit var binding: FragmentSubcategoryEditBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var selectedSubcategoryListener: ValueEventListener
@@ -36,15 +38,16 @@ class SubcategoryEditFragment : Fragment() {
     private lateinit var currentSubcategoryIcon: String
     private lateinit var currentSubcategoryName: String
     private val args: SubcategoryEditFragmentArgs by navArgs()
-    private var firebaseUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         activity = requireActivity()
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
-        if (firebaseUser == null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
+        }
+        else {
             sessionExpired()
         }
     }
@@ -68,7 +71,7 @@ class SubcategoryEditFragment : Fragment() {
         setSelectedSubcategoryListener()
 
         database = Firebase.database
-        databaseReference = database.getReference("subcategories").child(firebaseUser!!.uid).child(currentAccountId).child(args.categoryId).child(args.subcategoryId)
+        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId).child(args.subcategoryId)
         databaseReference.addValueEventListener(selectedSubcategoryListener)
     }
 
@@ -130,8 +133,7 @@ class SubcategoryEditFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 Snackbar
-                    .make(rootLayout, error.message, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { setSelectedSubcategoryListener() }
+                    .make(rootLayout, error.message, 5000)
                     .show()
             }
         }

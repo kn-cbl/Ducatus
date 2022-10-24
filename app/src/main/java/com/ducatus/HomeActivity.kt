@@ -16,14 +16,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityHomeBinding
-    private var currentFragment: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +28,6 @@ class HomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        loadData()
 //        networkObserver()
 
         setSupportActionBar(binding.tbHome)
@@ -42,7 +38,6 @@ class HomeActivity : AppCompatActivity() {
         binding.nvHome.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    currentFragment = R.id.homeFragment
                     binding.tbHome.setTitle(R.string.home)
 
                     val action = Navigation.findNavController(this, R.id.fcHome)
@@ -53,16 +48,19 @@ class HomeActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ReportsFragment()).commit()
 //                }
                 R.id.nav_budgets -> {
-                    currentFragment = R.id.budgetsFragment
                     binding.tbHome.setTitle(R.string.budgets)
 
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigateUp()
                     action.navigate(R.id.budgetsFragment)
                 }
-//                R.id.nav_transactions -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, TransactionsFragment()).commit()
-//                }
+                R.id.nav_transactions -> {
+                    binding.tbHome.setTitle(R.string.transactions)
+
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigateUp()
+                    action.navigate(R.id.transactionsFragment)
+                }
 //                R.id.nav_planned_payments -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, PlannedPaymentsFragment()).commit()
 //                }
@@ -82,7 +80,6 @@ class HomeActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }
                 R.id.nav_settings -> {
-                    currentFragment = R.id.settingsFragment
                     binding.tbHome.setTitle(R.string.settings)
 
                     val action = Navigation.findNavController(this, R.id.fcHome)
@@ -108,17 +105,14 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadAccount()
+        loadData()
     }
 
     private fun loadData() {
-        currentFragment = R.id.homeFragment
-
         auth = Firebase.auth
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             loadAccount()
-            sessionExpired()
         }
         else {
             sessionExpired()

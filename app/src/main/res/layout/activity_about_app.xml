@@ -71,6 +71,18 @@
         </LinearLayout>
     </RelativeLayout>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/mdAboutApp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:dividerInsetEnd="16dp"
+        app:dividerInsetStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout5"/>
+
     <TextView
         android:id="@+id/textView76"
         android:layout_width="match_parent"
@@ -85,7 +97,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout5" />
+        app:layout_constraintTop_toBottomOf="@+id/mdAboutApp" />
 
     <TextView
         android:id="@+id/textView77"

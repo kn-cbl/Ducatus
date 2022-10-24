@@ -149,7 +149,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(binding.llUpdatePassword, it.localizedMessage!!.toString(), Snackbar.LENGTH_LONG)
+                    .make(binding.llUpdatePassword, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -178,7 +178,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.llUpdatePassword, it.localizedMessage!!.toString(), Snackbar.LENGTH_LONG)
+                    .make(binding.llUpdatePassword, it.localizedMessage!!,5000)
                     .show()
             }
     }

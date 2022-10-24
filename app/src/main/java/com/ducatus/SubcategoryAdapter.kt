@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.data.Subcategory
 
 class SubcategoryAdapter(
     private val subcategories: MutableList<Subcategory>,

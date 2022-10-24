@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.data.Account
 
 class AccountAdapter(
     private val accounts: MutableList<Account>,

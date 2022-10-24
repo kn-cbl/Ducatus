@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.data.Category
+import com.ducatus.data.Subcategory
 import com.ducatus.databinding.FragmentCategoryEditBinding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -32,6 +34,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentCategoryEditBinding
     private lateinit var database: FirebaseDatabase
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var categoryReference: DatabaseReference
     private lateinit var subcategoryReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
@@ -45,15 +48,16 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     private lateinit var currentCategoryName: String
     private lateinit var currentCategoryNature: String
     private val args: CategoryEditFragmentArgs by navArgs()
-    private var firebaseUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         activity = requireActivity()
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
-        if (firebaseUser == null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
+        }
+        else {
             sessionExpired()
         }
     }
@@ -82,10 +86,10 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         setSubcategoriesListener()
 
         database = Firebase.database
-        categoryReference = database.getReference("categories").child(firebaseUser!!.uid).child(currentAccountId).child(args.categoryId)
+        categoryReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
         categoryReference.addValueEventListener(selectedCategoryListener)
 
-        subcategoryReference = database.getReference("subcategories").child(firebaseUser!!.uid).child(currentAccountId).child(args.categoryId)
+        subcategoryReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
         subcategoryReference.addChildEventListener(subcategoriesListener)
     }
 
@@ -181,8 +185,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
 
             override fun onCancelled(error: DatabaseError) {
                 Snackbar
-                    .make(rootLayout, error.message, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { setSelectedCategoryListener() }
+                    .make(rootLayout, error.message, 5000)
                     .show()
             }
         }
@@ -215,8 +218,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
 
             override fun onCancelled(error: DatabaseError) {
                 Snackbar
-                    .make(rootLayout, error.message, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { setSubcategoriesListener() }
+                    .make(rootLayout, error.message, 5000)
                     .show()
             }
         }
@@ -259,8 +261,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Failed to delete subcategory", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteSubcategory(subcategoryId, position) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }

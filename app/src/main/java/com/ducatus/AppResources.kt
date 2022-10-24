@@ -1,51 +1,9 @@
 package com.ducatus
 
+import com.ducatus.data.Category
+
 class AppResources {
-    private val categories = mapOf(
-        "0" to Category(
-            0, "Electronics", 1,
-            "material_dark_blue_700", "ic_baseline_devices_24"),
-
-        "1" to Category(
-            1, "Emergency Funds", 0,
-            "material_bright_red_700", "ic_local_first_aid_24"),
-
-        "2" to Category(
-            2, "Financial Expenses", 0,
-            "material_dark_yellow_a400", "ic_baseline_wallet_24"),
-
-        "3" to Category(
-            3, "Food and Groceries", 0,
-            "material_teal_700", "ic_baseline_fastfood_24"),
-
-        "4" to Category(
-            4, "Housing", 0,
-            "light_blue", "ic_baseline_home_24"),
-
-        "5" to Category(
-            5, "Investments", 0,
-            "dark_green", "ic_local_investment_24"),
-
-        "6" to Category(
-            6, "Healthcare", 0,
-            "darker_pink", "ic_baseline_health_and_safety_24"),
-
-        "7" to Category(
-            7, "Savings", 2,
-            "pink", "ic_baseline_savings_24"),
-
-        "8" to Category(
-            8, "Shopping and Entertainment", 1,
-            "material_dark_purple_700", "ic_baseline_shopping_bag_24"),
-
-        "9" to Category(
-            9, "Transportation", 0,
-            "dark_brown", "ic_baseline_directions_bus_24"),
-
-        "10" to Category(
-            10, "Utilities", 0,
-            "material_orange_700", "ic_baseline_electric_bolt_24"),
-    )
+    private val categorySize = 11
 
     private val colors = listOf(
         "lighter_red",
@@ -231,8 +189,67 @@ class AppResources {
         "ic_baseline_warning_24",
     )
 
-    fun getDefaultCategories(): Map<String, Category> {
-        return categories
+    fun getCategories(dbKeys: MutableList<String>): Map<String, Category> {
+        return mapOf(
+            dbKeys[0] to Category(
+                dbKeys[0], "Electronics", 1,
+                "material_dark_blue_700", "ic_baseline_devices_24"
+            ),
+
+            dbKeys[1] to Category(
+                dbKeys[2], "Emergency Funds", 0,
+                "material_bright_red_700", "ic_local_first_aid_24"
+            ),
+
+            dbKeys[2] to Category(
+                dbKeys[2], "Financial Expenses", 0,
+                "material_dark_yellow_a400", "ic_baseline_wallet_24"
+            ),
+
+            dbKeys[3] to Category(
+                dbKeys[3], "Food and Groceries", 0,
+                "material_teal_700", "ic_baseline_fastfood_24"
+            ),
+
+            dbKeys[4] to Category(
+                dbKeys[4], "Housing", 0,
+                "light_blue", "ic_baseline_home_24"
+            ),
+
+            dbKeys[5] to Category(
+                dbKeys[5], "Investments", 0,
+                "dark_green", "ic_local_investment_24"
+            ),
+
+            dbKeys[6] to Category(
+                dbKeys[6], "Healthcare", 0,
+                "darker_pink", "ic_baseline_health_and_safety_24"
+            ),
+
+            dbKeys[7] to Category(
+                dbKeys[7], "Savings", 2,
+                "pink", "ic_baseline_savings_24"
+            ),
+
+            dbKeys[8] to Category(
+                dbKeys[8], "Shopping and Entertainment", 1,
+                "material_dark_purple_700", "ic_baseline_shopping_bag_24"
+            ),
+
+            dbKeys[9] to Category(
+                dbKeys[9], "Transportation", 0,
+                "dark_brown", "ic_baseline_directions_bus_24"
+            ),
+
+            dbKeys[10] to Category(
+                dbKeys[10], "Utilities", 0,
+                "material_orange_700", "ic_baseline_electric_bolt_24"
+            ),
+        )
+    }
+
+    fun getCategoryItemCount(): Int {
+        return categorySize
     }
 
     fun getColors(): List<String> {

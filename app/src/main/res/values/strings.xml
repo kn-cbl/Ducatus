@@ -77,10 +77,32 @@
     <string name="check_inbox">Please check your inbox for the\nemail verification. Click the link in the\nemail to confirm your email address.</string>
     <string name="cancel">Cancel</string>
     <string name="important_documents">Important Documents</string>
+
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_header_1">What information do you collect?</string>
+    <string name="privacy_policy_header_1_description">We collect information that you voluntarily provide to us when you register in our app, when you use our app, or otherwise when you contact us.</string>
+    <string name="privacy_policy_subheader_1">Personal Information Provided by You</string>
+    <string name="privacy_policy_subheader_1_description">The personal information that we collect depends on the context of your interaction with us and the services, the choices you make, and the features you use. This may including the following:</string>
+    <string name="privacy_policy_subheader_1_list">• Names\n• Phone numbers\n• Email addresses\n• Usernames\n• Passwords</string>
+    <string name="privacy_policy_subheader_2">Application Data</string>
+    <string name="privacy_policy_subheader_2_description">WHen you use our application, we may also collect the following information if you choose to provide us with access or permission:</string>
+    <string name="privacy_policy_subheader_2_list_1">asdf</string>
+
     <string name="terms_of_service">Terms of Service</string>
-    <string name="delete_user_data">Delete User Data</string>
+
     <string name="deactivate_account">Deactivate Account</string>
+    <string name="deactivate_account_mark">Deactivate user account?</string>
+    <string name="deactivate_account_message">Deactivating will temporarily disable your account. After 24 hours, all of your data will be deleted alongside your user account. Do you still wish to proceed?</string>
+
+    <string name="delete_user_data">Delete User Data</string>
+    <string name="delete_user_data_mark">Delete user data?</string>
+    <string name="delete_user_data_message">All data associated with your user account will be gone forever. Do you still wish to proceed?</string>
+    <string name="delete_user_reauthenticate">Please provide your credentials again before we can delete your user data</string>
+    <string name="deleting_user_warning">Please do not exit the app while we delete your user data</string>
+
+    <string name="post_delete_message">Thank you for using Ducatus!</string>
+    <string name="post_delete_message_2">We\'re sad to see you go, but we hope to see you again!</string>
+
     <string name="user_profile_description">Update Profile Photo, Email, or Mobile Number</string>
     <string name="general_settings">General Settings</string>
     <string name="accounts">Accounts</string>
@@ -138,10 +160,15 @@
     <string name="subcategory_name_exists">Subcategory already exists</string>
     <string name="budget_name_empty">Enter budget name</string>
     <string name="budget_name_exists">Budget already exists</string>
-    <string name="budget_category_empty">Select a category</string>
     <string name="budget_amount_empty">Enter budget amount</string>
     <string name="budget_amount_0">Amount must be greater than 0</string>
     <string name="budget_amount_overflow">Amount must not be greater than the remaining budget</string>
+    <string name="amount_empty">Enter amount</string>
+    <string name="category_empty">Select a category</string>
+    <string name="subcategory_empty">Select a subcategory</string>
+    <string name="payment_type_empty">Enter a payment type</string>
+    <string name="date_empty">Select a date</string>
+    <string name="time_empty">Select a time</string>
 
     <!-- Notifications -->
     <string name="expenses_reminder">Expenses Reminder</string>
@@ -165,6 +192,7 @@
     <string name="settings">Settings</string>
     <string name="no_connection">No connection</string>
     <string name="transactions">Transactions</string>
+    <string name="transaction">Transaction</string>
     <string name="reports">Reports</string>
     <string name="planned_payments">Planned Payments</string>
     <string name="loans">Loans</string>
@@ -208,6 +236,8 @@
     <string name="essentials">Essentials</string>
     <string name="wants">Wants</string>
     <string name="savings">Savings</string>
+
+    <string name="category">Category</string>
     <string name="category_name">Category Name</string>
     <string name="category_nature">Category Nature</string>
     <string name="category_color">Category Color</string>
@@ -223,6 +253,7 @@
     <string name="delete_category_mark">Delete category?</string>
     <string name="delete_category_confirm">All data associated with this category will be gone forever. Do you still wish to proceed?</string>
 
+    <string name="subcategory">Subcategory</string>
     <string name="subcategories">Subcategories</string>
     <string name="subcategory_name">Subcategory Name</string>
     <string name="subcategory_icon">Subcategory Icon</string>
@@ -255,12 +286,38 @@
     <string name="year">Year</string>
     <string name="icon">Icon</string>
     <string name="account">Account</string>
-    <string name="category">Category</string>
     <string name="breakdown">breakdown</string>
-    <string name="calendar_overview">calendar overview</string>
+    <string name="overview">overview</string>
     <string name="receipt">Receipt</string>
     <string name="receipt_attached">Receipt attached</string>
     <string name="no_receipt">No receipt</string>
     <string name="payment_type">Payment Type</string>
+
+    <string name="add_transaction">Add Transaction</string>
+    <string name="add_record">Add Record</string>
+    <string name="expense">Expense</string>
+    <string name="income">Income</string>
+    <string name="top_up_value">Top up value (₱)</string>
+
+    <!-- Top up values -->
+    <string name="_100">100</string>
+    <string name="_300">300</string>
+    <string name="_500">500</string>
+    <string name="_1_000">1,000</string>
+    <string name="_1_500">1,500</string>
+    <string name="_2_000">2,000</string>
+    <string name="_3_000">3,000</string>
+    <string name="_4_000">4,000</string>
+    <string name="_5_000">5,000</string>
+    <string name="_0">0</string>
+    <string name="notes">Notes (optional)</string>
+    <string name="add_notes">Add notes</string>
+    <string name="image">Image (optional)</string>
+    <string name="more_details">More Details</string>
+    <string name="time">Time</string>
+    <string name="allocate_budgets">Allocate budgets</string>
+    <string name="allocate_budgets_message">You have not allocated a budget to any category yet. Allocate now?</string>
+    <string name="add_categories">Add categories</string>
+    <string name="add_categories_message">You have no categories to add a transaction record. Add categories now?</string>
 
 </resources>

@@ -1,6 +1,6 @@
 package com.ducatus
 
-class StringWithTag(stringPart: String, tagPart: String, tagPart2: String, tagPart3: String?) {
+class StringWithTag(stringPart: String, tagPart: String, tagPart2: String?, tagPart3: String?) {
     var string = stringPart
     var tag = tagPart
     var tag2 = tagPart2

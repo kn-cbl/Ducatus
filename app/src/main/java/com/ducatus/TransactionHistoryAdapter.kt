@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.data.Transaction
 
 class TransactionHistoryAdapter(
     private val transactions: MutableList<Transaction>,
@@ -31,8 +32,9 @@ class TransactionHistoryAdapter(
 
         holder.itemView.apply {
             val date = currentTransaction.transaction_date
-            val time = currentTransaction.transaction_time
-            val dateTime = "$date at $time"
+            val hour = currentTransaction.transaction_hour
+            val minute = currentTransaction.transaction_minute
+            val dateTime = "$date at $hour:$minute"
             findViewById<TextView>(R.id.tvTransactionHistoryDate).text = dateTime
 
             when (currentTransaction.transaction_receipt) {

@@ -110,6 +110,7 @@ class VerifyOTPMobileNumberActivity : AppCompatActivity() {
 
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
+                    binding.tvVerifyOTPMobileError.text = e.localizedMessage
                 }
                 else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded

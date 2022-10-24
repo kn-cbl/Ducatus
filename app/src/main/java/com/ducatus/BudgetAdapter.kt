@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.data.Budget
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import java.text.DateFormat
 import java.util.*

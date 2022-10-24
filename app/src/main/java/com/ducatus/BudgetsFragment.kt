@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.data.Budget
 import com.ducatus.databinding.FragmentBudgetsBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -27,9 +28,9 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     private lateinit var budgetAdapter: BudgetAdapter
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: DrawerLayout
     private lateinit var sharedPreferences: SharedPreferences
-    private var firebaseUser: FirebaseUser? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,8 +71,8 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     private fun loadData() {
         activity = requireActivity()
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
-        if (firebaseUser != null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
             sharedPreferences = SharedPreferences(activity)
             val currentAccountId = sharedPreferences.accountId.toString()
 
@@ -80,7 +81,7 @@ class BudgetsFragment : Fragment(), BudgetInterface {
             binding.rvBudgets.layoutManager = LinearLayoutManager(activity)
 
             database = Firebase.database
-            loadBudgets(firebaseUser!!.uid, currentAccountId)
+            loadBudgets(firebaseUser.uid, currentAccountId)
         }
         else {
             sessionExpired()
@@ -105,8 +106,7 @@ class BudgetsFragment : Fragment(), BudgetInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadBudgets(uid, accountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }

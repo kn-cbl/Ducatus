@@ -18,6 +18,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import com.ducatus.data.Account
+import com.ducatus.data.Budget
+import com.ducatus.data.Category
 import com.ducatus.databinding.FragmentBudgetEditDialogBinding
 import com.ducatus.viewmodel.BudgetViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -36,10 +39,10 @@ class BudgetEditDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentBudgetEditDialogBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
     private lateinit var selectedCategory: String
     private lateinit var currentAccountId: String
-    private var firebaseUser: FirebaseUser? = null
     private var accountMonthlyBudget: Double = 0.0
     private var accountRemainingBudget: Double = 0.0
     private var essentialCategories = 0
@@ -63,7 +66,7 @@ class BudgetEditDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loadData()
-        loadAccount(firebaseUser!!.uid, currentAccountId)
+        loadAccount(firebaseUser.uid, currentAccountId)
 
         // disable editing of budget category and budget total when user has already added
         // a transaction record for the budget
@@ -77,7 +80,7 @@ class BudgetEditDialogFragment : DialogFragment() {
             editable = false
         }
         else {
-            loadCategories(firebaseUser!!.uid, currentAccountId)
+            loadCategories(firebaseUser.uid, currentAccountId)
 
             val spCategory = (binding.tfEditBudgetCategory.editText as? AutoCompleteTextView)
             spCategory?.onItemClickListener =
@@ -88,7 +91,7 @@ class BudgetEditDialogFragment : DialogFragment() {
                     selectedCategory = string.tag
 
                     // determine budget based on selected category
-                    determineRecommendedBudget(string.tag2)
+                    determineRecommendedBudget(string.tag2!!)
                 }
         }
 
@@ -106,8 +109,8 @@ class BudgetEditDialogFragment : DialogFragment() {
 
     private fun loadData() {
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
-        if (firebaseUser != null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
             val sharedPreferences = SharedPreferences(activity)
             currentAccountId = sharedPreferences.accountId.toString()
         }
@@ -188,7 +191,7 @@ class BudgetEditDialogFragment : DialogFragment() {
 
                 // store category id
                 selectedCategory = selectedCategoryTags!!.tag
-                determineRecommendedBudget(selectedCategoryTags.tag2)
+                determineRecommendedBudget(selectedCategoryTags.tag2!!)
 
                 val adapter = ArrayAdapter(activity, R.layout.list_item, categories)
                 val spinner = (binding.tfEditBudgetCategory.editText as? AutoCompleteTextView)
@@ -269,7 +272,7 @@ class BudgetEditDialogFragment : DialogFragment() {
             errors++
         }
         if (TextUtils.isEmpty(budgetCategory)) {
-            binding.tfEditBudgetCategory.error = getString(R.string.budget_category_empty)
+            binding.tfEditBudgetCategory.error = getString(R.string.category_empty)
             errors++
         }
         if (TextUtils.isEmpty(budgetAmount)) {
@@ -292,7 +295,7 @@ class BudgetEditDialogFragment : DialogFragment() {
                 dismiss()
             }
             else {
-                getAccount(firebaseUser!!.uid, currentAccountId, budgetName, selectedCategory, budgetAmount.toDouble())
+                getAccount(firebaseUser.uid, currentAccountId, budgetName, selectedCategory, budgetAmount.toDouble())
             }
         }
     }

@@ -136,96 +136,63 @@
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
-                        <com.google.android.material.tabs.TabLayout
+                        <RadioGroup
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.tabs.TabItem
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:contentDescription="@string/calendar"
-                                android:icon="@drawable/ic_outline_calendar_month_24" />
-
-                            <com.google.android.material.tabs.TabItem
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/week" />
-
-                            <com.google.android.material.tabs.TabItem
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/month" />
-
-                            <com.google.android.material.tabs.TabItem
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/year" />
-                        </com.google.android.material.tabs.TabLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="16dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_calendar_shape"
                             android:layout_marginTop="8dp"
+                            android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
-                            android:background="@drawable/shape">
+                            android:orientation="horizontal">
 
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/calendarBtn3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <com.google.android.material.radiobutton.MaterialRadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
                                 android:layout_weight="1"
-                                android:background="@drawable/btn_selector"
-                                android:button="@android:color/transparent"
-                                android:checked="true"
-                                android:clickable="true"
-                                android:drawableStart="@drawable/ic_baseline_calendar_month_24"
+                                android:background="@drawable/btn_radio_selector"
+                                android:button="@color/transparent"
+                                android:fontFamily="@font/inter_medium"
                                 android:gravity="center"
-                                android:textColor="#545454"
-                                android:textStyle="bold" />
+                                android:text="@string/calendar"
+                                android:textAllCaps="false"
+                                android:textColor="@color/darker_gray" />
 
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/weekBtn3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <com.google.android.material.radiobutton.MaterialRadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
                                 android:layout_weight="1"
-                                android:background="@drawable/btn_selector"
-                                android:button="@android:color/transparent"
-                                android:checked="true"
-                                android:clickable="true"
+                                android:background="@drawable/btn_radio_selector"
+                                android:button="@color/transparent"
+                                android:fontFamily="@font/inter_medium"
                                 android:gravity="center"
-                                android:text="WEEK"
-                                android:textColor="#545454"
-                                android:textStyle="bold" />
+                                android:text="@string/week"
+                                android:textAllCaps="false"
+                                android:textColor="@color/darker_gray" />
 
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/monthBtn3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <com.google.android.material.radiobutton.MaterialRadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
                                 android:layout_weight="1"
-                                android:background="@drawable/btn_selector"
-                                android:button="@android:color/transparent"
-                                android:checked="false"
-                                android:clickable="true"
+                                android:background="@drawable/btn_radio_selector"
+                                android:button="@color/transparent"
+                                android:fontFamily="@font/inter_medium"
                                 android:gravity="center"
-                                android:text="MONTH"
-                                android:textColor="#545454"
-                                android:textStyle="bold" />
+                                android:text="@string/month"
+                                android:textAllCaps="false"
+                                android:textColor="@color/darker_gray" />
 
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/yearBtn3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <com.google.android.material.radiobutton.MaterialRadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
                                 android:layout_weight="1"
-                                android:background="@drawable/btn_selector"
-                                android:button="@android:color/transparent"
-                                android:checked="false"
-                                android:clickable="true"
+                                android:background="@drawable/btn_radio_selector"
+                                android:button="@color/transparent"
+                                android:fontFamily="@font/inter_medium"
                                 android:gravity="center"
-                                android:text="YEAR"
-                                android:textColor="#545454"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                                android:text="@string/year"
+                                android:textAllCaps="false"
+                                android:textColor="@color/darker_gray" />
+                        </RadioGroup>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -338,7 +305,6 @@
                                 android:layout_weight="1"
                                 android:background="@drawable/btn_selector"
                                 android:button="@android:color/transparent"
-                                android:checked="true"
                                 android:clickable="true"
                                 android:drawableLeft="@drawable/ic_baseline_calendar_month_24"
                                 android:gravity="center"

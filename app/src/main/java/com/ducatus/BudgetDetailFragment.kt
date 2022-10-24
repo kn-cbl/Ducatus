@@ -15,6 +15,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.data.Budget
+import com.ducatus.data.Transaction
 import com.ducatus.databinding.FragmentBudgetDetailBinding
 import com.ducatus.viewmodel.BudgetViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -34,12 +36,12 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
     private lateinit var binding: FragmentBudgetDetailBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
     private lateinit var transactionHistoryAdapter: TransactionHistoryAdapter
     private lateinit var budgetId: String
     private lateinit var accountId: String
     private val budgetViewModel: BudgetViewModel by activityViewModels()
-    private var firebaseUser: FirebaseUser? = null
     private var updated: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +49,8 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
 
         activity = requireActivity()
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
-        if (firebaseUser != null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
             val sharedPreferences = SharedPreferences(activity)
             accountId = sharedPreferences.accountId.toString()
             budgetId = activity.intent.getStringExtra("budgetId").toString()
@@ -71,11 +73,11 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadBudget(firebaseUser!!.uid, accountId, budgetId)
+        loadBudget(firebaseUser.uid, accountId, budgetId)
 
         budgetViewModel.isUpdated.observe(viewLifecycleOwner) { isUpdated ->
             updated = isUpdated
-            if (updated) loadBudget(firebaseUser!!.uid, accountId, budgetId)
+            if (updated) loadBudget(firebaseUser.uid, accountId, budgetId)
         }
     }
 
@@ -159,8 +161,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry") { loadBudget(uid, accountId, budgetId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -185,8 +186,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadTransactionHistory(uid, accountId, categoryId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -249,8 +249,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteBudget(uid, accountId, categoryId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -266,8 +265,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!.toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { unallocateCategory(uid, accountId, categoryId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }

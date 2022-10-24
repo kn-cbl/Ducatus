@@ -18,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountEditBinding
 import com.ducatus.viewmodel.AccountViewModel
 import com.ducatus.viewmodel.ColorViewModel
@@ -180,7 +181,7 @@ class AccountEditDialogFragment : DialogFragment() {
             }
             else {
                 updateAccount(
-                    args.accountId.toInt(),
+                    args.accountId,
                     accountName,
                     accountMonthlyBudget.toDouble(),
                     accountColor.toString()
@@ -189,7 +190,7 @@ class AccountEditDialogFragment : DialogFragment() {
         }
     }
 
-    private fun updateAccount(accountId: Int, accountName: String, accountMonthlyBudget: Double, accountColor: String) {
+    private fun updateAccount(accountId: String, accountName: String, accountMonthlyBudget: Double, accountColor: String) {
         showProgressDialog()
         val account = Account(accountId, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
         databaseReference.setValue(account)

@@ -14,13 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountsBinding
 import com.ducatus.viewmodel.AccountViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -38,7 +38,6 @@ class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
     private val accountViewModel: AccountViewModel by activityViewModels()
-    private var firebaseUser: FirebaseUser? = null
     private var updated: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,11 +45,11 @@ class AccountsFragment : Fragment(), AccountInterface {
 
         activity = requireActivity()
         auth = Firebase.auth
-        firebaseUser = auth.currentUser
+        val firebaseUser = auth.currentUser
 
         if (firebaseUser != null) {
             database = Firebase.database
-            databaseReference = database.getReference("accounts").child(firebaseUser!!.uid)
+            databaseReference = database.getReference("accounts").child(firebaseUser.uid)
             sharedPreferences = SharedPreferences(activity)
         }
         else {
@@ -159,8 +158,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadAccounts(currentAccountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -199,8 +197,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadMainAccount(currentAccountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -214,8 +211,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deselectAccount(currentAccountId, selectedAccountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -227,7 +223,7 @@ class AccountsFragment : Fragment(), AccountInterface {
                 databaseReference.child(accountId).child("selected").setValue(true)
                     .addOnSuccessListener {
                         val account = snapshot.getValue<Account>()
-                        sharedPreferences.accountId = accountId.toInt()
+                        sharedPreferences.accountId = accountId
                         sharedPreferences.accountName = account?.account_name
                         sharedPreferences.accountColor = account?.account_color
                         loadData()
@@ -235,16 +231,14 @@ class AccountsFragment : Fragment(), AccountInterface {
                     .addOnFailureListener {
                         hideProgressDialog()
                         Snackbar
-                            .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                            .setAction(getString(R.string.retry)) { selectAccount(accountId) }
+                            .make(rootLayout, it.localizedMessage!!,5000)
                             .show()
                     }
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to select account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { selectAccount(accountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }
@@ -267,8 +261,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to delete account, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteAccount(accountId) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }

@@ -8,7 +8,7 @@
     tools:context=".BudgetAddActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/tbBudgetAdd"
+        android:id="@+id/tbAddBudget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/green_primary"
@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tbBudgetAdd" />
+        app:layout_constraintTop_toBottomOf="@id/tbAddBudget" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbBudgetAdd"
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tbBudgetAdd">
+        app:layout_constraintTop_toBottomOf="@+id/tbAddBudget">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfAddBudgetName"

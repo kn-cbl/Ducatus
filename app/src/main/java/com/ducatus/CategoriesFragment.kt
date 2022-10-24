@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.data.Category
 import com.ducatus.databinding.FragmentCategoriesBinding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -34,6 +35,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     private lateinit var rootLayout: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var firebaseUser: FirebaseUser
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,26 +91,26 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     private fun loadData() {
         showProgressDialog()
         auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
+        if (auth.currentUser != null) {
+            firebaseUser = auth.currentUser!!
             sharedPreferences = SharedPreferences(activity)
             val currentAccountId = sharedPreferences.accountId.toString()
 
             database = Firebase.database
-            databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId)
-            loadCategories()
+            loadCategories(currentAccountId)
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadCategories() {
+    private fun loadCategories(accountId: String) {
         showProgressDialog()
         categoryAdapter = CategoryAdapter(mutableListOf(), this)
         binding.rvCategories.adapter = categoryAdapter
         binding.rvCategories.layoutManager = LinearLayoutManager(activity)
 
+        databaseReference = database.getReference("categories").child(firebaseUser.uid).child(accountId)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 val categories = mutableListOf<Category>()
@@ -120,7 +122,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 }
 
                 // sort categories
-                categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.category_name.toString() })
+                categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.category_name!! })
                 for (item in categories) {
                     categoryAdapter.addCategory(item)
                 }
@@ -129,8 +131,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to load data, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { loadCategories() }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
 
@@ -149,16 +150,44 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     }
 
     private fun deleteCategory(categoryId: String, position: Int) {
-        databaseReference = databaseReference.child(categoryId)
-        databaseReference.removeValue()
+        val currentAccountId = sharedPreferences.accountId.toString()
+        databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId)
+        databaseReference.child(categoryId).removeValue()
             .addOnSuccessListener {
                 categoryAdapter.removeCategory(position)
+                deleteSubcategories(categoryId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+            }
+    }
+
+    private fun deleteSubcategories(categoryId: String) {
+        val currentAccountId = sharedPreferences.accountId.toString()
+        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId)
+        databaseReference.child(categoryId).removeValue()
+            .addOnSuccessListener {
+                deleteBudget(categoryId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+            }
+    }
+
+    private fun deleteBudget(categoryId: String) {
+        val currentAccountId = sharedPreferences.accountId.toString()
+        databaseReference = database.getReference("budgets").child(firebaseUser.uid).child(currentAccountId)
+        databaseReference.child(categoryId).removeValue()
+            .addOnSuccessListener {
                 hideProgressDialog()
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, "Unable to delete category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { deleteCategory(categoryId, position) }
+                    .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
     }

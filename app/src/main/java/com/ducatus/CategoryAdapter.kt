@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.data.Category
 
 class CategoryAdapter(
     private val categories: MutableList<Category>,

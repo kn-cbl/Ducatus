@@ -1,7 +1,7 @@
-package com.ducatus
+package com.ducatus.data
 
 data class Account(
-    val account_id: Int? = null,
+    val account_id: String? = null,
     val account_name: String? = null,
     val account_color: String? = null,
     val account_monthly_budget: Double = 0.0,

@@ -165,14 +165,23 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable-v24/ic_outline_visibility_24.xml" value="0.364" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable-v24/nofill.xml" value="0.3525" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable-v24/signin_input.xml" value="0.3525" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_calendar_shape.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_circle.xml" value="0.3275" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_input.xml" value="0.2495" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_input_focused.xml" value="0.2495" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_phone_number.xml" value="0.197" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_phone_number_2.xml" value="0.197" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/bg_progress_bar.xml" value="0.2645" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_check.xml" value="0.287" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_disabled.xml" value="0.2635" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_green_bg.xml" value="0.2645" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_radio_checked.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_radio_default.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_radio_selector.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_selector.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_selector2.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_uncheck.xml" value="0.287" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/btn_uncheck2.xml" value="0.287" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/circular_image.xml" value="0.3635" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/circular_image_bg.xml" value="0.3635" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/et_focused.xml" value="0.2495" />
@@ -180,6 +189,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/green_circle_bg.xml" value="0.3275" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_account_balance.xml" value="0.1385" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_account_circle.xml" value="0.339" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_add.xml" value="0.2665" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_author.xml" value="0.282" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_back.xml" value="0.343" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/ic_baseline_account_circle_24.xml" value="0.3635" />
@@ -269,9 +279,12 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/progress_bg.xml" value="0.3525" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/progress_bg_light.xml" value="0.2645" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/rounded_corners.xml" value="0.2425" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/shape.xml" value="0.34" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/shape.xml" value="0.22" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/shape_light_green.xml" value="0.3615" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/shape_rectangle.xml" value="0.3615" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/square_shape_lightgreen.xml" value="0.3725" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/drawable/text_input.xml" value="0.197" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_about_app.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_about_app.xml" value="0.6385169927909372" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_about_ducatus.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_account_settings.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_account_settings_add_account.xml" value="0.2848731884057971" />
@@ -302,6 +315,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_otp_mobile_number.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_password.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_password2.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_post_delete.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_privacy.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_reset_password.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_reset_password_email.xml" value="0.33" />
@@ -311,6 +325,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_signup.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_test.xml" value="0.25" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_test_sms.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_transaction_add.xml" value="0.339699863574352" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_ucrop.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_update_password.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_user_profile.xml" value="0.33" />
@@ -320,6 +335,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_verify_otp_email.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_verify_otp_mobile_number.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/activity_verify_otpmobile_number.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/add_new_record.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/add_subscription_recurring.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/budget_detail.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/budgets_main.xml" value="0.371875" />
@@ -329,6 +345,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/confirm_image.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/crop_image.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/dropdown_item.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/edit_budget.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/edit_goal.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/edit_loandetail.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_about_app.xml" value="0.371875" />
@@ -338,6 +355,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_accounts.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_accounts_add.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_accounts_edit.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_active.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_budget_add.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_budget_detail.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_budget_edit.xml" value="0.33" />
@@ -354,16 +372,18 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_category_edit_nature_dialog.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_challenges.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_color_dialog.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_delete_user_data_dialog.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_fully_paid.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_g_oals.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_goal_active.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_goals.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_home.xml" value="0.5" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_icon_dialog.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_icon_dialog.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_loans.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_no_connection.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_planned_payments.xml" value="0.25181159420289856" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_privacy.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_privacy.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_privacy_policy.xml" value="0.44176706827309237" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_reports.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_settings.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_subcategory_add.xml" value="0.33" />
@@ -371,14 +391,17 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_subcategory_edit_icon.xml" value="0.75" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_subcategory_edit_icon_dialog.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_subcategory_edit_name.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_terms_of_service.xml" value="0.3567708333333333" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_test1.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_test2.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_tips.xml" value="0.25181159420289856" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_tips_articles.xml" value="0.371875" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transactions.xml" value="0.5" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transactions_breakdown.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transaction_add_expense.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transactions.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transactions_breakdown.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_transactions_calendar_overview.xml" value="0.3578125" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_email.xml" value="0.5" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_email_dialog.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_email_dialog.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_mobile_number.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_mobile_number_dialog.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_update_username.xml" value="0.5" />
@@ -388,6 +411,7 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/fragment_verify_update_mobile_number.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/goal_detail.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/goal_detail_completed.xml" value="0.371875" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/grid_amount_presets.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/header_navigation_drawer.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/home_accounts.xml" value="0.75" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/home_main.xml" value="0.371875" />
@@ -395,13 +419,16 @@
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/icon_item.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_account.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_accounts.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_amount_preset.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_amount_presets.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_budget.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_category.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_color.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_icon.xml" value="0.33" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_subcategory.xml" value="0.5" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_transaction.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_transaction_history.xml" value="0.5" />
-        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_transaction_overview.xml" value="0.33" />
+        <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_transaction_overview.xml" value="0.5" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/item_transactions_history.xml" value="0.1638888888888889" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/list_color.xml" value="0.371875" />
         <entry key="..\:/Users/Kean Cabel/Documents/AndroidStudioProjects/DucatusClone/app/src/main/res/layout/list_item.xml" value="0.371875" />

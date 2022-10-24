@@ -19,6 +19,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.ducatus.data.Subcategory
 import com.ducatus.databinding.FragmentSubcategoryAddBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
@@ -188,8 +189,8 @@ class SubcategoryAddFragment : Fragment() {
                 }
 
                 if (!nameKey) {
-                    val lastId = it.childrenCount.toInt()
-                    addSubcategory(lastId, subcategoryName, subcategoryColor, subcategoryIcon)
+                    val key = databaseReference.push().key
+                    addSubcategory(key!!, subcategoryName, subcategoryColor, subcategoryIcon)
                 }
                 else {
                     hideProgressDialog()
@@ -199,16 +200,15 @@ class SubcategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add subcategory, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { subcategoryExists(uid, accountId, subcategoryName, subcategoryColor, subcategoryIcon) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }
 
-    private fun addSubcategory(id: Int, subcategoryName: String, subcategoryColor: String, subcategoryIcon: String) {
+    private fun addSubcategory(id: String, subcategoryName: String, subcategoryColor: String, subcategoryIcon: String) {
         showProgressDialog()
         val subcategory = Subcategory(id, subcategoryName, subcategoryColor, subcategoryIcon)
-        databaseReference.child(id.toString()).setValue(subcategory)
+        databaseReference.child(id).setValue(subcategory)
             .addOnSuccessListener {
                 hideProgressDialog()
                 val action = SubcategoryAddFragmentDirections.actionSubcategoryAddFragmentToCategoryEditFragment(args.categoryId)
@@ -217,8 +217,7 @@ class SubcategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add subcategory, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { addSubcategory(id, subcategoryName, subcategoryColor, subcategoryIcon) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }

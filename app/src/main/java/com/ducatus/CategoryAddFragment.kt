@@ -18,6 +18,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.ducatus.data.Category
 import com.ducatus.databinding.FragmentCategoryAddBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
@@ -176,6 +177,7 @@ class CategoryAddFragment : Fragment() {
         }
 
         if (errors == 0) {
+            showProgressDialog()
             auth = Firebase.auth
             val firebaseUser: FirebaseUser? = auth.currentUser
             if (firebaseUser != null) {
@@ -199,13 +201,13 @@ class CategoryAddFragment : Fragment() {
                 )
             }
             else {
+                hideProgressDialog()
                 sessionExpired()
             }
         }
     }
 
     private fun categoryExists(uid: String, accountId: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
-        showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("categories").child(uid).child(accountId)
         databaseReference.get()
@@ -219,8 +221,9 @@ class CategoryAddFragment : Fragment() {
                 }
 
                 if (!nameKey) {
-                    val lastId = snapshot.childrenCount.toInt()
-                    addCategory(lastId, uid, categoryName, categoryNature, categoryColor, categoryIcon)
+                    val key = databaseReference.push().key
+                    val category = Category(key!!, categoryName, categoryNature, categoryColor, categoryIcon)
+                    addCategory(key, category)
                 }
                 else {
                     hideProgressDialog()
@@ -230,16 +233,13 @@ class CategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { categoryExists(uid, accountId, categoryName, categoryNature, categoryColor, categoryIcon) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }
 
-    private fun addCategory(id: Int, uid: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
-        showProgressDialog()
-        val category = Category(id, categoryName, categoryNature, categoryColor, categoryIcon)
-        databaseReference.child(id.toString()).setValue(category)
+    private fun addCategory(id: String, category: Category) {
+        databaseReference.child(id).setValue(category)
             .addOnSuccessListener {
                 hideProgressDialog()
                 val action = CategoryAddFragmentDirections.actionCategoryAddFragmentToCategoriesFragment()
@@ -248,8 +248,7 @@ class CategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, "Unable to add category, ${it.localizedMessage}", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.retry)) { addCategory(id, uid, categoryName, categoryNature, categoryColor, categoryIcon) }
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
     }

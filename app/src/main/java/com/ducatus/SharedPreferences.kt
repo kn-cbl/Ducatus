@@ -10,9 +10,9 @@ class SharedPreferences(context: Context) {
 
     private val customPreferences: SharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
 
-    var accountId: Int
-        get() = customPreferences.getInt(currentAccountId, 0)
-        set(value) = customPreferences.edit().putInt(currentAccountId, value).apply()
+    var accountId: String?
+        get() = customPreferences.getString(currentAccountId, "")
+        set(value) = customPreferences.edit().putString(currentAccountId, value).apply()
 
     var accountName: String?
         get() = customPreferences.getString(currentAccountName, "Username")

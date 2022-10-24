@@ -10,6 +10,8 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.data.Account
+import com.ducatus.data.User
 import com.ducatus.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -190,7 +192,7 @@ class LoginActivity : AppCompatActivity() {
                 for(child in it.children) {
                     if (child.child("selected").value.toString() == "true") {
                         val sharedPreferences = SharedPreferences(applicationContext)
-                        sharedPreferences.accountId = child.child("account_id").value.toString().toInt()
+                        sharedPreferences.accountId = child.child("account_id").value.toString()
                         sharedPreferences.accountName = child.child("account_name").value.toString()
                         sharedPreferences.accountColor = child.child("account_color").value.toString()
                         break
@@ -212,7 +214,7 @@ class LoginActivity : AppCompatActivity() {
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
-                    val user = User(firebaseUser.email, null, firebaseUser.displayName, null)
+                    val user = User(firebaseUser.email, null, null, null)
                     databaseReference.setValue(user)
                         .addOnSuccessListener {
                             createDefaultAccount(firebaseUser, firebaseUser.displayName.toString())
@@ -237,16 +239,27 @@ class LoginActivity : AppCompatActivity() {
         databaseReference = database.getReference("accounts").child(firebaseUser.uid)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
+                val key = databaseReference.push().key
+
                 if (!snapshot.exists()) {
                     val randomColor = generateRandomColor()
-                    val account = Account(0, username, resources.getResourceEntryName(randomColor), 0.0, 0.0, true)
-                    databaseReference.child("0").setValue(account)
+
+                    val account = Account(
+                        key,
+                        username,
+                        resources.getResourceEntryName(randomColor),
+                        0.0,
+                        0.0,
+                        true
+                    )
+
+                    databaseReference.child(key!!).setValue(account)
                         .addOnSuccessListener {
                             val sharedPreferences = SharedPreferences(applicationContext)
                             sharedPreferences.accountName = account.account_name
                             sharedPreferences.accountColor = account.account_color
 
-                            createDefaultCategories(firebaseUser)
+                            createDefaultCategories(firebaseUser, key)
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
@@ -254,7 +267,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                 }
                 else {
-                    createDefaultCategories(firebaseUser)
+                    createDefaultCategories(firebaseUser, key!!)
                 }
             }
             .addOnFailureListener {
@@ -263,15 +276,22 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun createDefaultCategories(firebaseUser: FirebaseUser) {
+    private fun createDefaultCategories(firebaseUser: FirebaseUser, accountId: String) {
         showProgressDialog()
         databaseReference = database.getReference("categories").child(firebaseUser.uid)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
-                    val categories = AppResources().getDefaultCategories()
+                    val keys = mutableListOf<String>()
 
-                    databaseReference.child("0").setValue(categories)
+                    val size = AppResources().getCategoryItemCount()
+                    for (i in 0 until size) {
+                        val key = databaseReference.push().key
+                        keys.add(key!!)
+                    }
+
+                    val categories = AppResources().getCategories(keys)
+                    databaseReference.child(accountId).setValue(categories)
                         .addOnSuccessListener {
                             checkSelectedAccount(firebaseUser)
                         }
