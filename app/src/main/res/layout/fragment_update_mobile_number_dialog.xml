@@ -84,10 +84,10 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_medium"
+                    android:fontFamily="@font/inter_regular"
                     android:text="@string/cancel"
                     android:textAllCaps="false"
-                    android:textColor="@color/green_primary" />
+                    android:textColor="@color/darker_gray" />
 
                 <Button
                     android:id="@+id/btnUpdateMobileNumberConfirm"
@@ -109,7 +109,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:paddingBottom="16dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"

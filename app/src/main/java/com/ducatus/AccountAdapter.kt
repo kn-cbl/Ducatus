@@ -46,7 +46,6 @@ class AccountAdapter(
                 )
             )
 
-
             findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.account_name
 
             val budget = "₱" + String.format("%,.2f", currentAccount.account_monthly_budget)

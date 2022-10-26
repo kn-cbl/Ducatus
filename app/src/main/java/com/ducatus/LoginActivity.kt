@@ -351,18 +351,19 @@ class LoginActivity : AppCompatActivity() {
         try {
             val googleSignInAccount: GoogleSignInAccount? = task.getResult(ApiException::class.java)
             if (googleSignInAccount != null) {
-                showProgressDialog()
                 firebaseAuthWithGoogle(googleSignInAccount)
             }
         }
         catch (e: ApiException) {
             if (e.statusCode == 12500) {
+                hideProgressDialog()
                 binding.tvLoginErrorAuth.text = getString(R.string.google_sign_in_failed)
             }
         }
     }
 
     private fun firebaseAuthWithGoogle(googleSignInAccount: GoogleSignInAccount) {
+        showProgressDialog()
         val firebaseCredential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
         auth.signInWithCredential(firebaseCredential)
             .addOnSuccessListener {
@@ -372,6 +373,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener {
+                hideProgressDialog()
                 gsc.signOut()
                 binding.tvLoginErrorAuth.text = getString(R.string.google_sign_in_failed)
             }

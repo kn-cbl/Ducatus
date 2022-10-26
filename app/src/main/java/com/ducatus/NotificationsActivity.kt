@@ -14,6 +14,10 @@ class NotificationsActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        binding.tbNotifications.setNavigationOnClickListener {
+            onBackPressed()
+        }
+
         binding.smExpensesReminder.setOnCheckedChangeListener { buttonView, isChecked ->
             if (!isChecked) {
                 enableExpensesReminder()

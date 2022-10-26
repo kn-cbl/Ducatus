@@ -8,9 +8,49 @@
     android:orientation="vertical"
     tools:context=".TransactionsBreakdownFragment">
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/pbTransactionsBreakdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/green_secondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvTransactionsBreakdownEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="160dp"
+        app:cardCornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/inter_medium"
+            android:text="@string/transactions_empty"
+            android:textAlignment="center"
+            android:textColor="@color/green_secondary"
+            android:textSize="16sp"
+            tools:ignore="TextContrastCheck" />
+    </com.google.android.material.card.MaterialCardView>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,12 +63,14 @@
             android:padding="16dp">
 
             <RadioGroup
+                android:id="@+id/rgTransactionsBreakdown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_calendar_shape"
                 android:orientation="horizontal">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbTransactionsBreakdownCalendar"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
@@ -41,11 +83,13 @@
                     android:textColor="@color/darker_gray" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbTransactionsBreakdownWeek"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
                     android:background="@drawable/btn_radio_selector"
                     android:button="@color/transparent"
+                    android:checked="true"
                     android:fontFamily="@font/inter_medium"
                     android:gravity="center"
                     android:text="@string/week"
@@ -53,6 +97,7 @@
                     android:textColor="@color/darker_gray" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbTransactionsBreakdownMonth"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
@@ -65,6 +110,7 @@
                     android:textColor="@color/darker_gray" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbTransactionsBreakdownYear"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
@@ -80,24 +126,23 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTransactionBreakdown"
+            android:id="@+id/rvTransactionsBreakdown"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="56dp"
-            android:background="@color/darker_white_2" />
+            android:background="@color/darker_white_2"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp" />
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/ibAddTransaction"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddTransaction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_circle"
         android:backgroundTint="@color/bright_blue"
         android:contentDescription="@string/add_transaction"
-        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_add_24"

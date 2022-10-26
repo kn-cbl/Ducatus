@@ -82,13 +82,54 @@
     <string name="privacy_policy_header_1">What information do you collect?</string>
     <string name="privacy_policy_header_1_description">We collect information that you voluntarily provide to us when you register in our app, when you use our app, or otherwise when you contact us.</string>
     <string name="privacy_policy_subheader_1">Personal Information Provided by You</string>
-    <string name="privacy_policy_subheader_1_description">The personal information that we collect depends on the context of your interaction with us and the services, the choices you make, and the features you use. This may including the following:</string>
+    <string name="privacy_policy_subheader_1_description">The personal information that we collect depends on the context of your interaction with the application, the choices you make, and the features you use. All personal information that you provide to us must be true, complete, and accurate. This may include the following:</string>
     <string name="privacy_policy_subheader_1_list">• Names\n• Phone numbers\n• Email addresses\n• Usernames\n• Passwords</string>
     <string name="privacy_policy_subheader_2">Application Data</string>
-    <string name="privacy_policy_subheader_2_description">WHen you use our application, we may also collect the following information if you choose to provide us with access or permission:</string>
-    <string name="privacy_policy_subheader_2_list_1">asdf</string>
+    <string name="privacy_policy_subheader_2_description">When you use our application, we may also collect the following information if you choose to provide us with access or permission:</string>
+    <string name="privacy_policy_subheader_2_list_1">• Camera Access</string>
+    <string name="privacy_policy_subheader_2_list_1_description">We may request access or permission to use your mobile device\'s camera for certain features of the application.</string>
+    <string name="privacy_policy_subheader_2_list_2">• Push Notifications</string>
+    <string name="privacy_policy_subheader_2_list_2_description">We may request to send you push notifications regarding your account or certain features of the application. If you wish to opt out from receiving notifications, you may turn them off in your device\'s settings.</string>
+    <string name="privacy_policy_header_2">How do you use the information that you collect?</string>
+    <string name="privacy_policy_header_2_description">We process your information to provide, improve, and administer our application, communicate with you for security and fraud prevention, and to comply with the law.</string>
+    <string name="privacy_policy_header_3">What information do you share?</string>
+    <string name="privacy_policy_header_3_description">We may share your data with third-party vendors, service providers, or agents who perform services for us or on our behalf and require access to such information to do said work.</string>
 
+    <string name="terms_and_conditions">Terms and Conditions</string>
     <string name="terms_of_service">Terms of Service</string>
+    <string name="toc_1_header">1. Introduction</string>
+    <string name="toc_1_description_1">Welcome to <b>Ducatus!</b></string>
+    <string name="toc_1_description_2"><b>Ducatus</b> operates a <b>budgeting and financing application with subscription management and loan monitoring</b> (hereinafter referred to as <b>"Service"</b></string>
+    <string name="toc_1_description_3">Our <b>Privacy Policy</b> governs your usage of the <b>Ducatus Mobile Application</b>, and explains how we collect, safeguard, and disclose information that results from your use of our Service.</string>
+    <string name="toc_1_description_4">We use your data to provide and improve Service. By using our application, you agree to the collection and use of information in accordance with this policy. Unless otherwise stated, the terms used in the policy have the same meaning as our Terms and Conditions.</string>
+    <string name="toc_1_description_5">Our Terms and Conditions govern all use of our Service and together with the Privacy Policy constitutes your agreement with us.</string>
+    <string name="toc_2_header">2. Definitions</string>
+    <string name="toc_2_description_1"><b>SERVICE</b> means the Ducatus Mobile Application operated by Team Ducats.</string>
+    <string name="toc_2_description_2"><b>OTP (One-Time Password)</b> is an automatically generated numeric code to verify and authenticate user access to the application or login session.</string>
+    <string name="toc_2_description_3"><b>USER</b> is the individual using our Service. The User corresponds to the Data Subject, who is the subject of Personal Data.</string>
+    <string name="toc_3_header">3. Information Collection and Use</string>
+    <string name="toc_3_description_1">We collect several different types of information such as <b>Username, Email, Mobile Number (optional), Profile Image (optional)</b> for authentication purposes to provide and improve our Service to you.</string>
+    <string name="toc_4_header">4. Types of Data Collected</string>
+    <string name="toc_4_description_1">While using our Service, we may ask you to provide us with certain valid information that can be used to identify you. This identifiable information may include your:</string>
+    <string name="toc_4_list_1">• Username\n• Email\n• Password\n• Mobile Number (optional)\n• Account Profile Image (optional)</string>
+    <string name="toc_4_description_2">We assure you that the information we gather will only be used for the purpose of this application, other than that, we will not use this information for different matters.</string>
+    <string name="toc_5_header">5. OTP (One-Time Password)</string>
+    <string name="toc_5_description_1">We may also collect your data regarding your mobile number wherein an OTP numeric code will be sent respectively for verification purposes.</string>
+    <string name="toc_5_description_2">Rest assured that the purpose of this process is for validation of the mobile number that will be or is connected to our Service.</string>
+    <string name="toc_6_header">6. Security of Data</string>
+    <string name="toc_6_description_1">The security of your data is crucial to us. However, no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</string>
+    <string name="toc_7_header">7. Terms of Service</string>
+    <string name="toc_7_description_1">• Our goal is to help and assist users in relation with budgeting and financial management including but not limited to subscription management and loan monitoring.</string>
+    <string name="toc_7_description_2">• We also provide articles and videos that serve as tips for budgeting and financial management, which are validated by professionals.</string>
+    <string name="toc_7_description_3">• Daily Challenges and Savings Goal will also be provided to allow users to save a certain amount and reach an achievable amount goal.</string>
+    <string name="toc_8_header">8. Conditions</string>
+    <string name="toc_8_description_1">• Users must create an account first in order to use the application.</string>
+    <string name="toc_8_description_2">• Multiple creation of accounts is allowed.</string>
+    <string name="toc_8_description_3">• The expenses reports can be downloaded in PDF format only.</string>
+    <string name="toc_9_header">9. Contact Us</string>
+    <string name="toc_9_description_1">If you have any questions about the Terms and Conditions, feel free to contact us by email at <b>teamducats@gmail.com</b>.</string>
+    <string name="decline">decline</string>
+    <string name="agree">agree</string>
 
     <string name="deactivate_account">Deactivate Account</string>
     <string name="deactivate_account_mark">Deactivate user account?</string>
@@ -319,5 +360,7 @@
     <string name="allocate_budgets_message">You have not allocated a budget to any category yet. Allocate now?</string>
     <string name="add_categories">Add categories</string>
     <string name="add_categories_message">You have no categories to add a transaction record. Add categories now?</string>
+
+    <string name="transactions_empty">No transactions found</string>
 
 </resources>

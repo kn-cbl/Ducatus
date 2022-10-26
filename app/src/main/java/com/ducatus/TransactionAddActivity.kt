@@ -9,10 +9,7 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.GridLayout
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
@@ -21,6 +18,7 @@ import com.ducatus.data.Category
 import com.ducatus.data.Subcategory
 import com.ducatus.data.Transaction
 import com.ducatus.databinding.ActivityTransactionAddBinding
+import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -33,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.text.DateFormat
 import java.util.*
 
 
@@ -79,12 +78,32 @@ class TransactionAddActivity : AppCompatActivity() {
             }
         }
 
+        binding.tfAddTransactionDate.editText?.setOnClickListener {
+            try {
+                datePicker.show(supportFragmentManager, "tag")
+            }
+            catch (e: Exception) {}
+        }
+
         binding.tfAddTransactionDate.setEndIconOnClickListener {
-            datePicker.show(supportFragmentManager, "tag")
+            try {
+                datePicker.show(supportFragmentManager, "tag")
+            }
+            catch (e: Exception) {}
+        }
+
+        binding.tfAddTransactionTime.editText?.setOnClickListener {
+            try {
+                timePicker.show(supportFragmentManager, "tag")
+            }
+            catch (e: Exception) {}
         }
 
         binding.tfAddTransactionTime.setEndIconOnClickListener {
-            timePicker.show(supportFragmentManager, "tag")
+            try {
+                timePicker.show(supportFragmentManager, "tag")
+            }
+            catch (e: Exception) {}
         }
 
         val spCategory = (binding.tfAddTransactionCategory.editText as? AutoCompleteTextView)
@@ -94,6 +113,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
                 // store id of selected category
                 selectedCategory = string.tag
+                getCategoryRemainingBudget(firebaseUser.uid, currentAccountId, selectedCategory)
                 loadSubcategories(firebaseUser.uid, currentAccountId, selectedCategory)
             }
 
@@ -107,8 +127,8 @@ class TransactionAddActivity : AppCompatActivity() {
             }
 
         // determine if transaction is expense or income
-        binding.rgAddTransaction.setOnCheckedChangeListener { _, id ->
-            when (id) {
+        binding.rgAddTransaction.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
                 R.id.rbTransactionExpense -> {
                     transactionType = 0
                 }
@@ -216,11 +236,10 @@ class TransactionAddActivity : AppCompatActivity() {
                         val category = child.getValue<Category>()
                         if (category != null) {
                             if (category.category_allocated) {
-                                getCategoryRemainingBudget(uid, accountId, category.category_id!!)
                                 categories.add(
                                     StringWithTag(
                                         category.category_name!!,
-                                        category.category_id,
+                                        category.category_id!!,
                                         null,
                                         null
                                     )
@@ -235,6 +254,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
                         // store category id
                         selectedCategory = categories.first().tag
+                        getCategoryRemainingBudget(uid, accountId, selectedCategory)
                         loadSubcategories(firebaseUser.uid, currentAccountId, selectedCategory)
 
                         val adapter = ArrayAdapter(applicationContext, R.layout.list_item, categories)
@@ -274,6 +294,7 @@ class TransactionAddActivity : AppCompatActivity() {
                     binding.tfAddTransactionSubcategory.visibility = View.GONE
                 }
                 else {
+                    binding.tfAddTransactionSubcategory.visibility = View.VISIBLE
                     val subcategories = mutableListOf<StringWithTag>()
                     for (child in snapshot.children) {
                         val subcategory = child.getValue<Subcategory>()
@@ -339,17 +360,31 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun setDateTimePicker() {
+        val today = MaterialDatePicker.todayInUtcMilliseconds()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+
+        calendar.timeInMillis = today
+        calendar[Calendar.MONTH] = Calendar.JANUARY
+        val janThisYear = calendar.timeInMillis
+
+        val constraintsBuilder =
+            CalendarConstraints.Builder()
+                .setStart(janThisYear)
+                .setEnd(today)
+
         datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setCalendarConstraints(constraintsBuilder.build())
             .build()
 
         datePicker.addOnPositiveButtonClickListener { date ->
-            binding.tfAddTransactionDate.editText?.setText(date.toString())
+            val formattedDate =
+                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                    .format(Date(date))
 
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            calendar.timeInMillis = date
-            selectedDate = calendar.timeInMillis
+            binding.tfAddTransactionDate.editText?.setText(formattedDate)
+            selectedDate = date
         }
 
         timePicker = MaterialTimePicker.Builder()
@@ -447,7 +482,6 @@ class TransactionAddActivity : AppCompatActivity() {
         val date = binding.tfAddTransactionDate.editText?.text.toString().trim { it <= ' ' }
         val time = binding.tfAddTransactionTime.editText?.text.toString().trim { it <= ' ' }
         val category = binding.tfAddTransactionCategory.editText?.text.toString().trim { it <= ' ' }
-        val subcategory = binding.tfAddTransactionSubcategory.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfAddTransactionPaymentType.editText?.text.toString().trim { it <= ' ' }
         val notes = binding.tfAddTransactionNotes.editText?.text.toString().trim { it <= ' ' }
         val image: Long
@@ -465,11 +499,6 @@ class TransactionAddActivity : AppCompatActivity() {
 
         if (TextUtils.isEmpty(category)) {
             binding.tfAddTransactionCategory.error = getString(R.string.category_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(subcategory)) {
-            binding.tfAddTransactionSubcategory.error = getString(R.string.subcategory_empty)
             errors++
         }
 
@@ -491,7 +520,7 @@ class TransactionAddActivity : AppCompatActivity() {
         }
 
         if (errors == 0) {
-            addTransaction(amount.toDouble(), paymentType, notes, null)
+            deductAmount(amount.toDouble(), paymentType, notes, null)
         }
     }
 
@@ -499,10 +528,84 @@ class TransactionAddActivity : AppCompatActivity() {
 
     }
 
-    private fun addTransaction(amount: Double, paymentType: String, notes: String, imageUrl: Uri?) {
-        showProgressDialogAdd()
+    private fun deductAmount(amount: Double, paymentType: String, notes: String, imageUrl: Uri?) {
+        databaseReference = database.getReference("budgets").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val budget = snapshot.getValue<Budget>()
+                if (budget != null) {
+                    val amountSpent = when (transactionType) {
+                        0 -> budget.budget_amount_spent + amount
+                        else -> budget.budget_amount_spent - amount
+                    }
 
-        databaseReference = database.getReference("transactions").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory)
+                    databaseReference.child("budget_amount_spent").setValue(amountSpent)
+                        .addOnSuccessListener {
+                            val categoryData = mapOf(
+                                "id" to budget.category_id.toString(),
+                                "name" to budget.category_name.toString(),
+                                "color" to budget.category_color.toString(),
+                                "icon" to budget.category_icon.toString()
+                            )
+
+                            if (selectedSubcategory != null) {
+                                getSubcategory(amount, paymentType, notes, imageUrl, categoryData)
+                            }
+                            else {
+                                addTransaction(amount, paymentType, notes, imageUrl, categoryData, null)
+                            }
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialogAdd()
+                            Snackbar
+                                .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                                .show()
+                        }
+                }
+            }
+            .addOnFailureListener {
+                hideProgressDialogAdd()
+                Snackbar
+                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
+
+    private fun getSubcategory(amount: Double, paymentType: String, notes: String, imageUrl: Uri?, categoryData: Map<String, String>) {
+        showProgressDialogAdd()
+        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory).child(selectedSubcategory!!)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val subcategory = snapshot.getValue<Subcategory>()
+                if (subcategory != null) {
+                    val subcategoryData = mapOf(
+                        "id" to subcategory.subcategory_id.toString(),
+                        "name" to subcategory.subcategory_name.toString(),
+                        "color" to subcategory.subcategory_color.toString(),
+                        "icon" to subcategory.subcategory_icon.toString()
+                    )
+
+                    addTransaction(amount, paymentType, notes, imageUrl, categoryData, subcategoryData)
+                }
+            }
+            .addOnFailureListener {
+                hideProgressDialogAdd()
+                Snackbar
+                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
+
+    private fun addTransaction(
+        amount: Double,
+        paymentType: String,
+        notes: String,
+        imageUrl: Uri?,
+        category: Map<String, String>,
+        subcategory: Map<String, String>?
+    ) {
+        showProgressDialogAdd()
+        databaseReference = database.getReference("transactions").child(firebaseUser.uid).child(currentAccountId)
         val key = databaseReference.push().key
         val transaction = Transaction(
             key,
@@ -514,40 +617,20 @@ class TransactionAddActivity : AppCompatActivity() {
             selectedDate,
             selectedHour,
             selectedMinute,
-            selectedSubcategory
+            category["id"],
+            category["name"],
+            category["color"],
+            category["icon"],
+            subcategory?.get("id"),
+            subcategory?.get("name"),
+            subcategory?.get("color"),
+            subcategory?.get("icon"),
         )
 
-        databaseReference.setValue(transaction)
+        databaseReference.child(key!!).setValue(transaction)
             .addOnSuccessListener {
                 hideProgressDialogAdd()
                 onBackPressed()
-            }
-            .addOnFailureListener {
-                hideProgressDialogAdd()
-                Snackbar
-                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
-                    .show()
-            }
-    }
-
-    private fun deductAmount(amount: Double) {
-        databaseReference = database.getReference("budgets").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory)
-        databaseReference.get()
-            .addOnSuccessListener { snapshot ->
-                var amountSpent = snapshot.child("budget_amount_spent").value.toString().toDouble()
-                amountSpent += amount
-
-                databaseReference.child("budget_amount_spent").setValue(amountSpent)
-                    .addOnSuccessListener {
-                        hideProgressDialogAdd()
-                        onBackPressed()
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialogAdd()
-                        Snackbar
-                            .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
-                            .show()
-                    }
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()

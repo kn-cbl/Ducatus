@@ -197,7 +197,7 @@ class AppResources {
             ),
 
             dbKeys[1] to Category(
-                dbKeys[2], "Emergency Funds", 0,
+                dbKeys[1], "Emergency Funds", 0,
                 "material_bright_red_700", "ic_local_first_aid_24"
             ),
 

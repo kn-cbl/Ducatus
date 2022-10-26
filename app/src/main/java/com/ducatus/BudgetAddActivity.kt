@@ -352,9 +352,9 @@ class BudgetAddActivity : AppCompatActivity() {
         showProgressDialogAdd()
         databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.get()
-            .addOnSuccessListener {
+            .addOnSuccessListener { snapshot ->
                 var nameKey = false
-                for (child in it.children) {
+                for (child in snapshot.children) {
                     if (budgetName == child.child("budget_name").value.toString()) {
                         nameKey = true
                         break
@@ -365,7 +365,7 @@ class BudgetAddActivity : AppCompatActivity() {
                     getCategory(categoryId, uid, budgetName, categoryId, accountId, budgetAmount)
                 }
                 else {
-                    hideProgressDialog()
+                    hideProgressDialogAdd()
                     binding.tfAddBudgetName.error = getString(R.string.budget_name_exists)
                 }
             }

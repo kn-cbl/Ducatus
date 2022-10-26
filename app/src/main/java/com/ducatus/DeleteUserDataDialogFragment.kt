@@ -92,6 +92,11 @@ class DeleteUserDataDialogFragment : DialogFragment() {
                 getGoogleIdToken()
             }
         }
+        else {
+            enableWindow()
+            binding.llDeleteUserReauthenticate.visibility = View.VISIBLE
+            binding.llDeleteUser.visibility = View.GONE
+        }
     }
 
     private fun getGoogleIdToken() {
@@ -136,10 +141,11 @@ class DeleteUserDataDialogFragment : DialogFragment() {
         catch (e: ApiException) {
             if (e.statusCode == 12500) {
                 enableWindow()
-                dismiss()
                 Snackbar
                     .make(rootLayout, getString(R.string.google_sign_in_failed), 5000)
                     .show()
+
+                dismiss()
             }
         }
     }
@@ -153,10 +159,11 @@ class DeleteUserDataDialogFragment : DialogFragment() {
             }
             .addOnFailureListener {
                 enableWindow()
-                dismiss()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
+
+                dismiss()
             }
     }
 

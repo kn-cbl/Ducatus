@@ -111,7 +111,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             findNavController().navigate(action)
         }
 
-        binding.ibAddSubcategory.setOnClickListener {
+        binding.fabAddSubcategory.setOnClickListener {
             toolbar.title = getString(R.string.add_subcategory)
             val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToSubcategoryAddFragment(args.categoryId)
             findNavController().navigate(action)
@@ -179,7 +179,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                 }
 
                 if (subcategoryAdapter.itemCount >= 20) {
-                    binding.ibAddSubcategory.visibility = View.GONE
+                    binding.fabAddSubcategory.visibility = View.GONE
                 }
             }
 
@@ -292,13 +292,13 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         binding.pbCategoryEdit.visibility = View.VISIBLE
         binding.llCategoryEdit.visibility = View.GONE
         binding.rvSubcategories.visibility = View.GONE
-        binding.ibAddSubcategory.visibility = View.GONE
+        binding.fabAddSubcategory.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbCategoryEdit.visibility = View.INVISIBLE
         binding.llCategoryEdit.visibility = View.VISIBLE
         binding.rvSubcategories.visibility = View.VISIBLE
-        binding.ibAddSubcategory.visibility = View.VISIBLE
+        binding.fabAddSubcategory.visibility = View.VISIBLE
     }
 }

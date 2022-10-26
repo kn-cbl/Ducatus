@@ -92,12 +92,18 @@ class BudgetsFragment : Fragment(), BudgetInterface {
         showProgressDialog()
         databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.get()
-            .addOnSuccessListener {
-                for (child in it.children) {
+            .addOnSuccessListener { snapshot ->
+                val budgets = mutableListOf<Budget>()
+                for (child in snapshot.children) {
                     val budget = child.getValue<Budget>()
                     if (budget != null) {
-                        budgetAdapter.addBudget(budget)
+                        budgets.add(budget)
                     }
+                }
+
+                budgets.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.budget_name!! })
+                for (item in budgets) {
+                    budgetAdapter.addBudget(item)
                 }
 
                 if (budgetAdapter.itemCount <= 0) binding.cvBudgetsEmpty.visibility = View.VISIBLE

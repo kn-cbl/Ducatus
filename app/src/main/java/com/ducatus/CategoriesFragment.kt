@@ -55,7 +55,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         super.onViewCreated(view, savedInstanceState)
         loadData()
 
-        binding.ibAddCategory.setOnClickListener {
+        binding.fabAddCategory.setOnClickListener {
             toolbar.title = "Add Category"
             val action = CategoriesFragmentDirections.actionCategoriesFragmentToCategoryAddFragment()
             findNavController().navigate(action)
@@ -136,7 +136,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             }
 
         if (categoryAdapter.itemCount >= 20) {
-            binding.ibAddCategory.visibility = View.GONE
+            binding.fabAddCategory.visibility = View.GONE
         }
     }
 
@@ -217,12 +217,12 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     private fun showProgressDialog() {
         binding.pbCategories.visibility = View.VISIBLE
         binding.rvCategories.visibility = View.GONE
-        binding.ibAddCategory.visibility = View.GONE
+        binding.fabAddCategory.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbCategories.visibility = View.INVISIBLE
         binding.rvCategories.visibility = View.VISIBLE
-        binding.ibAddCategory.visibility = View.VISIBLE
+        binding.fabAddCategory.visibility = View.VISIBLE
     }
 }

@@ -2,6 +2,7 @@ package com.ducatus
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.navigation.Navigation
 import com.ducatus.databinding.ActivityPrivacyBinding
 
 class PrivacyActivity : AppCompatActivity() {
@@ -19,7 +20,13 @@ class PrivacyActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        val navController = Navigation.findNavController(this, R.id.fcPrivacy)
+        if (navController.previousBackStackEntry != null) {
+            navController.popBackStack()
+        }
+        else {
+            super.onBackPressed()
+        }
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }

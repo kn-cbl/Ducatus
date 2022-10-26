@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentPrivacyBinding
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -23,9 +24,9 @@ import com.google.firebase.ktx.Firebase
 
 class PrivacyFragment : Fragment() {
     private lateinit var activity: Activity
-    private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentPrivacyBinding
     private lateinit var rootLayout: ConstraintLayout
+    private lateinit var toolbar: MaterialToolbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +34,8 @@ class PrivacyFragment : Fragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.clPrivacy)
+        toolbar = activity.findViewById(R.id.tbPrivacy)
+        toolbar.title = getString(R.string.privacy)
 
         binding = FragmentPrivacyBinding.inflate(inflater, container, false)
         return binding.root
@@ -42,12 +45,14 @@ class PrivacyFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.rlPrivacyPolicy.setOnClickListener {
+            toolbar.title = getString(R.string.privacy_policy)
             val action = PrivacyFragmentDirections.actionPrivacyFragmentToPrivacyPolicyFragment()
             findNavController().navigate(action)
         }
 
         binding.rlTOS.setOnClickListener {
-            val action= PrivacyFragmentDirections.actionPrivacyFragmentToTermsOfServiceFragment()
+            toolbar.title = getString(R.string.terms_and_conditions)
+            val action = PrivacyFragmentDirections.actionPrivacyFragmentToTermsOfServiceFragment()
             findNavController().navigate(action)
         }
 
