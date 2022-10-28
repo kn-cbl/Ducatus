@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
 
     <color name="black">#FF000000</color>
+    <color name="off_black">#2B2B2B</color>
     <color name="almost_black">#FF202020</color>
     <color name="darker_gray">#545454</color>
     <color name="dark_gray">#5C5C5C</color>
@@ -18,6 +19,7 @@
     <color name="darker_white">#E3E3E3</color>
     <color name="darker_white_2">#E7E7E7</color>
     <color name="dark_white">#F8F8F8</color>
+    <color name="off_white">#FEFEFE</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark_brown">#704f4f</color>
 

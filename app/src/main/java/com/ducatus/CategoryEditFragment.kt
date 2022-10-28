@@ -202,6 +202,10 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                 if (subcategory != null) {
                     subcategoryAdapter.addSubcategory(subcategory)
                 }
+
+                if (subcategoryAdapter.itemCount <= 0) {
+                    binding.tvSubcategoriesEmpty.visibility = View.VISIBLE
+                }
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -209,7 +213,9 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                // no implementation
+                if (subcategoryAdapter.itemCount <= 0) {
+                    binding.tvSubcategoriesEmpty.visibility = View.VISIBLE
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {

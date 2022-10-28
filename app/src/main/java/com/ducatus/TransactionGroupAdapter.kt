@@ -8,6 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.TransactionGroup
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.text.DateFormat
+import java.util.*
 
 class TransactionGroupAdapter(
     private val transactionsGroup: MutableList<TransactionGroup>,
@@ -48,9 +51,13 @@ class TransactionGroupAdapter(
                 activity.packageName
             )
 
+            val dateText = determineDateText(currentTransactionGroup.date!!)
+            findViewById<TextView>(R.id.tvItemTransactionDate).text = dateText
+
             val text = currency + String.format("%,.2f", amount)
             findViewById<TextView>(R.id.tvItemTransactionTotal).text = text
-            findViewById<TextView>(R.id.tvItemTransactionTotal).setTextColor(ContextCompat.getColor(activity, amountColorRes))
+            findViewById<TextView>(R.id.tvItemTransactionTotal)
+                .setTextColor(ContextCompat.getColor(activity, amountColorRes))
 
             val transactionAdapter = currentTransactionGroup.adapter
             val childView = findViewById<RecyclerView>(R.id.rvTransactionGroup)
@@ -70,5 +77,25 @@ class TransactionGroupAdapter(
     fun addTransactionGroup(transactionGroup: TransactionGroup) {
         transactionsGroup.add(transactionGroup)
         notifyItemInserted(transactionsGroup.size - 1)
+    }
+
+    private fun determineDateText(date: Long): String {
+        val formattedDate =
+            DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                .format(Date(date))
+
+        val today = MaterialDatePicker.todayInUtcMilliseconds()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.timeInMillis = today
+
+        val dateToday = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+            .format(Date(calendar.timeInMillis))
+
+        var dateText = formattedDate
+        if (formattedDate == dateToday) {
+            dateText = "Today"
+        }
+
+        return dateText
     }
 }

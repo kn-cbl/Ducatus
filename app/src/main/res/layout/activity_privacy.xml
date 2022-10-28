@@ -24,7 +24,7 @@
             android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24_white"
             app:title="@string/privacy"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/off_white" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fcPrivacy"

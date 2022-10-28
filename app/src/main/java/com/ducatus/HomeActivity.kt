@@ -126,21 +126,18 @@ class HomeActivity : AppCompatActivity() {
         val currentAccountColor = sharedPreferences.accountColor
 
         val headerView = binding.nvHome.getHeaderView(0)
-        val imageColor = resources.getIdentifier(
+        val iconColor = resources.getIdentifier(
             currentAccountColor,
             "color",
             this.packageName
         )
 
-        headerView.findViewById<ImageView>(R.id.ivHeaderImage).setColorFilter(
-            ResourcesCompat.getColor(
-                resources,
-                R.color.white,
-                null
-            )
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text = currentAccountName?.get(0)?.uppercase()
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).setTextColor(
+            ContextCompat.getColor(this, iconColor)
         )
 
-        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(ContextCompat.getColor(this, imageColor))
+        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(ContextCompat.getColor(this, iconColor))
         headerView.findViewById<TextView>(R.id.tvHeaderName).text = currentAccountName
 
         hideProgressDialog()

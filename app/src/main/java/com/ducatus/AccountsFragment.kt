@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -169,19 +170,14 @@ class AccountsFragment : Fragment(), AccountInterface {
                 val account = snapshot.getValue<Account>()
                 if (account != null) {
                     try {
-                        val imageColor = resources.getIdentifier(
+                        val iconColor = resources.getIdentifier(
                             account.account_color.toString(),
                             "color",
                             activity.packageName
                         )
 
-                        binding.ivSelectedAccountImage.setColorFilter(
-                            ResourcesCompat.getColor(
-                                resources,
-                                imageColor,
-                                null
-                            )
-                        )
+                        binding.tvSelectedAccountIcon.text = account.account_name?.get(0)?.uppercase()
+                        binding.flSelectedAccountIcon.backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
                     }
                     catch (e: Exception) {}
 

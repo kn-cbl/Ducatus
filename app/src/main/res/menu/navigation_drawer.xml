@@ -19,7 +19,7 @@
             android:title="@string/budgets" />
         <item
             android:id="@+id/nav_transactions"
-            android:icon="@drawable/ic_transactions"
+            android:icon="@drawable/ic_local_transactions_24"
             android:title="@string/transactions" />
         <item
             android:id="@+id/nav_planned_payments"

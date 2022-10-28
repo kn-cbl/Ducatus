@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/off_white"
     tools:context=".BudgetDetailFragment">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -66,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/budget_name"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     android:textSize="14sp" />
 
                 <TextView
@@ -85,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/ic_more"
+                android:background="@drawable/ic_baseline_more_vert_24"
                 android:contentDescription="@string/edit"
                 tools:ignore="TouchTargetSizeCheck" />
         </RelativeLayout>
@@ -226,7 +227,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
             android:text="@string/transaction_history"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="16sp" />
 
         <com.google.android.material.divider.MaterialDivider

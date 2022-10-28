@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:background="@color/green_primary"
         android:elevation="16dp"
-        app:tabIndicatorColor="@color/white"
+        app:tabIndicatorColor="@color/off_white"
         app:tabIndicatorHeight="4dp"
         app:tabMode="fixed"
-        app:tabTextColor="@color/white" />
+        app:tabTextColor="@color/off_white" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpTransactions"

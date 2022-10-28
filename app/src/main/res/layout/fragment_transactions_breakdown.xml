@@ -59,7 +59,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/off_white"
             android:padding="16dp">
 
             <RadioGroup
@@ -146,6 +146,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_add_24"
-        app:tint="@color/white" />
+        app:tint="@color/off_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

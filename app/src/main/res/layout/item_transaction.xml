@@ -6,11 +6,13 @@
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvItemTransaction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/off_white"
         app:cardCornerRadius="16dp">
 
         <RelativeLayout
@@ -39,7 +41,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@id/llEndInfo"
+                android:layout_toStartOf="@id/tvItemTransactionAmount"
                 android:layout_toEndOf="@id/flItemTransactionIcon"
                 android:orientation="vertical">
 
@@ -49,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/category_name"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     android:textSize="14sp" />
 
                 <TextView
@@ -62,33 +64,17 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/llEndInfo"
+            <TextView
+                android:id="@+id/tvItemTransactionAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:gravity="end"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvItemTransactionAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="@string/amount"
-                    android:textColor="@color/darker_gray"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tvItemTransactionDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/date"
-                    android:textColor="@color/darker_gray"
-                    android:textSize="13sp" />
-            </LinearLayout>
+                android:fontFamily="@font/inter_bold"
+                android:text="@string/amount"
+                android:textAlignment="textEnd"
+                android:textColor="@color/darker_gray"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 

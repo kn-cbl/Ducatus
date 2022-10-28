@@ -6,4 +6,5 @@
     android:maxLines="1"
     android:padding="16dp"
     android:textAppearance="?attr/textAppearanceSubtitle1"
+    android:textColor="@color/off_black"
     android:textSize="14sp" />

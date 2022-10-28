@@ -127,6 +127,14 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                     categoryAdapter.addCategory(item)
                 }
 
+                if (categoryAdapter.itemCount <= 0) {
+                    binding.tvCategoriesEmpty.visibility = View.VISIBLE
+                }
+
+                if (categoryAdapter.itemCount >= 20) {
+                    binding.fabAddCategory.visibility = View.GONE
+                }
+
                 hideProgressDialog()
             }
             .addOnFailureListener {
@@ -134,10 +142,6 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
             }
-
-        if (categoryAdapter.itemCount >= 20) {
-            binding.fabAddCategory.visibility = View.GONE
-        }
     }
 
     private fun confirmDelete(categoryId: String, position: Int) {

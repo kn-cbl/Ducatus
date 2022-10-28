@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/off_white"
     tools:context=".UpdateMobileNumberDialogFragment">
 
     <LinearLayout
@@ -21,7 +22,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
             android:text="@string/update_mobile_number"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="20sp" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -54,6 +55,10 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:hint="@string/mobile_number"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
                 app:prefixText="@string/_63">
@@ -63,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxLength="10"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,18 +89,18 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
+                    android:fontFamily="@font/inter_medium"
                     android:text="@string/cancel"
                     android:textAllCaps="false"
-                    android:textColor="@color/darker_gray" />
+                    android:textColor="@color/green_primary" />
 
                 <Button
                     android:id="@+id/btnUpdateMobileNumberConfirm"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/confirm"
                     android:textAllCaps="false"
@@ -139,6 +144,10 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:hint="@string/verification_code"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true">
 
@@ -147,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxLength="6"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/off_black" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.divider.MaterialDivider
@@ -161,10 +170,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:text="@string/verify"
                 android:textAllCaps="false"
-                android:textColor="@color/green_primary" />
+                android:textColor="@color/green_secondary" />
 
             <TextView
                 android:id="@+id/tvUpdateMobileResendVerify"

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.Transaction
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.DateFormat
 import java.util.*
@@ -85,8 +86,9 @@ class TransactionAdapter(
             findViewById<TextView>(R.id.tvItemTransactionAmount).text = amountText
             findViewById<TextView>(R.id.tvItemTransactionAmount).setTextColor(ContextCompat.getColor(activity, amountColorRes))
 
-            val dateText = determineDateText(currentTransaction.transaction_date!!)
-            findViewById<TextView>(R.id.tvItemTransactionDate).text = dateText
+            findViewById<MaterialCardView>(R.id.cvItemTransaction).setOnClickListener {
+                listener.viewItem(currentTransaction.transaction_id.toString())
+            }
         }
     }
 
@@ -118,25 +120,5 @@ class TransactionAdapter(
         }
 
         return mapOf("currency" to currency, "color" to color)
-    }
-
-    private fun determineDateText(date: Long): String {
-        val formattedDate =
-            DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                .format(Date(date))
-
-        val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        calendar.timeInMillis = today
-
-        val dateToday = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-            .format(Date(calendar.timeInMillis))
-
-        var dateText = formattedDate
-        if (formattedDate == dateToday) {
-            dateText = "Today"
-        }
-
-        return dateText
     }
 }

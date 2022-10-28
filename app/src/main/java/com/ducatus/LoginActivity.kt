@@ -250,6 +250,7 @@ class LoginActivity : AppCompatActivity() {
                         resources.getResourceEntryName(randomColor),
                         0.0,
                         0.0,
+                        0.0,
                         true
                     )
 

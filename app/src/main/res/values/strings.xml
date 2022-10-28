@@ -225,6 +225,7 @@
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="change">Change</string>
+    <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="update">Update</string>
@@ -271,6 +272,9 @@
     <string name="amount_left">Amount Left</string>
     <string name="limit">Limit</string>
     <string name="budget_status">Budget status</string>
+    <string name="budget_status_1">Your budget is on track</string>
+    <string name="budget_status_2">You have almost reached your budget limit</string>
+    <string name="budget_status_3">You have reached your budget limit</string>
     <string name="delete_budget">Delete budget?</string>
     <string name="delete_budget_confirm">All data associated with this budget will be gone forever. Do you still wish to proceed?</string>
 
@@ -278,6 +282,7 @@
     <string name="wants">Wants</string>
     <string name="savings">Savings</string>
 
+    <string name="categories_empty">No categories</string>
     <string name="category">Category</string>
     <string name="category_name">Category Name</string>
     <string name="category_nature">Category Nature</string>
@@ -294,6 +299,7 @@
     <string name="delete_category_mark">Delete category?</string>
     <string name="delete_category_confirm">All data associated with this category will be gone forever. Do you still wish to proceed?</string>
 
+    <string name="subcategories_empty">No subcategories</string>
     <string name="subcategory">Subcategory</string>
     <string name="subcategories">Subcategories</string>
     <string name="subcategory_name">Subcategory Name</string>
@@ -334,6 +340,7 @@
     <string name="no_receipt">No receipt</string>
     <string name="payment_type">Payment Type</string>
 
+    <string name="transactions_empty">No transactions found</string>
     <string name="add_transaction">Add Transaction</string>
     <string name="add_record">Add Record</string>
     <string name="expense">Expense</string>
@@ -361,6 +368,7 @@
     <string name="add_categories">Add categories</string>
     <string name="add_categories_message">You have no categories to add a transaction record. Add categories now?</string>
 
-    <string name="transactions_empty">No transactions found</string>
+    <string name="delete_transaction">Delete transaction?</string>
+    <string name="delete_transaction_message">All data associated with this transaction will be gone forever. Do you still wish to proceed?</string>
 
 </resources>

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/off_white"
     tools:context=".PrivacyFragment">
 
     <TextView
@@ -15,7 +16,7 @@
         android:layout_marginRight="16dp"
         android:fontFamily="@font/inter_medium"
         android:text="@string/important_documents"
-        android:textColor="@color/black"
+        android:textColor="@color/off_black"
         android:textSize="16sp" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -47,7 +48,7 @@
             android:layout_toEndOf="@+id/imageView10"
             android:fontFamily="@font/inter_medium"
             android:text="@string/privacy_policy"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="14sp" />
     </RelativeLayout>
 
@@ -80,7 +81,7 @@
             android:layout_toEndOf="@+id/imageView11"
             android:fontFamily="@font/inter_medium"
             android:text="@string/terms_of_service"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="14sp" />
     </RelativeLayout>
 
@@ -112,7 +113,7 @@
             android:layout_toEndOf="@+id/imageView13"
             android:fontFamily="@font/inter_medium"
             android:text="@string/deactivate_account"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="14sp" />
     </RelativeLayout>
 
@@ -145,7 +146,7 @@
             android:layout_toEndOf="@+id/imageView12"
             android:fontFamily="@font/inter_medium"
             android:text="@string/delete_user_data"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="14sp" />
     </RelativeLayout>
 

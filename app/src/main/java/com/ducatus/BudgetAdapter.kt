@@ -107,12 +107,41 @@ class BudgetAdapter(
                 ContextCompat.getColor(activity, iconColor)
             )
 
-            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress = ((budgetSpent / budgetTotal) * 100).toInt()
+            val budgetProgress = ((budgetSpent / budgetTotal) * 100).toInt()
+            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress = budgetProgress
             findViewById<LinearProgressIndicator>(R.id.pbItemBudget).setIndicatorColor(ContextCompat.getColor(activity, iconColor))
             findViewById<ImageView>(R.id.ibViewItemBudget).tag = currentBudget.budget_id
             findViewById<ImageView>(R.id.ibViewItemBudget).setOnClickListener {
                 listener.viewItem(currentBudget.budget_id.toString())
             }
+
+            // determine icon and text to display
+            var statusIcon = ""
+            var statusText = ""
+
+            when (budgetProgress) {
+                in 0..59 -> {
+                    statusIcon = "ic_budget_status_1"
+                    statusText = "Your budget is on track"
+                }
+                in 60..99 -> {
+                    statusIcon = "ic_budget_status_2"
+                    statusText = "You have almost reached your budget limit"
+                }
+                100 -> {
+                    statusIcon = "ic_budget_status_3"
+                    statusText = "You have reached your budget limit"
+                }
+            }
+
+            val statusIconRes = resources.getIdentifier(
+                statusIcon,
+                "drawable",
+                activity.packageName
+            )
+
+            findViewById<ImageView>(R.id.ivItemBudgetStatus).setImageResource(statusIconRes)
+            findViewById<TextView>(R.id.tvItemBudgetStatus).text = statusText
         }
     }
 

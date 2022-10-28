@@ -6,5 +6,6 @@ data class Account(
     val account_color: String? = null,
     val account_monthly_budget: Double = 0.0,
     val account_remaining_budget: Double = 0.0,
+    val account_remaining_balance: Double = 0.0,
     val selected: Boolean = false,
 )

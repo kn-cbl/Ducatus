@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/off_white"
     tools:context=".PostDeleteActivity">
 
     <ImageButton
         android:id="@+id/imgBtnPostDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/go_back"
         android:minWidth="48dp"
@@ -34,7 +34,7 @@
         android:fontFamily="@font/inter_medium"
         android:text="@string/post_delete_message"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/off_black"
         android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -51,7 +51,7 @@
         android:fontFamily="@font/inter_regular"
         android:text="@string/post_delete_message_2"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/off_black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -69,17 +69,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:srcCompat="@drawable/bg_sad_girl" />
-
-<!--    <Button-->
-<!--        android:id="@+id/btnPostDeleteBack"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="24dp"-->
-<!--        android:fontFamily="@font/inter_medium"-->
-<!--        android:text="@string/log_in"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.5"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

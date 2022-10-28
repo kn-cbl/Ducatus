@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darker_white"
+    android:background="@color/darker_white_2"
     tools:context=".BudgetsFragment">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -27,6 +27,7 @@
         android:layout_marginTop="160dp"
         android:layout_marginEnd="56dp"
         android:layout_marginBottom="160dp"
+        app:cardBackgroundColor="@color/off_white"
         app:cardCornerRadius="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

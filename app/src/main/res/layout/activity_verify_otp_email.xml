@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/icon_hint"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/otp_email" />
+        app:srcCompat="@drawable/bg_verify_otp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,7 +46,7 @@
             android:layout_marginTop="56dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="124dp"
-            app:cardBackgroundColor="@color/dark_white"
+            app:cardBackgroundColor="@color/off_white"
             app:cardCornerRadius="24dp">
 
             <LinearLayout
@@ -72,7 +72,7 @@
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/verification_code"
                     android:textAlignment="center"
-                    android:textColor="@color/darker_gray"
+                    android:textColor="@color/off_black"
                     android:textSize="25sp" />
 
                 <TextView
@@ -112,8 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:fontFamily="@font/inter_regular"
-                    android:text=""
+                    android:fontFamily="@font/inter_medium"
                     android:textAlignment="center"
                     android:textColor="@color/dark_red"
                     android:textSize="12sp"
@@ -132,7 +131,7 @@
                     android:maxLength="6"
                     android:padding="10dp"
                     android:textAlignment="center"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     android:textSize="20sp"
                     tools:ignore="LabelFor,TextFields,SpeakableTextPresentCheck" />
 
@@ -143,13 +142,13 @@
                     android:layout_marginLeft="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="24dp"
-                    android:background="@drawable/green_button"
+                    android:background="@drawable/btn_green_primary_bg"
                     android:backgroundTint="@color/green_primary"
-                    android:fontFamily="@font/inter_medium"
+                    android:fontFamily="@font/inter_bold"
                     android:letterSpacing="0.04"
                     android:text="@string/verify"
                     android:textAllCaps="false"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/off_white" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/pbVerifyOTPEmail"
@@ -160,7 +159,7 @@
                     android:elevation="10dp"
                     android:indeterminate="true"
                     android:visibility="invisible"
-                    app:indicatorColor="@color/white" />
+                    app:indicatorColor="@color/off_white" />
 
                 <TextView
                     android:id="@+id/tvResendOTPEmail"
@@ -169,7 +168,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="32dp"
                     android:enabled="false"
-                    android:fontFamily="@font/inter_regular"
+                    android:fontFamily="@font/inter_medium"
                     android:text="@string/resend_in_60"
                     android:textColor="@color/darker_gray"
                     android:textSize="14sp" />

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/off_white"
     android:orientation="vertical"
     tools:context=".SubcategoryEditFragment">
 
@@ -84,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
                     android:text="@string/subcategory_name"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     android:textSize="12sp" />
 
                 <TextView
@@ -93,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_medium"
                     android:text="@string/subcategory_name"
-                    android:textColor="@color/black"
+                    android:textColor="@color/off_black"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -113,4 +114,5 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

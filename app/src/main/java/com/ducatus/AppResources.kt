@@ -149,6 +149,7 @@ class AppResources {
         "ic_baseline_medication_24",
         "ic_baseline_menu_book_24",
         "ic_baseline_more_horiz_24",
+        "ic_baseline_more_vert_24",
         "ic_baseline_motor_24",
         "ic_baseline_music_24",
         "ic_baseline_night_24",

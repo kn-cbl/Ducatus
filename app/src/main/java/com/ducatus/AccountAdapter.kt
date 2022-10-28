@@ -3,8 +3,10 @@ package com.ducatus
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.Account
@@ -32,19 +34,14 @@ class AccountAdapter(
         val currentAccount = accounts[position]
 
         holder.itemView.apply {
-            val imageColor = resources.getIdentifier(
+            val iconColor = resources.getIdentifier(
                 currentAccount.account_color.toString(),
                 "color",
                 activity.packageName
             )
 
-            findViewById<ImageView>(R.id.ivItemAccountImage).setColorFilter(
-                ResourcesCompat.getColor(
-                    resources,
-                    imageColor,
-                    null
-                )
-            )
+            findViewById<TextView>(R.id.tvItemAccountIcon).text = currentAccount.account_name?.get(0)?.uppercase()
+            findViewById<FrameLayout>(R.id.flItemAccountIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.account_name
 

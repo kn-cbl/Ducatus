@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/off_white"
     tools:context=".UpdateEmailDialogFragment">
 
     <LinearLayout
@@ -20,7 +21,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
             android:text="@string/update_email"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="20sp" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -46,6 +47,10 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:hint="@string/new_email"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusTopStart="8dp"
             app:endIconMode="clear_text"
             app:errorEnabled="true">
 
@@ -55,7 +60,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:inputType="textEmailAddress"
                 android:maxLength="255"
-                android:textColor="@color/black"
+                android:textColor="@color/off_black"
                 android:textSize="14sp"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -69,6 +74,10 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:hint="@string/current_password"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusTopStart="8dp"
             app:errorEnabled="true"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/darker_gray">
@@ -79,7 +88,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:inputType="textPassword"
                 android:maxLength="20"
-                android:textColor="@color/black"
+                android:textColor="@color/off_black"
                 android:textSize="14sp"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -90,7 +99,6 @@
             android:layout_marginTop="16dp" />
 
         <LinearLayout
-            android:id="@+id/llUpdateUsernameButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -101,18 +109,18 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_regular"
+                android:fontFamily="@font/inter_medium"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/darker_gray" />
+                android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnUpdateEmailConfirm"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/confirm"
                 android:textAllCaps="false"

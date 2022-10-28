@@ -17,7 +17,7 @@
         app:navigationIcon="@drawable/ic_baseline_clear_24_white"
         app:title="Edit Subscription"
         app:titleTextColor="#FFFFFF"
-        app:menu="@menu/editbudget_menu"/>
+        app:menu="@menu/edit_delete_menu"/>
 
     <LinearLayout
         android:id="@+id/linearLayout_EditSubscriptionName"

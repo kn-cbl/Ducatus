@@ -79,7 +79,7 @@ class HomeFragment : Fragment() {
             .addOnSuccessListener {
                 val account = it.getValue<Account>()
                 if (account != null) {
-                    val budget = "₱" + String.format("%,.2f", account.account_remaining_budget)
+                    val budget = "₱" + String.format("%,.2f", account.account_remaining_balance)
                     binding.tvHomeAccountBalance.text = budget
                     hideProgressDialog()
                 }

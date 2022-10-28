@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/off_white"
     tools:context=".CategoryEditIconDialogFragment">
 
     <LinearLayout
@@ -20,7 +21,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_medium"
             android:text="@string/edit_category_icon"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="20sp" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -49,6 +50,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/color"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
                 app:errorEnabled="true"
                 app:expandedHintEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -92,6 +97,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/icon"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
                 app:errorEnabled="true"
                 app:expandedHintEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -137,19 +146,19 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_regular"
+                android:fontFamily="@font/inter_medium"
                 android:letterSpacing="0.04"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/darker_gray" />
+                android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnEditCategoryIconSave"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/inter_medium"
                 android:letterSpacing="0.04"
                 android:text="@string/confirm"

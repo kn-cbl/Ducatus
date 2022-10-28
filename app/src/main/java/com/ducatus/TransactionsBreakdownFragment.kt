@@ -137,9 +137,9 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
         return activity
     }
 
-    override fun viewItem(budgetId: String) {
-        val intent = Intent(activity, BudgetDetailActivity::class.java)
-        intent.putExtra("budgetId", budgetId)
+    override fun viewItem(transactionId: String) {
+        val intent = Intent(activity, TransactionDetailActivity::class.java)
+        intent.putExtra("transactionId", transactionId)
         startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
@@ -210,7 +210,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
                     )
 
                     transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                    group = TransactionGroup(totalAmount, transactions, transactionAdapter)
+                    group = TransactionGroup(transactions[0].transaction_date, totalAmount, transactions, transactionAdapter)
                     transactionGroupAdapter.addTransactionGroup(group)
                 }
                 else {
@@ -246,7 +246,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
                                 // add to adapter if current item is the last item
                                 if (i == transactions.size - 1) {
                                     transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                    group = TransactionGroup(totalAmount, newTransactions, transactionAdapter)
+                                    group = TransactionGroup(transactions[i].transaction_date, totalAmount, newTransactions, transactionAdapter)
                                     transactionGroupAdapter.addTransactionGroup(group)
                                 }
                             }
@@ -264,7 +264,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
                                 }
 
                                 transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                group = TransactionGroup(totalAmount, preClear, transactionAdapter)
+                                group = TransactionGroup(transactions[i].transaction_date, totalAmount, preClear, transactionAdapter)
                                 transactionGroupAdapter.addTransactionGroup(group)
 
                                 // clear current data for the next group
@@ -281,7 +281,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
                                 // add to adapter if current item is the last item
                                 if (i == transactions.size - 1) {
                                     transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                    group = TransactionGroup(totalAmount, newTransactions, transactionAdapter)
+                                    group = TransactionGroup(transactions[i].transaction_date, totalAmount, newTransactions, transactionAdapter)
                                     transactionGroupAdapter.addTransactionGroup(group)
                                 }
                             }

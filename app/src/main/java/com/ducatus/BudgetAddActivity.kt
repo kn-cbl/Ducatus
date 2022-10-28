@@ -8,9 +8,7 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
@@ -50,6 +48,7 @@ class BudgetAddActivity : AppCompatActivity() {
 
         loadData()
         inputObserver()
+        setAmountPresetClickListener()
 
         val spAccount = (binding.tfAddBudgetAccount.editText as? AutoCompleteTextView)
         spAccount?.onItemClickListener =
@@ -264,6 +263,26 @@ class BudgetAddActivity : AppCompatActivity() {
 
         val text = "Recommended budget for the selected category: ₱" + String.format("%,.2f", recommendedBudget)
         binding.tfAddBudgetAmount.helperText = text
+    }
+
+    private fun setAmountPresetClickListener() {
+        val amountList = listOf(
+            "500", "1000", "1500",
+            "2000", "3000", "4000",
+            "5000", "7500", "10000"
+        )
+
+        val gridLayout = findViewById<GridLayout>(R.id.glAmountPreset)
+        for (i in 0 until gridLayout.childCount) {
+            val gridItem = gridLayout.getChildAt(i) as TextView
+            gridItem.text = amountList[i]
+            gridItem.tag = amountList[i]
+
+            gridLayout.getChildAt(i).setOnClickListener { item ->
+                val amount = item.tag.toString()
+                binding.tfAddBudgetAmount.editText?.setText(amount)
+            }
+        }
     }
 
     private fun inputObserver() {

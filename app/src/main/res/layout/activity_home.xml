@@ -19,9 +19,9 @@
             android:background="@color/green_primary"
             android:elevation="0dp"
             app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:navigationIconTint="@color/white"
+            app:navigationIconTint="@color/off_white"
             app:title="@string/home"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/off_white" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fcHome"

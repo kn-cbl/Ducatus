@@ -13,7 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.GridLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
@@ -57,6 +59,7 @@ class AccountAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         inputObserver()
+        setAmountPresetClickListener()
 
         colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
@@ -76,6 +79,26 @@ class AccountAddFragment : Fragment() {
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    private fun setAmountPresetClickListener() {
+        val amountList = listOf(
+            "1000", "2000", "5000",
+            "10000", "20000", "30000",
+            "50000", "75000", "100000"
+        )
+
+        val gridLayout = activity.findViewById<GridLayout>(R.id.glAmountPreset)
+        for (i in 0 until gridLayout.childCount) {
+            val gridItem = gridLayout.getChildAt(i) as TextView
+            gridItem.text = amountList[i]
+            gridItem.tag = amountList[i]
+
+            gridLayout.getChildAt(i).setOnClickListener { item ->
+                val amount = item.tag.toString()
+                binding.tfAddAccountBudget.editText?.setText(amount)
             }
         }
     }
@@ -174,7 +197,7 @@ class AccountAddFragment : Fragment() {
 
                 if (!nameKey) {
                     val key = databaseReference.push().key
-                    val account = Account(key, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget)
+                    val account = Account(key, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget, accountMonthlyBudget)
                     addAccount(key!!, uid, account)
                 }
                 else {

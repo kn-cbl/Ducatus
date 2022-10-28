@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +15,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountEditBinding
 import com.ducatus.viewmodel.AccountViewModel
+import com.ducatus.viewmodel.AmountViewModel
 import com.ducatus.viewmodel.ColorViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -42,6 +43,7 @@ class AccountEditDialogFragment : DialogFragment() {
     private var currentBudget: Double? = null
     private var currentColor: String? = null
     private val args: AccountEditDialogFragmentArgs by navArgs()
+    private val amountViewModel: AmountViewModel by activityViewModels()
     private val colorViewModel: ColorViewModel by activityViewModels()
     private val viewModel: AccountViewModel by activityViewModels()
 
@@ -60,8 +62,23 @@ class AccountEditDialogFragment : DialogFragment() {
         loadData()
         inputObserver()
 
+        amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
+            binding.tfEditAccountBudget.editText?.setText(amount)
+        }
+
         colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
+        }
+
+        binding.tfEditAccountBudget.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = AmountDialogFragment()
+
+            val bundle = Bundle()
+            bundle.putString("account", "account")
+            newFragment.arguments = bundle
+
+            newFragment.show(fragmentManager, "dialog")
         }
 
         binding.tfEditAccountColor.editText?.setOnClickListener {

@@ -13,42 +13,54 @@
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="100"
         android:text="@string/_100"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="300"
         android:text="@string/_300"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="500"
         android:text="@string/_500"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
 
     <!-- row 2 -->
@@ -58,42 +70,54 @@
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="1000"
         android:text="@string/_1_000"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="1500"
         android:text="@string/_1_500"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="2000"
         android:text="@string/_2_000"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
 
     <!-- row 3 -->
@@ -102,41 +126,53 @@
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="3000"
         android:text="@string/_3_000"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="4000"
         android:text="@string/_4_000"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_rowWeight="1"
         android:layout_columnWeight="1"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="2sp"
         android:background="@drawable/shape_light_green"
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
+        android:maxLines="1"
         android:padding="16dp"
         android:tag="5000"
         android:text="@string/_5_000"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+        android:textColor="@color/off_black" />
 
 </GridLayout>

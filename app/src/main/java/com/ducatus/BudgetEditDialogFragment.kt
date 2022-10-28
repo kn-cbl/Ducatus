@@ -22,6 +22,7 @@ import com.ducatus.data.Account
 import com.ducatus.data.Budget
 import com.ducatus.data.Category
 import com.ducatus.databinding.FragmentBudgetEditDialogBinding
+import com.ducatus.viewmodel.AmountViewModel
 import com.ducatus.viewmodel.BudgetViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -50,6 +51,7 @@ class BudgetEditDialogFragment : DialogFragment() {
     private var savingCategories = 0
     private var editable: Boolean = true
     private val args: BudgetEditDialogFragmentArgs by navArgs()
+    private val amountViewModel: AmountViewModel by activityViewModels()
     private val viewModel: BudgetViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -93,6 +95,21 @@ class BudgetEditDialogFragment : DialogFragment() {
                     // determine budget based on selected category
                     determineRecommendedBudget(string.tag2!!)
                 }
+
+            amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
+                binding.tfEditBudgetAmount.editText?.setText(amount)
+            }
+
+            binding.tfEditBudgetAmount.editText?.setOnClickListener {
+                val fragmentManager = childFragmentManager
+                val newFragment = AmountDialogFragment()
+
+                val bundle = Bundle()
+                bundle.putString("budget", "budget")
+                newFragment.arguments = bundle
+
+                newFragment.show(fragmentManager, "dialog")
+            }
         }
 
         binding.tfEditBudgetName.editText?.setText(args.budgetName)

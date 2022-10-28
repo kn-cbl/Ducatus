@@ -15,7 +15,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/editbudget_menu"
+        app:menu="@menu/edit_delete_menu"
         app:navigationIcon="@drawable/ic_baseline_clear_24_white"
         app:title="Record Detail"
         app:titleTextColor="#FFFFFF" />

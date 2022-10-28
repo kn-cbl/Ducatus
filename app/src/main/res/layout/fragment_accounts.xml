@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/off_white"
     tools:context=".AccountsFragment">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -38,18 +39,28 @@
             android:contentDescription="@string/edit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_more" />
+            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
-        <ImageView
-            android:id="@+id/ivSelectedAccountImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+        <FrameLayout
+            android:id="@+id/flSelectedAccountIcon"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
             android:layout_marginTop="24dp"
-            android:contentDescription="@string/account_icon"
+            android:background="@drawable/bg_circle"
+            android:backgroundTint="@color/lightest_gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_account_circle" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvSelectedAccountIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_medium"
+                android:textColor="@color/off_white"
+                android:textSize="52sp" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvSelectedAccountName"
@@ -59,11 +70,11 @@
             android:fontFamily="@font/inter_semi_bold"
             android:text="@string/account_name"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/off_black"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivSelectedAccountImage" />
+            app:layout_constraintTop_toBottomOf="@+id/flSelectedAccountIcon" />
 
         <TextView
             android:id="@+id/tvSelectedAccountBudget"
@@ -79,19 +90,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectedAccountName" />
 
-        <View
+        <com.google.android.material.divider.MaterialDivider
             android:id="@+id/vwAccount"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="?android:attr/listDivider"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectedAccountBudget" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAccounts"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vwAccount" />
@@ -101,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,6 +135,7 @@
                 android:textColor="@color/darker_gray"
                 android:textSize="14sp" />
         </RelativeLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,22 +6,33 @@
     android:layout_height="100dp"
     android:background="@color/green_secondary">
 
-    <ImageView
-        android:id="@+id/ivHeaderImage"
-        android:layout_width="58dp"
-        android:layout_height="58dp"
+    <FrameLayout
+        android:id="@+id/flHeaderIcon"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        app:srcCompat="@drawable/ic_account_circle"
-        app:tint="@color/white"
-        android:contentDescription="@string/account_icon" />
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/off_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvHeaderIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="32sp" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:layout_toEndOf="@+id/ivHeaderImage"
+        android:layout_toEndOf="@+id/flHeaderIcon"
         android:orientation="vertical">
 
         <TextView
@@ -29,17 +40,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
-            android:textAppearance="?attr/textAppearanceHeadline6"
             android:text="@string/username"
-            android:textColor="@color/white" />
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="@color/off_white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
-            android:textAppearance="?attr/textAppearanceBody2"
             android:text="@string/my_wallet"
-            android:textColor="@color/white" />
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="@color/off_white" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -25,6 +25,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/off_white"
         app:cardCornerRadius="16dp">
 
         <LinearLayout
@@ -67,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_medium"
                         android:text="@string/budget_name"
-                        android:textColor="@color/black"
+                        android:textColor="@color/off_black"
                         android:textSize="14sp" />
 
                     <TextView
@@ -188,7 +189,7 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:id="@+id/imageView14"
+                    android:id="@+id/ivItemBudgetStatus"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:contentDescription="@string/icon"
