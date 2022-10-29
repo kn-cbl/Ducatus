@@ -4,14 +4,15 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.KeyEvent
+import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.Navigation
 import com.ducatus.databinding.ActivityHomeBinding
+import com.ducatus.interfaces.GoalIntf
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -21,16 +22,24 @@ import com.google.firebase.ktx.Firebase
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityHomeBinding
+    private var fIndex: Int = 0
+    private var mListener: GoalIntf = object : GoalIntf {
+        override fun OnToolbarClickListener(mView: View) {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
 //        networkObserver()
 
         setSupportActionBar(binding.tbHome)
+
+
         binding.tbHome.setNavigationOnClickListener {
             binding.dlHome.open()
         }
@@ -38,6 +47,7 @@ class HomeActivity : AppCompatActivity() {
         binding.nvHome.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
+                    fIndex = 0
                     binding.tbHome.setTitle(R.string.home)
 
                     val action = Navigation.findNavController(this, R.id.fcHome)
@@ -48,6 +58,7 @@ class HomeActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ReportsFragment()).commit()
 //                }
                 R.id.nav_budgets -> {
+                    fIndex = 1
                     binding.tbHome.setTitle(R.string.budgets)
 
                     val action = Navigation.findNavController(this, R.id.fcHome)
@@ -56,7 +67,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 R.id.nav_transactions -> {
                     binding.tbHome.setTitle(R.string.transactions)
-
+                    fIndex = 2
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigateUp()
                     action.navigate(R.id.transactionsFragment)
@@ -67,9 +78,12 @@ class HomeActivity : AppCompatActivity() {
 //                R.id.nav_loans -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, LoansFragment()).commit()
 //                }
-//                R.id.nav_goals -> {
-//                    startActivity(Intent(this, EditGoal::class.java))
-//                }
+                R.id.nav_goals -> {
+                    fIndex = 4
+                    GoalMainActivity.start(this, mListener)
+//                    binding.tbHome.setTitle(R.string.goals)
+
+                }
 //                R.id.nav_challenges -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ChallengesFragment()).commit()
 //                }
@@ -97,8 +111,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (binding.dlHome.isOpen) {
             binding.dlHome.close()
-        }
-        else {
+        } else {
             binding.dlHome.open()
         }
     }
@@ -113,8 +126,7 @@ class HomeActivity : AppCompatActivity() {
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             loadAccount()
-        }
-        else {
+        } else {
             sessionExpired()
         }
     }
@@ -132,12 +144,14 @@ class HomeActivity : AppCompatActivity() {
             this.packageName
         )
 
-        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text = currentAccountName?.get(0)?.uppercase()
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text =
+            currentAccountName?.get(0)?.uppercase()
         headerView.findViewById<TextView>(R.id.tvHeaderIcon).setTextColor(
             ContextCompat.getColor(this, iconColor)
         )
 
-        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(ContextCompat.getColor(this, iconColor))
+        headerView.findViewById<RelativeLayout>(R.id.rlHeader)
+            .setBackgroundColor(ContextCompat.getColor(this, iconColor))
         headerView.findViewById<TextView>(R.id.tvHeaderName).text = currentAccountName
 
         hideProgressDialog()
@@ -151,21 +165,29 @@ class HomeActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 // do nothing
             }
+
             override fun onFinish() {
                 activityStarted = true
             }
         }.start()
 
         if (activityStarted) {
-            val snackbarAvailable = Snackbar.make(binding.dlHome, getString(R.string.connection_available), Snackbar.LENGTH_LONG)
-            val snackbarUnavailable = Snackbar.make(binding.dlHome, getString(R.string.connection_unavailable), Snackbar.LENGTH_INDEFINITE)
+            val snackbarAvailable = Snackbar.make(
+                binding.dlHome,
+                getString(R.string.connection_available),
+                Snackbar.LENGTH_LONG
+            )
+            val snackbarUnavailable = Snackbar.make(
+                binding.dlHome,
+                getString(R.string.connection_unavailable),
+                Snackbar.LENGTH_INDEFINITE
+            )
 
             NetworkConnectivityObserver(this).observe(this) {
                 if (it == NetworkStatus.Available) {
                     snackbarUnavailable.dismiss()
                     snackbarAvailable.show()
-                }
-                else if (it == NetworkStatus.Unavailable) {
+                } else if (it == NetworkStatus.Unavailable) {
                     snackbarUnavailable.show()
                 }
             }
@@ -183,6 +205,7 @@ class HomeActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 // do nothing
             }
+
             override fun onFinish() {
                 val intent = Intent(applicationContext, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -194,7 +217,10 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 
     private fun hideProgressDialog() {

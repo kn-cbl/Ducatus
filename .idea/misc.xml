@@ -73,6 +73,20 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/shape2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_gray.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_lightgreen.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/activity_home.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/activity_transaction_detail.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_container.xml" value="0.2384428223844282" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_origg.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goalactivity_main.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goals.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions_breakdown.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/goalactivity_main.xml" value="0.25" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/new_goal.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/check_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/cropimage_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/editbudget_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/notifications_menu.xml" value="0.20416666666666666" />

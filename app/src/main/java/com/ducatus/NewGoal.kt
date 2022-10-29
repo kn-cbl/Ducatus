@@ -3,10 +3,17 @@ package com.ducatus
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import com.ducatus.data.Goals
+import com.ducatus.services.LocalFirebaseDatabase
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.new_goal.*
+import kotlinx.coroutines.selects.select
 
 
 class NewGoal : AppCompatActivity() {
@@ -16,10 +23,12 @@ class NewGoal : AppCompatActivity() {
     lateinit var result: TextView
     lateinit var adapterColor: ArrayAdapter<String>
     lateinit var context: Context
+    lateinit var accountID: String
+    private val db: LocalFirebaseDatabase = LocalFirebaseDatabase()
 
 
-    fun addColor(name: String, color: Int){
-        if(name != null && color != null){
+    fun addColor(name: String, color: Int) {
+        if (name != null && color != null) {
             listItemColor.add(name)
             listColor.add(color)
         }
@@ -27,7 +36,23 @@ class NewGoal : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         setContentView(R.layout.new_goal)
+        newGoal_toolbar.setOnClickListener(View.OnClickListener {
+            onBackPressed()
+        })
+        newGoal_toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.done -> {
+                    Toast.makeText(this, "Saving ..", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        val sharedPreferences = SharedPreferences(this)
+        accountID = sharedPreferences.accountId!!
         context = this
         addColor("color_one", getColor(R.color.color_one))
         addColor("color_two", getColor(R.color.color_two))
@@ -59,14 +84,17 @@ class NewGoal : AppCompatActivity() {
 
         spinner = findViewById(R.id.spinner_color)
 
-        val adapter:ArrayAdapter<String> = object: ArrayAdapter<String>(
+        val adapter: ArrayAdapter<String> = object : ArrayAdapter<String>(
             context,
             R.layout.spinner_item,
             R.id.txt_bundle,
             listItemColor
-        ){
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View
-            {
+        ) {
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
                 val view = getView(position, convertView, parent)
                 val color = view.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = color.background as GradientDrawable
@@ -116,18 +144,31 @@ class NewGoal : AppCompatActivity() {
 //            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
-        iconsDropdown.setOnClickListener{
+        iconsDropdown.setOnClickListener {
             val dialog = IconDialogFragment()
 //            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.done) {
+
+//            val goals: Goals = Goals(accountID,)
+            Toast.makeText(this, "Saving ...", Toast.LENGTH_SHORT).show()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
 }
-
 
 
 private fun <T> ArrayAdapter<T>.getDropDownView() {
     TODO("Not yet implemented")
 }
+
