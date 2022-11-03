@@ -1,11 +1,15 @@
 package com.ducatus.data
 
 data class Goals(
-    val accountID: String = "",
-    val goalDescription: String = "",
-    val targetDate: String = "",
-    val percentage: Double = 0.0,
-    val earned: Double = 0.0,
-    val remaining: Double = 0.0,
-    val goalAmount: Double = 0.0
+    var accountID: String = "",
+    var key: String = "",
+    var goalDescription: String = "",
+    var targetDate: String = "",
+    var percentage: Double = 0.0,
+    var earned: Double = 0.0,
+    var remaining: Double = 0.0,
+    var goalAmount: Double = 0.0,
+    var notes: String = "",
+    var color: Int = 0,
+    var icon: Int = 0
 )

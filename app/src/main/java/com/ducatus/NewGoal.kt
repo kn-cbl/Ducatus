@@ -1,19 +1,22 @@
 package com.ducatus
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.ducatus.data.Goals
+import com.ducatus.data.LocalEntities
+import com.ducatus.interfaces.FirebaseDatabaseCallback
+import com.ducatus.interfaces.GoalIntf
 import com.ducatus.services.LocalFirebaseDatabase
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.new_goal.*
-import kotlinx.coroutines.selects.select
+import java.lang.Exception
 
 
 class NewGoal : AppCompatActivity() {
@@ -24,7 +27,30 @@ class NewGoal : AppCompatActivity() {
     lateinit var adapterColor: ArrayAdapter<String>
     lateinit var context: Context
     lateinit var accountID: String
+    lateinit var icons: ImageButton
     private val db: LocalFirebaseDatabase = LocalFirebaseDatabase()
+    private lateinit var goalName: EditText
+    private lateinit var targetAmount: EditText
+    private lateinit var saved: EditText
+    private lateinit var targetDate: EditText
+    private lateinit var notes: EditText
+    private var currentColor: Int = 0
+    lateinit var listener: GoalIntf
+
+
+    companion object {
+        lateinit var goalIntf: GoalIntf
+
+        fun start(mContext: Context, mGoalIntf: GoalIntf) {
+            NewGoal.goalIntf = mGoalIntf
+            val intent: Intent = Intent(mContext, NewGoal::class.java)
+            mContext.startActivity(intent)
+        }
+
+        fun getInterface(): GoalIntf {
+            return NewGoal.goalIntf
+        }
+    }
 
 
     fun addColor(name: String, color: Int) {
@@ -38,13 +64,69 @@ class NewGoal : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         setContentView(R.layout.new_goal)
+        initViews()
         newGoal_toolbar.setOnClickListener(View.OnClickListener {
             onBackPressed()
         })
         newGoal_toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.done -> {
-                    Toast.makeText(this, "Saving ..", Toast.LENGTH_SHORT).show()
+                    if (goalName.text.toString().equals("") ||
+                        targetAmount.text.toString().equals("") ||
+                        saved.text.toString().equals("") ||
+                        targetDate.text.toString().equals("") ||
+                        notes.text.toString().equals("")
+                    ) {
+                        Toast.makeText(this, "Please Don't Leave Empty Fields", Toast.LENGTH_SHORT)
+                            .show()
+                        true
+                    }
+                    var goals: Goals = Goals()
+                    goals.accountID = accountID.toString()
+                    goals.goalDescription = goalName.text.toString()
+                    var amount = targetAmount.text.toString().toDouble()
+                    goals.goalAmount = amount
+                    var save = saved.text.toString().toDouble()
+                    goals.earned = saved.text.toString().toDouble()
+                    goals.targetDate = targetDate.text.toString()
+                    goals.color = currentColor;
+                    goals.notes = notes.text.toString()
+                    goals.percentage = save / amount * 100
+                    goals.remaining = amount - save
+//                    goals.icon = icons.tag as Int
+
+                    Log.w("accountID", accountID.toString())
+
+                    var entities: LocalEntities = LocalEntities()
+                    entities.goals = goals
+
+                    val callback: FirebaseDatabaseCallback = object : FirebaseDatabaseCallback {
+                        override fun onSuccessInsert() {
+                            Toast.makeText(
+                                applicationContext,
+                                "Successfully Added Goal",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                            goalIntf.PressBack()
+                        }
+
+                        override fun onError(e: Exception) {
+                            Toast.makeText(
+                                applicationContext,
+                                "Failed to Add Goal",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            Log.e("ADDING_GOAL_ERR", e.message.toString())
+                        }
+
+                        override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                            TODO("Not yet implemented")
+                        }
+                    }
+
+                    db.writeToDb(entities, "Goals", callback)
                     true
                 }
                 else -> false
@@ -99,6 +181,7 @@ class NewGoal : AppCompatActivity() {
                 val color = view.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = color.background as GradientDrawable
                 db.setColor(listColor[position])
+                currentColor = listColor[position]
                 db.cornerRadius = 20f
                 color.background = db
                 return view
@@ -125,6 +208,7 @@ class NewGoal : AppCompatActivity() {
                 val svv = sv.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = GradientDrawable()
                 db.setColor(listColor[position])
+                currentColor = listColor[position]
                 db.cornerRadius = 20f
                 svv.background = db
             }
@@ -135,7 +219,7 @@ class NewGoal : AppCompatActivity() {
         }
 
 
-        val icons = findViewById<ImageButton>(R.id.spinner_icon)
+        icons = findViewById<ImageButton>(R.id.spinner_icon)
         val iconsDropdown = findViewById<ImageView>(R.id.icon_dropdown)
 
         icons.setOnClickListener {
@@ -151,17 +235,17 @@ class NewGoal : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    private fun initViews() {
+        goalName = findViewById(R.id.editTextName_newGoal)
+        targetAmount = findViewById(R.id.edittargetAmount_newGoal)
+        saved = findViewById(R.id.textSavedAlready_newGoal)
+        targetDate = findViewById(R.id.editDate_newGGoal)
+        notes = findViewById(R.id.editTextNotes_newGoal)
+        listener = NewGoal.goalIntf
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.done) {
-
-//            val goals: Goals = Goals(accountID,)
-            Toast.makeText(this, "Saving ...", Toast.LENGTH_SHORT).show()
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 
 

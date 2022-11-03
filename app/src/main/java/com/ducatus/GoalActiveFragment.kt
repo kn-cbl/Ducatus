@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.adapter.GoalAdapter
 import com.ducatus.data.Goals
 import com.ducatus.data.LocalEntities
+import com.ducatus.interfaces.ActiveGoalIntf
 import com.ducatus.interfaces.FirebaseDatabaseCallback
+import com.ducatus.interfaces.GoalIntf
 import com.ducatus.services.LocalFirebaseDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.lang.Exception
@@ -29,6 +31,37 @@ class GoalActiveFragment() : Fragment() {
     private lateinit var adapter: GoalAdapter
     private val db: LocalFirebaseDatabase = LocalFirebaseDatabase()
 
+    var adapterCallback = object : ActiveGoalIntf {
+        override fun OnClickListener(mView: View, position: Int) {
+//            EditGoal.start(requireContext(), listOfGoals.get(position))
+        }
+    }
+    val goalIntf = object : GoalIntf {
+        override fun PressBack() {
+            val callback = object : FirebaseDatabaseCallback {
+                override fun onSuccessInsert() {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onError(e: Exception) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                    listOfGoals = goalsList
+                    adapter = GoalAdapter(requireContext(), goalsList, adapterCallback)
+                    recycler.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                    recycler.adapter = adapter
+                }
+            }
+            db.getAllDataFromDB("Goals", accountID, callback)
+        }
+
+        override fun OnToolbarClickListener(mView: View) {
+            TODO("Not yet implemented")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +78,7 @@ class GoalActiveFragment() : Fragment() {
     private fun initListeners(mView: View) {
         btnAdd.setOnClickListener(View.OnClickListener {
             btnAdd.isEnabled = false
-            val intent: Intent = Intent(mView.context, NewGoal::class.java)
-            startActivity(intent)
+            NewGoal.start(requireContext(), goalIntf)
         })
     }
 
@@ -56,7 +88,6 @@ class GoalActiveFragment() : Fragment() {
         recycler = mView.findViewById(R.id.recycler)
         btnAdd = mView.findViewById(R.id.fab_goalActive)
         loadData(mView)
-        createGoalTemp(mView)
     }
 
     private fun loadData(mView: View) {
@@ -66,20 +97,23 @@ class GoalActiveFragment() : Fragment() {
             }
 
             override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                listOfGoals = goalsList
-                createGoalTemp(mView)
+                createGoalTemp(mView, goalsList)
             }
 
             override fun onError(e: Exception) {
                 Log.e("GOALS_ERROR", e.message.toString())
-                Toast.makeText(mView.context, "Internal System Error", Toast.LENGTH_SHORT).show()
             }
         }
         db.getAllDataFromDB("Goals", accountID, callback)
     }
 
-    private fun createGoalTemp(mView: View) {
-        adapter = GoalAdapter(mView.context, listOfGoals)
+    private fun createGoalTemp(mView: View, list: List<Goals>) {
+        var adapterCallback = object : ActiveGoalIntf {
+            override fun OnClickListener(mView: View, position: Int) {
+                TODO("Not yet implemented")
+            }
+        }
+        adapter = GoalAdapter(requireContext(), list, adapterCallback)
         recycler.layoutManager =
             LinearLayoutManager(mView.context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = adapter

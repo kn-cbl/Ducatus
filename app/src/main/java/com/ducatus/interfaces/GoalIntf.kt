@@ -4,4 +4,5 @@ import android.view.View
 
 interface GoalIntf {
     fun OnToolbarClickListener(mView: View)
+    fun PressBack()
 }

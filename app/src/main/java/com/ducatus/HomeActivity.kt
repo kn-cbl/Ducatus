@@ -28,6 +28,10 @@ class HomeActivity : AppCompatActivity() {
             binding.nvHome.setCheckedItem(R.id.nav_home)
             binding.dlHome.open()
         }
+
+        override fun PressBack() {
+            TODO("Not yet implemented")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

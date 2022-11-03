@@ -1,12 +1,14 @@
 package com.ducatus
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.ducatus.data.Goals
 
 
 class EditGoal : AppCompatActivity() {
@@ -16,10 +18,21 @@ class EditGoal : AppCompatActivity() {
     lateinit var result: TextView
     lateinit var adapterColor: ArrayAdapter<String>
     lateinit var context: Context
+    lateinit var mGoal: Goals
+    private lateinit var editGoalName: EditText
 
+    companion object {
+        lateinit var goal: Goals
 
-    fun addColor(name: String, color: Int){
-        if(name != null && color != null){
+        fun start(mContext: Context, g: Goals) {
+            goal = g
+            val intent: Intent = Intent(mContext, EditGoal::class.java)
+            mContext.startActivity(intent)
+        }
+    }
+
+    fun addColor(name: String, color: Int) {
+        if (name != null && color != null) {
             listItemColor.add(name)
             listColor.add(color)
         }
@@ -28,6 +41,7 @@ class EditGoal : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_goal)
+        initViews()
         context = this
         addColor("color_one", getColor(R.color.color_one))
         addColor("color_two", getColor(R.color.color_two))
@@ -59,14 +73,17 @@ class EditGoal : AppCompatActivity() {
 
         spinner = findViewById(R.id.spinner_color)
 
-        val adapter:ArrayAdapter<String> = object: ArrayAdapter<String>(
+        val adapter: ArrayAdapter<String> = object : ArrayAdapter<String>(
             context,
             R.layout.spinner_item,
             R.id.txt_bundle,
             listItemColor
-        ){
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View
-            {
+        ) {
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
                 val view = getView(position, convertView, parent)
                 val color = view.findViewById<View>(R.id.viewHelperItem)
                 val db: GradientDrawable = color.background as GradientDrawable
@@ -116,16 +133,22 @@ class EditGoal : AppCompatActivity() {
 //            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
-        iconsDropdown.setOnClickListener{
+        iconsDropdown.setOnClickListener {
             val dialog = IconDialogFragment()
 //            dialog.displayIcon = icons
             dialog.show(supportFragmentManager, "Icon Dialog")
         }
     }
 
+    private fun initViews() {
+        mGoal = EditGoal.goal
+//        var str = mGoal.goalDescription
+//        editGoalName = findViewById(R.id.editTextName_editGoal)
+//        editGoalName.text = str
+    }
+
 
 }
-
 
 
 private fun <T> ArrayAdapter<T>.getDropDownView() {
