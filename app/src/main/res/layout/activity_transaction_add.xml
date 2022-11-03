@@ -18,11 +18,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_baseline_close_24_white"
-        app:title="@string/add_record"
+        app:title="@string/add_transaction"
         app:titleTextColor="@color/off_white" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/pbAddTransaction"
+        android:id="@+id/pbAddTransactionAction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="10dp"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@id/tbAddTransaction" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/pbTransactionAdd"
+        android:id="@+id/pbAddTransactionMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
@@ -332,7 +332,7 @@
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusTopStart="8dp"
                 app:counterEnabled="true"
-                app:counterMaxLength="100"
+                app:counterMaxLength="200"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
                 app:expandedHintEnabled="false">
@@ -342,8 +342,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
                     android:hint="@string/add_notes"
-                    android:inputType="text"
-                    android:maxLength="50"
+                    android:inputType="textMultiLine"
+                    android:maxLength="200"
                     android:textColor="@color/off_black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp"
@@ -373,9 +373,9 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:fontFamily="@font/inter_regular"
-                    android:inputType="text"
-                    android:maxLength="50"
+                    android:inputType="none"
                     android:textColor="@color/off_black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp"

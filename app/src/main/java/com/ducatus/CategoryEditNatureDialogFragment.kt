@@ -105,7 +105,7 @@ class CategoryEditNatureDialogFragment : DialogFragment() {
 
             database = Firebase.database
             databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
-            databaseReference.child("category_nature").setValue(categoryNature)
+            databaseReference.child("nature").setValue(categoryNature)
                 .addOnSuccessListener {
                     hideProgressDialog()
                     dismiss()

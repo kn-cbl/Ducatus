@@ -112,18 +112,11 @@ class UpdateUsernameDialogFragment : DialogFragment() {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("users")
-        databaseReference.get()
-            .addOnSuccessListener {
-                var usernameKey = false
 
-                for (child in it.children) {
-                    if(username == child.child("username").value.toString()) {
-                        usernameKey = true
-                        break
-                    }
-                }
-
-                if (!usernameKey) {
+        val query = databaseReference.orderByChild("username").equalTo(username)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
                     updateDB(firebaseUser, username)
                 }
                 else {

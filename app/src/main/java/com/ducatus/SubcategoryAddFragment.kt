@@ -160,12 +160,17 @@ class SubcategoryAddFragment : Fragment() {
             if (firebaseUser != null) {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
+
+                val subcategoryData = mapOf(
+                    "name" to subcategoryName,
+                    "color" to subcategoryColor.toString(),
+                    "icon" to subcategoryIcon.toString()
+                )
+
                 subcategoryExists(
                     firebaseUser.uid,
                     accountId,
-                    subcategoryName,
-                    subcategoryColor.toString(),
-                    subcategoryIcon.toString()
+                    subcategoryData
                 )
             }
             else {
@@ -174,23 +179,24 @@ class SubcategoryAddFragment : Fragment() {
         }
     }
 
-    private fun subcategoryExists(uid: String, accountId: String, subcategoryName: String, subcategoryColor: String, subcategoryIcon: String) {
+    private fun subcategoryExists(uid: String, accountId: String, subcategoryData: Map<String, String>) {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                var nameKey = false
-                for (child in it.children) {
-                    if (subcategoryName == child.child("subcategory_name").value.toString()) {
-                        nameKey = true
-                        break
-                    }
-                }
-
-                if (!nameKey) {
+        val query = databaseReference.orderByChild("nameLower").equalTo(subcategoryData["name"])
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
                     val key = databaseReference.push().key
-                    addSubcategory(key!!, subcategoryName, subcategoryColor, subcategoryIcon)
+                    val subcategory = Subcategory(
+                        key,
+                        subcategoryData["name"],
+                        subcategoryData["name"]!!.lowercase(),
+                        subcategoryData["color"],
+                        subcategoryData["icon"]
+                    )
+
+                    addSubcategory(subcategory)
                 }
                 else {
                     hideProgressDialog()
@@ -205,10 +211,9 @@ class SubcategoryAddFragment : Fragment() {
             }
     }
 
-    private fun addSubcategory(id: String, subcategoryName: String, subcategoryColor: String, subcategoryIcon: String) {
+    private fun addSubcategory(subcategory: Subcategory) {
         showProgressDialog()
-        val subcategory = Subcategory(id, subcategoryName, subcategoryColor, subcategoryIcon)
-        databaseReference.child(id).setValue(subcategory)
+        databaseReference.child(subcategory.id!!).setValue(subcategory)
             .addOnSuccessListener {
                 hideProgressDialog()
                 val action = SubcategoryAddFragmentDirections.actionSubcategoryAddFragmentToCategoryEditFragment(args.categoryId)

@@ -3,21 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="16dp"
     android:orientation="vertical">
 
-    <TableRow
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="2">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:orientation="vertical">
 
             <TextView
@@ -25,7 +26,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
-                android:text="@string/date" />
+                android:text="@string/date"
+                android:textColor="@color/darker_gray" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -49,14 +51,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/inter_regular"
-                    android:text="@string/receipt" />
+                    android:text="@string/receipt"
+                    android:textColor="@color/darker_gray" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:gravity="end"
             android:orientation="vertical">
 
@@ -64,17 +67,19 @@
                 android:id="@+id/tvTransactionHistoryAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_regular"
-                android:text="@string/amount" />
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/amount"
+                android:textColor="@color/darker_gray" />
 
             <TextView
                 android:id="@+id/tvTransactionHistoryPaymentType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
-                android:text="@string/payment_type" />
+                android:text="@string/payment_type"
+                android:textColor="@color/darker_gray" />
         </LinearLayout>
-    </TableRow>
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"

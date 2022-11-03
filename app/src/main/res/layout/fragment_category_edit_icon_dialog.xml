@@ -146,23 +146,21 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:letterSpacing="0.04"
                 android:text="@string/cancel"
-                android:textAllCaps="false"
                 android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnEditCategoryIconSave"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/inter_medium"
+                android:layout_marginEnd="6dp"
+                android:fontFamily="@font/inter_semi_bold"
                 android:letterSpacing="0.04"
-                android:text="@string/confirm"
-                android:textAllCaps="false"
+                android:text="@string/ok"
                 android:textColor="@color/green_primary" />
         </LinearLayout>
 

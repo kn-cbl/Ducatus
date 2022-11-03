@@ -9,10 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.data.Transaction
 import com.ducatus.data.TransactionGroup
 import com.ducatus.databinding.FragmentTransactionsBreakdownBinding
+import com.ducatus.viewmodel.SearchViewModel
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
@@ -34,52 +37,44 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var datePicker: MaterialDatePicker<Long>
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: DrawerLayout
-    private lateinit var transactionsListener: ValueEventListener
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity = requireActivity()
-        rootLayout = activity.findViewById(R.id.dlHome)
-
-        auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-            database = Firebase.database
-
-            val sharedPreferences = SharedPreferences(activity)
-            currentAccountId = sharedPreferences.accountId.toString()
-        }
-        else {
-            sessionExpired()
-        }
-    }
+    private lateinit var toolbar: MaterialToolbar
+    private var firebaseUser: FirebaseUser? = null
+    private val searchViewModel: SearchViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activity = requireActivity()
+        rootLayout = activity.findViewById(R.id.dlHome)
+        toolbar = activity.findViewById(R.id.tbHome)
         binding = FragmentTransactionsBreakdownBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        calendar.add(Calendar.DAY_OF_YEAR, -7)
-        val lastWeek = calendar.timeInMillis
-
-        showProgressDialog()
-        setTransactionsListener(lastWeek)
-        databaseReference = database.getReference("transactions").child(firebaseUser.uid).child(currentAccountId)
-        databaseReference.addValueEventListener(transactionsListener)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadData()
         setDatePicker()
+
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search -> {
+                    firebaseUser?.let {
+                        val fragmentManager = childFragmentManager
+                        val newFragment = SearchItemDialogFragment()
+                        newFragment.show(fragmentManager, "dialog")
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        searchViewModel.searchInput.observe(viewLifecycleOwner) { name ->
+            searchTransactionsByCategory(name)
+        }
 
         // special case, show date picker when clicked
         binding.rbTransactionsBreakdownCalendar.setOnClickListener {
@@ -112,11 +107,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
 //
 //            Snackbar.make(rootLayout, formattedDate, 3000).show()
 
-                // remove listener before adding new listener based on selected date
-                showProgressDialog()
-                databaseReference.removeEventListener(transactionsListener)
-                setTransactionsListener(date)
-                databaseReference.addValueEventListener(transactionsListener)
+                firebaseUser?.let { loadTransactions(date) }
             }
         }
 
@@ -124,12 +115,25 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
             val intent = Intent(activity, TransactionAddActivity::class.java)
             startActivity(intent)
             activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            toolbar.menu.clear()
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        databaseReference.removeEventListener(transactionsListener)
+    override fun onResume() {
+        super.onResume()
+
+        toolbar.inflateMenu(R.menu.search_menu)
+        firebaseUser?.let {
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.add(Calendar.DAY_OF_YEAR, -7)
+            val lastWeek = calendar.timeInMillis
+            loadTransactions(lastWeek)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        toolbar.menu.clear()
     }
 
     // get activity to be used in adapter
@@ -137,8 +141,9 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
         return activity
     }
 
-    override fun viewItem(transactionId: String) {
+    override fun viewItem(categoryId: String, transactionId: String) {
         val intent = Intent(activity, TransactionDetailActivity::class.java)
+        intent.putExtra("categoryId", categoryId)
         intent.putExtra("transactionId", transactionId)
         startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -167,25 +172,34 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
 
         datePicker.addOnPositiveButtonClickListener { date ->
             // remove listener before adding new listener based on selected date
-            showProgressDialog()
-            databaseReference.removeEventListener(transactionsListener)
-            setTransactionsListener(date)
-            databaseReference.addValueEventListener(transactionsListener)
+            loadTransactions(date)
         }
     }
 
-    private fun setTransactionsListener(date: Long) {
-        transactionsListener = object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val transactionGroupAdapter = TransactionGroupAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                binding.rvTransactionsBreakdown.adapter = transactionGroupAdapter
-                binding.rvTransactionsBreakdown.layoutManager = LinearLayoutManager(activity)
+    private fun loadData() {
+        auth = Firebase.auth
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            val sharedPreferences = SharedPreferences(activity)
+            currentAccountId = sharedPreferences.accountId.toString()
 
+            database = Firebase.database
+            databaseReference = database.getReference("transactions").child(firebaseUser!!.uid).child(currentAccountId)
+        }
+        else {
+            sessionExpired()
+        }
+    }
+
+    private fun loadTransactions(date: Long) {
+        showProgressDialog()
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
                 val transactions = mutableListOf<Transaction>()
                 for (child in snapshot.children) {
                     val transaction = child.getValue<Transaction>()
                     if (transaction != null) {
-                        if (transaction.transaction_date!! >= date) {
+                        if (transaction.date!! >= date) {
                             transactions.add(transaction)
                         }
                     }
@@ -193,119 +207,183 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
 
                 // sort by date
                 transactions.sortByDescending {
-                    it.transaction_date!! + it.transaction_hour!! + it.transaction_minute!!
+                    it.date!! + it.hour!! + it.minute!!
                 }
 
-                var transactionAdapter: TransactionAdapter
-                var group: TransactionGroup
+                adaptTransactions(transactions)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
 
-                val newTransactions = mutableListOf<Transaction>()
-                var totalAmount = 0.0
-
-                if (transactions.size == 1) {
-                    newTransactions.add(transactions[0])
-                    totalAmount += determineTransactionType(
-                        transactions[0].transaction_type,
-                        transactions[0].transaction_amount
-                    )
-
-                    transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                    group = TransactionGroup(transactions[0].transaction_date, totalAmount, transactions, transactionAdapter)
-                    transactionGroupAdapter.addTransactionGroup(group)
-                }
-                else {
-                    for (i in 0 until transactions.size) {
-                        // first item
-                        if (i == 0) {
-                            newTransactions.add(transactions[0])
-                            totalAmount += determineTransactionType(
-                                transactions[i].transaction_type,
-                                transactions[i].transaction_amount
-                            )
-                        }
-                        else {
-                            // check if current transaction date is same as previous
-                            // increment total amount if same and add to group
-                            // otherwise create new group
-
-                            val currentDate =
-                                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                                    .format(Date(transactions[i].transaction_date!!))
-
-                            val previousDate =
-                                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                                    .format(Date(transactions[i - 1].transaction_date!!))
-
-                            if (currentDate == previousDate) {
-                                newTransactions.add(transactions[i])
-                                totalAmount += determineTransactionType(
-                                    transactions[i].transaction_type,
-                                    transactions[i].transaction_amount
-                                )
-
-                                // add to adapter if current item is the last item
-                                if (i == transactions.size - 1) {
-                                    transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                    group = TransactionGroup(transactions[i].transaction_date, totalAmount, newTransactions, transactionAdapter)
-                                    transactionGroupAdapter.addTransactionGroup(group)
-                                }
-                            }
-                            else {
-                                // add previous item to current group before deleting data
-                                // append items to new list for the ff. reason:
-                                // for some odd reason, the list passed to group adapter
-                                // still updates when clear() is called even after
-                                // adding to group adapter, resulting to loss of previous item's
-                                // data
-
-                                val preClear = mutableListOf<Transaction>()
-                                for (item in newTransactions) {
-                                    preClear.add(item)
-                                }
-
-                                transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                group = TransactionGroup(transactions[i].transaction_date, totalAmount, preClear, transactionAdapter)
-                                transactionGroupAdapter.addTransactionGroup(group)
-
-                                // clear current data for the next group
-                                totalAmount = 0.0
-                                newTransactions.clear()
-
-                                // create new group and add to adapter if current item is last item
-                                newTransactions.add(transactions[i])
-                                totalAmount += determineTransactionType(
-                                    transactions[i].transaction_type,
-                                    transactions[i].transaction_amount
-                                )
-
-                                // add to adapter if current item is the last item
-                                if (i == transactions.size - 1) {
-                                    transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
-                                    group = TransactionGroup(transactions[i].transaction_date, totalAmount, newTransactions, transactionAdapter)
-                                    transactionGroupAdapter.addTransactionGroup(group)
-                                }
-                            }
-                        }
+    private fun searchTransactionsByCategory(name: String) {
+        showProgressDialog()
+        val query = databaseReference.orderByChild("categoryNameLower").startAt(name).endAt(name + "\uf8ff")
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                val transactions = mutableListOf<Transaction>()
+                for (child in snapshot.children) {
+                    val transaction = child.getValue<Transaction>()
+                    if (transaction != null) {
+                        transactions.add(transaction)
                     }
                 }
 
-                if (transactionGroupAdapter.itemCount <= 0) {
-                    binding.cvTransactionsBreakdownEmpty.visibility = View.VISIBLE
-                }
-
-                hideProgressDialog()
+                // search by subcategory and add to list
+                searchTransactionsBySubcategory(name, transactions)
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
+                hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, error.message, 5000)
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
+    }
+
+    private fun searchTransactionsBySubcategory(name: String, transactions: MutableList<Transaction>) {
+        val query = databaseReference.orderByChild("subcategoryNameLower").startAt(name).endAt(name + "\uf8ff")
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                for (child in snapshot.children) {
+                    val transaction = child.getValue<Transaction>()
+                    if (transaction != null) {
+                        transactions.add(transaction)
+                    }
+                }
+
+                if (transactions.isNotEmpty()) {
+                    // sort by date
+                    transactions.sortByDescending {
+                        it.date!! + it.hour!! + it.minute!!
+                    }
+
+                    adaptTransactions(transactions)
+                }
+                else {
+                    hideProgressDialog()
+                    Snackbar
+                        .make(rootLayout, "No transactions found with the name $name", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
+
+    private fun adaptTransactions(transactions: MutableList<Transaction>) {
+        val transactionGroupAdapter = TransactionGroupAdapter(mutableListOf(), this)
+        binding.rvTransactionsBreakdown.adapter = transactionGroupAdapter
+        binding.rvTransactionsBreakdown.layoutManager = LinearLayoutManager(activity)
+
+        var transactionAdapter: TransactionAdapter
+        var group: TransactionGroup
+
+        val newTransactions = mutableListOf<Transaction>()
+        var totalAmount = 0.0
+
+        if (transactions.size == 1) {
+            newTransactions.add(transactions[0])
+            totalAmount += determineTransactionType(
+                transactions[0].type,
+                transactions[0].amount
+            )
+
+            transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
+            group = TransactionGroup(transactions[0].date, totalAmount, transactions, transactionAdapter)
+            transactionGroupAdapter.addTransactionGroup(group)
         }
+        else {
+            for (i in 0 until transactions.size) {
+                // first item
+                if (i == 0) {
+                    newTransactions.add(transactions[0])
+                    totalAmount += determineTransactionType(
+                        transactions[i].type,
+                        transactions[i].amount
+                    )
+                }
+                else {
+                    // check if current transaction date is same as previous
+                    // increment total amount if same and add to group
+                    // otherwise create new group
+
+                    val currentDate =
+                        DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                            .format(Date(transactions[i].date!!))
+
+                    val previousDate =
+                        DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                            .format(Date(transactions[i - 1].date!!))
+
+                    if (currentDate == previousDate) {
+                        newTransactions.add(transactions[i])
+                        totalAmount += determineTransactionType(
+                            transactions[i].type,
+                            transactions[i].amount
+                        )
+
+                        // add to adapter if current item is the last item
+                        if (i == transactions.size - 1) {
+                            transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
+                            group = TransactionGroup(transactions[i].date, totalAmount, newTransactions, transactionAdapter)
+                            transactionGroupAdapter.addTransactionGroup(group)
+                        }
+                    }
+                    else {
+                        // add previous item to current group before deleting data
+                        // append items to new list for the ff. reason:
+                        // for some odd reason, the list passed to group adapter
+                        // still updates when clear() is called even after
+                        // adding to group adapter, resulting to loss of previous item's
+                        // data
+
+                        val preClear = mutableListOf<Transaction>()
+                        for (item in newTransactions) {
+                            preClear.add(item)
+                        }
+
+                        transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
+                        group = TransactionGroup(transactions[i].date, totalAmount, preClear, transactionAdapter)
+                        transactionGroupAdapter.addTransactionGroup(group)
+
+                        // clear current data for the next group
+                        totalAmount = 0.0
+                        newTransactions.clear()
+
+                        // create new group and add to adapter if current item is last item
+                        newTransactions.add(transactions[i])
+                        totalAmount += determineTransactionType(
+                            transactions[i].type,
+                            transactions[i].amount
+                        )
+
+                        // add to adapter if current item is the last item
+                        if (i == transactions.size - 1) {
+                            transactionAdapter = TransactionAdapter(mutableListOf(), this@TransactionsBreakdownFragment)
+                            group = TransactionGroup(transactions[i].date, totalAmount, newTransactions, transactionAdapter)
+                            transactionGroupAdapter.addTransactionGroup(group)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (transactionGroupAdapter.itemCount <= 0) {
+            binding.cvTransactionsBreakdownEmpty.visibility = View.VISIBLE
+        }
+
+        hideProgressDialog()
     }
 
     private fun determineTransactionType(type: Int, amount: Double): Double {
-         return when (type) {
+        return when (type) {
             0 -> 0 - amount
             else -> 0 + amount
         }

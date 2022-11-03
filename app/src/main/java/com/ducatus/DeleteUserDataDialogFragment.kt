@@ -40,8 +40,8 @@ class DeleteUserDataDialogFragment : DialogFragment() {
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
     private lateinit var rootLayout: ConstraintLayout
-    private val functions = 100 / 11
     private val args: DeleteUserDataDialogFragmentArgs by navArgs()
+    private val functions = 100 / 11
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

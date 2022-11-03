@@ -129,7 +129,7 @@
     <string name="toc_9_header">9. Contact Us</string>
     <string name="toc_9_description_1">If you have any questions about the Terms and Conditions, feel free to contact us by email at <b>teamducats@gmail.com</b>.</string>
     <string name="decline">decline</string>
-    <string name="agree">agree</string>
+    <string name="agree">I Agree</string>
 
     <string name="deactivate_account">Deactivate Account</string>
     <string name="deactivate_account_mark">Deactivate user account?</string>
@@ -200,16 +200,18 @@
     <string name="subcategory_name_empty">Enter category name</string>
     <string name="subcategory_name_exists">Subcategory already exists</string>
     <string name="budget_name_empty">Enter budget name</string>
-    <string name="budget_name_exists">Budget already exists</string>
-    <string name="budget_amount_empty">Enter budget amount</string>
-    <string name="budget_amount_0">Amount must be greater than 0</string>
-    <string name="budget_amount_overflow">Amount must not be greater than the remaining budget</string>
+    <string name="budget_name_exists">Budget name already exists</string>
     <string name="amount_empty">Enter amount</string>
+    <string name="amount_starts_0">Amount must be greater than 0</string>
+    <string name="amount_overflow">Amount must not be greater than the remaining budget</string>
+    <string name="amount_overflow_2">Monthly budget is too low for your current expenses</string>
+    <string name="categories_remaining_budget_empty">No categories found with remaining budget</string>
     <string name="category_empty">Select a category</string>
     <string name="subcategory_empty">Select a subcategory</string>
     <string name="payment_type_empty">Enter a payment type</string>
     <string name="date_empty">Select a date</string>
     <string name="time_empty">Select a time</string>
+    <string name="loan_name_empty">Enter loan name</string>
 
     <!-- Notifications -->
     <string name="expenses_reminder">Expenses Reminder</string>
@@ -233,11 +235,8 @@
     <string name="my_wallet">My Wallet</string>
     <string name="settings">Settings</string>
     <string name="no_connection">No connection</string>
-    <string name="transactions">Transactions</string>
-    <string name="transaction">Transaction</string>
+
     <string name="reports">Reports</string>
-    <string name="planned_payments">Planned Payments</string>
-    <string name="loans">Loans</string>
     <string name="goals">Goals</string>
     <string name="challenges">Challenges</string>
     <string name="tips">Tips</string>
@@ -254,6 +253,7 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_mark">Delete account?</string>
     <string name="delete_account_confirm">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
+    <string name="deleting_account_warning">Please do not exit the app while we delete the account</string>
 
     <string name="budget">Budget</string>
     <string name="budgets">Budgets</string>
@@ -326,21 +326,26 @@
     <string name="see_all">See all</string>
     <string name="amount">Amount</string>
     <string name="date">Date</string>
+    <string name="due_date">Due Date</string>
     <string name="transaction_type">Transaction Type</string>
     <string name="calendar">Calendar</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
+    <string name="month_s">month/s</string>
     <string name="year">Year</string>
+    <string name="year_s">year/s</string>
     <string name="icon">Icon</string>
     <string name="account">Account</string>
+
+    <string name="transactions">Transactions</string>
+    <string name="transaction">Transaction</string>
+    <string name="transactions_empty">No transactions found</string>
     <string name="breakdown">breakdown</string>
     <string name="overview">overview</string>
     <string name="receipt">Receipt</string>
     <string name="receipt_attached">Receipt attached</string>
     <string name="no_receipt">No receipt</string>
     <string name="payment_type">Payment Type</string>
-
-    <string name="transactions_empty">No transactions found</string>
     <string name="add_transaction">Add Transaction</string>
     <string name="add_record">Add Record</string>
     <string name="expense">Expense</string>
@@ -367,8 +372,32 @@
     <string name="allocate_budgets_message">You have not allocated a budget to any category yet. Allocate now?</string>
     <string name="add_categories">Add categories</string>
     <string name="add_categories_message">You have no categories to add a transaction record. Add categories now?</string>
-
     <string name="delete_transaction">Delete transaction?</string>
     <string name="delete_transaction_message">All data associated with this transaction will be gone forever. Do you still wish to proceed?</string>
+
+    <string name="planned_payments">Planned Payments</string>
+    <string name="planned_payments_empty">No planned payments found</string>
+    <string name="planned_payment">Planned Payment</string>
+    <string name="one_time">One-time</string>
+    <string name="recurring">Recurring</string>
+    <string name="add_planned_payment">Add Planned Payment</string>
+    <string name="planned_payment_name">Planned Payment Name</string>
+    <string name="frequency">Frequency</string>
+    <string name="recurrence">Recurrence</string>
+
+    <string name="loans">Loans</string>
+    <string name="active">Active</string>
+    <string name="fully_paid">Fully Paid</string>
+    <string name="loan_name">Loan Name</string>
+    <string name="add_loan">Add Loan</string>
+    <string name="lend_money">Lend Money</string>
+    <string name="borrow_money">Borrow Money</string>
+    <string name="active_loans_empty">No active loans found</string>
+    <string name="search">Search</string>
+    <string name="name">Name</string>
+    <string name="repeat_monthly">Repeat Monthly</string>
+    <string name="repeat_yearly">Repeat Yearly</string>
+    <string name="every">Every</string>
+    <string name="select_recurrence">Select recurrence</string>
 
 </resources>

@@ -122,7 +122,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 }
 
                 // sort categories
-                categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.category_name!! })
+                categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name!! })
                 for (item in categories) {
                     categoryAdapter.addCategory(item)
                 }
@@ -131,7 +131,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                     binding.tvCategoriesEmpty.visibility = View.VISIBLE
                 }
 
-                if (categoryAdapter.itemCount >= 20) {
+                if (categoryAdapter.itemCount >= 30) {
                     binding.fabAddCategory.visibility = View.GONE
                 }
 

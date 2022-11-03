@@ -30,7 +30,7 @@
             app:destination="@id/subcategoryEditFragment" />
         <action
             android:id="@+id/action_categoryEditFragment_to_categoryEditNameDialogFragment"
-            app:destination="@id/categoryEditNameFragment" />
+            app:destination="@id/categoryEditNameDialogFragment" />
         <action
             android:id="@+id/action_categoryEditFragment_to_categoryEditNatureDialogFragment"
             app:destination="@id/categoryEditNatureDialogFragment" />
@@ -71,7 +71,7 @@
             app:popUpToInclusive="true" />
     </fragment>
     <dialog
-        android:id="@+id/categoryEditNameFragment"
+        android:id="@+id/categoryEditNameDialogFragment"
         android:name="com.ducatus.CategoryEditNameDialogFragment"
         android:label="fragment_category_edit_name_dialog"
         tools:layout="@layout/fragment_category_edit_name_dialog">

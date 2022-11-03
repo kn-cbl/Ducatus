@@ -1,11 +1,12 @@
 package com.ducatus.data
 
 data class Account(
-    val account_id: String? = null,
-    val account_name: String? = null,
-    val account_color: String? = null,
-    val account_monthly_budget: Double = 0.0,
-    val account_remaining_budget: Double = 0.0,
-    val account_remaining_balance: Double = 0.0,
+    val id: String? = null,
+    val name: String? = null,
+    val nameLower: String? = null,
+    val color: String? = null,
+    val monthlyBudget: Double = 0.0,
+    val remainingBudget: Double = 0.0,
+    val remainingBalance: Double = 0.0,
     val selected: Boolean = false,
 )

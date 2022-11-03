@@ -11,9 +11,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.Transaction
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.datepicker.MaterialDatePicker
-import java.text.DateFormat
-import java.util.*
 
 class TransactionAdapter(
     private val transactions: MutableList<Transaction>,
@@ -38,15 +35,15 @@ class TransactionAdapter(
         val currentTransaction = transactions[position]
 
         holder.itemView.apply {
-            var itemColor = currentTransaction.category_color
-            var itemIcon = currentTransaction.category_icon
-            var itemName = currentTransaction.category_name
+            var itemColor = currentTransaction.categoryColor
+            var itemIcon = currentTransaction.categoryIcon
+            var itemName = currentTransaction.categoryName
 
             // check if item has subcategory data
-            if (currentTransaction.subcategory_id != null) {
-                itemColor = currentTransaction.subcategory_color
-                itemIcon = currentTransaction.subcategory_icon
-                itemName = currentTransaction.subcategory_name
+            if (currentTransaction.subcategoryId != null) {
+                itemColor = currentTransaction.subcategoryColor
+                itemIcon = currentTransaction.subcategoryIcon
+                itemName = currentTransaction.subcategoryName
             }
 
             val iconColor = resources.getIdentifier(
@@ -72,22 +69,22 @@ class TransactionAdapter(
             )
 
             findViewById<TextView>(R.id.tvItemTransactionCategory).text = itemName
-            findViewById<TextView>(R.id.tvItemTransactionType).text = currentTransaction.transaction_payment_type
+            findViewById<TextView>(R.id.tvItemTransactionType).text = currentTransaction.paymentType
 
             // expense or income
-            val transactionState = determineTransactionType(currentTransaction.transaction_type)
+            val transactionState = determineTransactionType(currentTransaction.type)
             val amountColorRes = resources.getIdentifier(
                 transactionState["color"],
                 "color",
                 activity.packageName
             )
 
-            val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.transaction_amount)
+            val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.amount)
             findViewById<TextView>(R.id.tvItemTransactionAmount).text = amountText
             findViewById<TextView>(R.id.tvItemTransactionAmount).setTextColor(ContextCompat.getColor(activity, amountColorRes))
 
             findViewById<MaterialCardView>(R.id.cvItemTransaction).setOnClickListener {
-                listener.viewItem(currentTransaction.transaction_id.toString())
+                listener.viewItem(currentTransaction.categoryId!!, currentTransaction.id!!)
             }
         }
     }
@@ -106,16 +103,12 @@ class TransactionAdapter(
         val color: String
         when (type) {
             0 -> {
-                currency = "-P"
+                currency = "-₱"
                 color = "bright_red"
             }
-            1 -> {
-                currency = "P"
-                color = "green_secondary"
-            }
             else -> {
-                currency = "P"
-                color = "darker_gray"
+                currency = "₱"
+                color = "green_secondary"
             }
         }
 

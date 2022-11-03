@@ -7,7 +7,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.Account
 
@@ -35,21 +34,21 @@ class AccountAdapter(
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
-                currentAccount.account_color.toString(),
+                currentAccount.color.toString(),
                 "color",
                 activity.packageName
             )
 
-            findViewById<TextView>(R.id.tvItemAccountIcon).text = currentAccount.account_name?.get(0)?.uppercase()
+            findViewById<TextView>(R.id.tvItemAccountIcon).text = currentAccount.name?.get(0)?.uppercase()
             findViewById<FrameLayout>(R.id.flItemAccountIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
-            findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.account_name
+            findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.name
 
-            val budget = "₱" + String.format("%,.2f", currentAccount.account_monthly_budget)
+            val budget = "₱" + String.format("%,.2f", currentAccount.monthlyBudget)
             findViewById<TextView>(R.id.tvItemAccountBudget).text = budget
 
             findViewById<ImageView>(R.id.ibItemAccountEdit).setOnClickListener {
-                listener.showPopup(it, 2, currentAccount.account_id.toString())
+                listener.showPopup(it, 2, currentAccount.id.toString())
             }
         }
     }

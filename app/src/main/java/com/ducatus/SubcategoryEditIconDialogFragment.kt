@@ -148,7 +148,7 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
     private fun saveColor(uid: String, accountId: String, subcategoryColor: String, subcategoryIcon: String) {
         showProgressDialog()
         databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId).child(args.subcategoryId)
-        databaseReference.child("subcategory_color").setValue(subcategoryColor)
+        databaseReference.child("color").setValue(subcategoryColor)
             .addOnSuccessListener {
                 saveIcon(uid, accountId, subcategoryIcon)
             }
@@ -162,7 +162,7 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
 
     private fun saveIcon(uid: String, accountId: String, subcategoryIcon: String) {
         databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId).child(args.subcategoryId)
-        databaseReference.child("subcategory_icon").setValue(subcategoryIcon)
+        databaseReference.child("icon").setValue(subcategoryIcon)
             .addOnSuccessListener {
                 hideProgressDialog()
                 dismiss()

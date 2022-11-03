@@ -30,43 +30,43 @@ class HomeActivity : AppCompatActivity() {
 
 //        networkObserver()
 
-        setSupportActionBar(binding.tbHome)
         binding.tbHome.setNavigationOnClickListener {
             binding.dlHome.open()
         }
 
         binding.nvHome.setNavigationItemSelectedListener { menuItem ->
+            binding.tbHome.menu.clear()
+            var title = R.string.home
+
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    binding.tbHome.setTitle(R.string.home)
-
                     val action = Navigation.findNavController(this, R.id.fcHome)
-                    action.navigateUp()
                     action.navigate(R.id.homeFragment)
                 }
 //                R.id.nav_reports -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ReportsFragment()).commit()
 //                }
                 R.id.nav_budgets -> {
-                    binding.tbHome.setTitle(R.string.budgets)
-
+                    title = R.string.budgets
                     val action = Navigation.findNavController(this, R.id.fcHome)
-                    action.navigateUp()
                     action.navigate(R.id.budgetsFragment)
                 }
                 R.id.nav_transactions -> {
-                    binding.tbHome.setTitle(R.string.transactions)
-
+                    title = R.string.transactions
                     val action = Navigation.findNavController(this, R.id.fcHome)
-                    action.navigateUp()
                     action.navigate(R.id.transactionsFragment)
                 }
-//                R.id.nav_planned_payments -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, PlannedPaymentsFragment()).commit()
-//                }
-//                R.id.nav_loans -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, LoansFragment()).commit()
-//                }
+                R.id.nav_planned_payments -> {
+                    binding.tbHome.inflateMenu(R.menu.search_menu)
+                    title = R.string.planned_payments
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.plannedPaymentsFragment)
+                }
+                R.id.nav_loans -> {
+                    title = R.string.loans
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.loansFragment)
+                }
 //                R.id.nav_goals -> {
 //                    startActivity(Intent(this, EditGoal::class.java))
 //                }
@@ -80,15 +80,14 @@ class HomeActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }
                 R.id.nav_settings -> {
-                    binding.tbHome.setTitle(R.string.settings)
-
+                    title = R.string.settings
                     val action = Navigation.findNavController(this, R.id.fcHome)
-                    action.navigateUp()
                     action.navigate(R.id.settingsFragment)
                 }
             }
 
             menuItem.isChecked = true
+            binding.tbHome.setTitle(title)
             binding.dlHome.close()
             true
         }

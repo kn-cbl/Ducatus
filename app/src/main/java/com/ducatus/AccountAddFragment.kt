@@ -155,7 +155,7 @@ class AccountAddFragment : Fragment() {
             errors++
         }
         if (accountMonthlyBudget.startsWith("0")) {
-            binding.tfAddAccountBudget.error = getString(R.string.budget_amount_0)
+            binding.tfAddAccountBudget.error = getString(R.string.amount_starts_0)
             errors++
         }
         if (accountColor == null) {
@@ -184,20 +184,21 @@ class AccountAddFragment : Fragment() {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("accounts").child(uid)
-        databaseReference.get()
+        val query = databaseReference.orderByChild("nameLower").equalTo(accountName)
+        query.get()
             .addOnSuccessListener { snapshot ->
-                var nameKey = false
-
-                for (child in snapshot.children) {
-                    if (accountName == child.child("account_name").value.toString()) {
-                        nameKey = true
-                        break
-                    }
-                }
-
-                if (!nameKey) {
+                if (!snapshot.exists()) {
                     val key = databaseReference.push().key
-                    val account = Account(key, accountName, accountColor, accountMonthlyBudget, accountMonthlyBudget, accountMonthlyBudget)
+                    val account = Account(
+                        key,
+                        accountName,
+                        accountName.lowercase(),
+                        accountColor,
+                        accountMonthlyBudget,
+                        accountMonthlyBudget,
+                        accountMonthlyBudget
+                    )
+
                     addAccount(key!!, uid, account)
                 }
                 else {

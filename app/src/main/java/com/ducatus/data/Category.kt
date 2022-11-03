@@ -1,10 +1,11 @@
 package com.ducatus.data
 
 data class Category(
-    val category_id: String? = null,
-    val category_name: String? = null,
-    val category_nature: Int = 0,
-    val category_color: String? = null,
-    val category_icon: String? = null,
-    val category_allocated: Boolean = false
+    val id: String? = null,
+    val name: String? = null,
+    val nameLower: String? = null,
+    val nature: Int = 0,
+    val color: String? = null,
+    val icon: String? = null,
+    val allocated: Boolean = false
 )

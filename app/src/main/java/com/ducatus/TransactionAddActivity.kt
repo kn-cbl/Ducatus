@@ -2,7 +2,6 @@ package com.ducatus
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
@@ -34,24 +33,22 @@ import com.google.firebase.ktx.Firebase
 import java.text.DateFormat
 import java.util.*
 
-
 class TransactionAddActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityTransactionAddBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var datePicker: MaterialDatePicker<Long>
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var timePicker: MaterialTimePicker
     private lateinit var currentAccountId: String
-    private lateinit var selectedCategory: String
-    private var remainingBudget: Double = 0.0
-    private var selectedSubcategory: String? = null
-    private var selectedDate: Long? = null
-    private var selectedHour: Long? = null
-    private var selectedMinute: Long? = null
-    private var transactionType = 0
+    private lateinit var selectedCategory: Category
+    private var firebaseUser: FirebaseUser? = null
     private val milliseconds: Long = 60 * 1000
+    private var selectedSubcategory: Subcategory? = null
+    private var remainingBudget: Double = 0.0
+    private var transactionType = 0
+    private var dateTimeMap: MutableMap<String, Long> =
+        mutableMapOf("date" to 0, "hour" to 0, "minute" to 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +61,11 @@ class TransactionAddActivity : AppCompatActivity() {
         setDateTimePicker()
         inputObserver()
 
-        binding.tbAddTransaction.inflateMenu(R.menu.check_menu)
         binding.tbAddTransaction.setNavigationOnClickListener {
             onBackPressed()
         }
 
+        binding.tbAddTransaction.inflateMenu(R.menu.check_menu)
         binding.tbAddTransaction.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.done -> {
@@ -94,21 +91,25 @@ class TransactionAddActivity : AppCompatActivity() {
         val spCategory = (binding.tfAddTransactionCategory.editText as? AutoCompleteTextView)
         spCategory?.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
-                val string: StringWithTag = parent?.getItemAtPosition(position) as StringWithTag
+                val category = parent?.getItemAtPosition(position) as CategoryWithTag
 
-                // store id of selected category
-                selectedCategory = string.tag
-                getCategoryRemainingBudget(firebaseUser.uid, currentAccountId, selectedCategory)
-                loadSubcategories(firebaseUser.uid, currentAccountId, selectedCategory)
+                // store data of selected category
+                selectedCategory = category.category
+
+                val categoryId = category.category.id!!
+                firebaseUser?.let {
+                    getCategoryRemainingBudget(it.uid, currentAccountId, categoryId)
+                    loadSubcategories(it.uid, currentAccountId, categoryId)
+                }
             }
 
         val spSubcategory = (binding.tfAddTransactionSubcategory.editText as? AutoCompleteTextView)
         spSubcategory?.onItemClickListener =
             AdapterView.OnItemClickListener { parent, _, position, _ ->
-                val string: StringWithTag = parent?.getItemAtPosition(position) as StringWithTag
+                val subcategory = parent?.getItemAtPosition(position) as SubcategoryWithTag
 
-                // store id of selected category
-                selectedSubcategory = string.tag
+                // store data of selected subcategory
+                selectedSubcategory = subcategory.subcategory
             }
     }
 
@@ -120,16 +121,17 @@ class TransactionAddActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        hasSetBudget(firebaseUser.uid, currentAccountId)
-        loadCategories(firebaseUser.uid, currentAccountId)
+        firebaseUser?.let {
+            hasSetBudget(it.uid, currentAccountId)
+            loadCategories(it.uid, currentAccountId)
+        }
     }
 
     private fun loadData() {
         showProgressDialog()
         auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
             val sharedPreferences = SharedPreferences(this)
             currentAccountId = sharedPreferences.accountId.toString()
             database = Firebase.database
@@ -142,13 +144,13 @@ class TransactionAddActivity : AppCompatActivity() {
     private fun hasSetBudget(uid: String, accountId: String) {
         databaseReference = database.getReference("accounts").child(uid).child(accountId)
         databaseReference.get()
-            .addOnSuccessListener {
-                val monthlyBudget = it.child("account_monthly_budget").value.toString().toDouble()
+            .addOnSuccessListener { snapshot ->
+                val monthlyBudget = snapshot.child("monthlyBudget").value.toString().toDouble()
                 if (monthlyBudget <= 0) {
                     MaterialAlertDialogBuilder(this)
                         .setTitle(resources.getString(R.string.set_monthly_budget))
                         .setMessage(resources.getString(R.string.set_monthly_budget_mark))
-                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> setMonthlyBudget(accountId) }
+                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> setMonthlyBudget() }
                         .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
                         .show()
                 }
@@ -163,10 +165,10 @@ class TransactionAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun setMonthlyBudget(accountId: String) {
+    private fun setMonthlyBudget() {
         val intent = Intent(this, AccountsActivity::class.java)
         intent.putExtra("setBudget", "set")
-        intent.putExtra("accountId", accountId)
+        intent.putExtra("accountId", currentAccountId)
         startActivity(intent)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
@@ -204,37 +206,23 @@ class TransactionAddActivity : AppCompatActivity() {
                     hasNoCategories()
                 }
                 else {
-                    val categories = mutableListOf<StringWithTag>()
+                    val categories = mutableListOf<CategoryWithTag>()
                     for (child in snapshot.children) {
                         val category = child.getValue<Category>()
                         if (category != null) {
-                            if (category.category_allocated) {
+                            if (category.allocated) {
                                 categories.add(
-                                    StringWithTag(
-                                        category.category_name!!,
-                                        category.category_id!!,
-                                        null,
-                                        null
+                                    CategoryWithTag(
+                                        category.name!!,
+                                        category
                                     )
                                 )
                             }
                         }
                     }
 
-                    if (categories.isNotEmpty()) {
-                        // sort categories by name
-                        categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.string })
-
-                        // store category id
-                        selectedCategory = categories.first().tag
-                        getCategoryRemainingBudget(uid, accountId, selectedCategory)
-                        loadSubcategories(firebaseUser.uid, currentAccountId, selectedCategory)
-
-                        val adapter = ArrayAdapter(applicationContext, R.layout.list_item, categories)
-                        val spinner = (binding.tfAddTransactionCategory.editText as? AutoCompleteTextView)
-                        spinner?.setAdapter(adapter)
-                        spinner?.setText(categories.first().toString(), false)
-                    }
+                    // check categories that still have remaining budget
+                    hasRemainingBudget(uid, accountId, categories)
                 }
 
             }
@@ -259,43 +247,47 @@ class TransactionAddActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun loadSubcategories(uid: String, accountId: String, categoryId: String) {
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(categoryId)
+    private fun hasRemainingBudget(uid: String, accountId: String, categories: MutableList<CategoryWithTag>) {
+        databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                if (!snapshot.exists()) {
-                    binding.tfAddTransactionSubcategory.visibility = View.GONE
-                }
-                else {
-                    binding.tfAddTransactionSubcategory.visibility = View.VISIBLE
-                    val subcategories = mutableListOf<StringWithTag>()
-                    for (child in snapshot.children) {
-                        val subcategory = child.getValue<Subcategory>()
-                        if (subcategory != null) {
-                            subcategories.add(
-                                StringWithTag(
-                                    subcategory.subcategory_name.toString(),
-                                    subcategory.subcategory_id.toString(),
-                                    null,
-                                    null
-                                )
-                            )
+                val indexes = mutableListOf<Int>()
+                for (i in 0 until categories.size) {
+                    val budget = snapshot.child(categories[i].category.id!!).getValue<Budget>()
+                    if (budget != null) {
+                        remainingBudget = budget.amountTotal - budget.amountSpent
+                        if (remainingBudget <= 0) {
+                            // store index of category to be removed later
+                            // if category is removed now, loop will be out of bounds
+                            indexes.add(i)
                         }
                     }
-
-                    // sort categories by name
-                    subcategories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.string })
-
-                    // store category id
-                    selectedSubcategory = subcategories.first().tag
-
-                    val adapter = ArrayAdapter(applicationContext, R.layout.list_item, subcategories)
-                    val spinner = (binding.tfAddTransactionSubcategory.editText as? AutoCompleteTextView)
-                    spinner?.setAdapter(adapter)
-                    spinner?.setText(subcategories.first().toString(), false)
                 }
 
-                hideProgressDialog()
+                // remove categories that has <= 0 remaining budget
+                for (index in indexes) {
+                    categories.removeAt(index)
+                }
+
+                if (categories.isNotEmpty()) {
+                    // sort categories by name
+                    categories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+
+                    // store category data
+                    selectedCategory = categories.first().category
+
+                    val categoryId = categories.first().category.id!!
+                    getCategoryRemainingBudget(uid, accountId, categoryId)
+                    loadSubcategories(uid, accountId, categoryId)
+
+                    val adapter = ArrayAdapter(applicationContext, R.layout.list_item, categories)
+                    val spinner = (binding.tfAddTransactionCategory.editText as? AutoCompleteTextView)
+                    spinner?.setAdapter(adapter)
+                    spinner?.setText(categories.first().toString(), false)
+                }
+                else {
+                    binding.tfAddTransactionCategory.error = getString(R.string.categories_remaining_budget_empty)
+                }
             }
             .addOnFailureListener {
                 Snackbar
@@ -310,10 +302,53 @@ class TransactionAddActivity : AppCompatActivity() {
             .addOnSuccessListener { snapshot ->
                 val budget = snapshot.getValue<Budget>()
                 if (budget != null) {
-                    remainingBudget = budget.budget_amount_total - budget.budget_amount_spent
+                    remainingBudget = budget.amountTotal - budget.amountSpent
                     val text = "Remaining budget: ₱" + String.format("%,.2f", remainingBudget)
                     binding.tfAddTransactionCategory.helperText = text
                 }
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
+
+    private fun loadSubcategories(uid: String, accountId: String, categoryId: String) {
+        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(categoryId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    binding.tfAddTransactionSubcategory.visibility = View.GONE
+                }
+                else {
+                    binding.tfAddTransactionSubcategory.visibility = View.VISIBLE
+                    val subcategories = mutableListOf<SubcategoryWithTag>()
+                    for (child in snapshot.children) {
+                        val subcategory = child.getValue<Subcategory>()
+                        if (subcategory != null) {
+                            subcategories.add(
+                                SubcategoryWithTag(
+                                    subcategory.name!!,
+                                    subcategory,
+                                )
+                            )
+                        }
+                    }
+
+                    // sort categories by name
+                    subcategories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+
+                    // store category data
+                    selectedSubcategory = subcategories.first().subcategory
+
+                    val adapter = ArrayAdapter(applicationContext, R.layout.list_item, subcategories)
+                    val spinner = (binding.tfAddTransactionSubcategory.editText as? AutoCompleteTextView)
+                    spinner?.setAdapter(adapter)
+                    spinner?.setText(subcategories.first().toString(), false)
+                }
+
+                hideProgressDialog()
             }
             .addOnFailureListener {
                 Snackbar
@@ -357,7 +392,7 @@ class TransactionAddActivity : AppCompatActivity() {
                     .format(Date(date))
 
             binding.tfAddTransactionDate.editText?.setText(formattedDate)
-            selectedDate = date
+            dateTimeMap["date"] = date
         }
 
         timePicker = MaterialTimePicker.Builder()
@@ -398,8 +433,8 @@ class TransactionAddActivity : AppCompatActivity() {
             val msHour: Long = timePicker.hour * milliseconds
             val msMinute: Long = timePicker.minute * milliseconds
 
-            selectedHour = msHour
-            selectedMinute = msMinute
+            dateTimeMap["hour"] = msHour
+            dateTimeMap["minute"] = msMinute
         }
 
         binding.tfAddTransactionDate.editText?.setOnClickListener {
@@ -437,7 +472,7 @@ class TransactionAddActivity : AppCompatActivity() {
                 binding.tfAddTransactionAmount.error = getString(R.string.amount_empty)
             }
             else if (text.toString().toDouble() > remainingBudget) {
-                binding.tfAddTransactionAmount.error = getString(R.string.budget_amount_overflow)
+                binding.tfAddTransactionAmount.error = getString(R.string.amount_overflow)
             }
             else {
                 binding.tfAddTransactionAmount.error = null
@@ -487,7 +522,7 @@ class TransactionAddActivity : AppCompatActivity() {
         val time = binding.tfAddTransactionTime.editText?.text.toString().trim { it <= ' ' }
         val category = binding.tfAddTransactionCategory.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfAddTransactionPaymentType.editText?.text.toString().trim { it <= ' ' }
-        val notes = binding.tfAddTransactionNotes.editText?.text.toString().trim { it <= ' ' }
+        var notes: String? = binding.tfAddTransactionNotes.editText?.text.toString().trim { it <= ' ' }
         val image: Long
         var errors = 0
 
@@ -511,6 +546,10 @@ class TransactionAddActivity : AppCompatActivity() {
             errors++
         }
 
+        if (TextUtils.isEmpty(notes)) {
+            notes = null
+        }
+
         if (TextUtils.isEmpty(amount)) {
             binding.tfAddTransactionAmount.error = getString(R.string.amount_empty)
             errors++
@@ -518,22 +557,27 @@ class TransactionAddActivity : AppCompatActivity() {
 
         else {
             if (amount.startsWith("0")) {
-                binding.tfAddTransactionAmount.error = getString(R.string.budget_amount_0)
+                binding.tfAddTransactionAmount.error = getString(R.string.amount_starts_0)
                 errors++
             }
             else if (amount.toDouble() > remainingBudget) {
-                binding.tfAddTransactionAmount.error = getString(R.string.budget_amount_overflow)
+                binding.tfAddTransactionAmount.error = getString(R.string.amount_overflow)
                 errors++
             }
         }
 
         if (errors == 0) {
-            var transactionAmount = amount.toDouble()
-            if (transactionType == 1) {
-                transactionAmount *= -1
-            }
+            val transactionData = mapOf(
+                "amount" to amount,
+                "paymentType" to paymentType,
+                "notes" to notes,
+//                "imageUri" to null,
+                "date" to dateTimeMap["date"].toString(),
+                "hour" to dateTimeMap["hour"].toString(),
+                "minute" to dateTimeMap["minute"].toString(),
+            )
 
-            decreaseBudget(transactionAmount, paymentType, notes, null)
+            firebaseUser?.let { decreaseBudget(it.uid, currentAccountId, transactionData) }
         }
     }
 
@@ -541,57 +585,22 @@ class TransactionAddActivity : AppCompatActivity() {
 
     }
 
-    private fun decreaseBudget(amount: Double, paymentType: String, notes: String, imageUrl: Uri?) {
+    private fun decreaseBudget(uid: String, accountId: String, transactionData: Map<String, String?>) {
         showProgressDialogAdd()
-        databaseReference = database.getReference("budgets").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory)
+        databaseReference = database.getReference("budgets")
+            .child(uid).child(accountId).child(selectedCategory.id!!).child("amountSpent")
+
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                val budget = snapshot.getValue<Budget>()
-                if (budget != null) {
-                    val amountSpent = budget.budget_amount_spent + amount
-
-                    databaseReference.child("budget_amount_spent").setValue(amountSpent)
-                        .addOnSuccessListener {
-                            val categoryData = mapOf(
-                                "id" to budget.category_id.toString(),
-                                "name" to budget.category_name.toString(),
-                                "color" to budget.category_color.toString(),
-                                "icon" to budget.category_icon.toString()
-                            )
-
-                            decreaseAccountBalance(amount, paymentType, notes, imageUrl, categoryData)
-                        }
-                        .addOnFailureListener {
-                            hideProgressDialogAdd()
-                            Snackbar
-                                .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
-                                .show()
-                        }
+                val amountSpent = snapshot.value.toString().toDouble()
+                val newAmountSpent = when (transactionType) {
+                    0 -> amountSpent + transactionData["amount"]!!.toDouble()
+                    else -> amountSpent - transactionData["amount"]!!.toDouble()
                 }
-            }
-            .addOnFailureListener {
-                hideProgressDialogAdd()
-                Snackbar
-                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
-                    .show()
-            }
-    }
 
-    private fun decreaseAccountBalance(amount: Double, paymentType: String, notes: String, imageUrl: Uri?, categoryData: Map<String, String>) {
-        databaseReference = database.getReference("accounts").child(firebaseUser.uid).child(currentAccountId).child("account_remaining_balance")
-        databaseReference.get()
-            .addOnSuccessListener { snapshot ->
-                val remainingBalance = snapshot.value.toString().toDouble()
-                val newRemainingBalance = remainingBalance - amount
-
-                databaseReference.setValue(newRemainingBalance)
+                databaseReference.setValue(newAmountSpent)
                     .addOnSuccessListener {
-                        if (selectedSubcategory != null) {
-                            getSubcategory(amount, paymentType, notes, imageUrl, categoryData)
-                        }
-                        else {
-                            addTransaction(amount, paymentType, notes, imageUrl, categoryData, null)
-                        }
+                        decreaseAccountBalance(uid, accountId, transactionData)
                     }
                     .addOnFailureListener {
                         hideProgressDialogAdd()
@@ -608,21 +617,28 @@ class TransactionAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun getSubcategory(amount: Double, paymentType: String, notes: String, imageUrl: Uri?, categoryData: Map<String, String>) {
-        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(selectedCategory).child(selectedSubcategory!!)
+    private fun decreaseAccountBalance(uid: String, accountId: String, transactionData: Map<String, String?>) {
+        databaseReference = database.getReference("accounts")
+            .child(uid).child(accountId).child("remainingBalance")
+
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                val subcategory = snapshot.getValue<Subcategory>()
-                if (subcategory != null) {
-                    val subcategoryData = mapOf(
-                        "id" to subcategory.subcategory_id.toString(),
-                        "name" to subcategory.subcategory_name.toString(),
-                        "color" to subcategory.subcategory_color.toString(),
-                        "icon" to subcategory.subcategory_icon.toString()
-                    )
-
-                    addTransaction(amount, paymentType, notes, imageUrl, categoryData, subcategoryData)
+                val remainingBalance = snapshot.value.toString().toDouble()
+                val newRemainingBalance = when (transactionType) {
+                    0 -> remainingBalance - transactionData["amount"]!!.toDouble()
+                    else -> remainingBalance + transactionData["amount"]!!.toDouble()
                 }
+
+                databaseReference.setValue(newRemainingBalance)
+                    .addOnSuccessListener {
+                        addTransaction(uid, accountId, transactionData, selectedCategory, selectedSubcategory)
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialogAdd()
+                        Snackbar
+                            .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                            .show()
+                    }
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
@@ -633,36 +649,37 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun addTransaction(
-        amount: Double,
-        paymentType: String,
-        notes: String,
-        imageUrl: Uri?,
-        category: Map<String, String>,
-        subcategory: Map<String, String>?
+        uid: String,
+        accountId: String,
+        transactionData: Map<String, String?>,
+        category: Category,
+        subcategory: Subcategory?
     ) {
-        databaseReference = database.getReference("transactions").child(firebaseUser.uid).child(currentAccountId)
+        databaseReference = database.getReference("transactions").child(uid).child(accountId)
         val key = databaseReference.push().key
         val transaction = Transaction(
-            key,
-            amount,
+            key!!,
+            transactionData["amount"]!!.toDouble(),
             transactionType,
-            paymentType,
-            notes,
+            transactionData["paymentType"],
+            transactionData["notes"],
             null,
-            selectedDate,
-            selectedHour,
-            selectedMinute,
-            category["id"],
-            category["name"],
-            category["color"],
-            category["icon"],
-            subcategory?.get("id"),
-            subcategory?.get("name"),
-            subcategory?.get("color"),
-            subcategory?.get("icon"),
+            transactionData["date"]!!.toLong(),
+            transactionData["hour"]!!.toLong(),
+            transactionData["minute"]!!.toLong(),
+            category.id!!,
+            category.name,
+            category.name!!.lowercase(),
+            category.color,
+            category.icon,
+            subcategory?.id,
+            subcategory?.name,
+            subcategory?.name?.lowercase(),
+            subcategory?.color,
+            subcategory?.icon,
         )
 
-        databaseReference.child(key!!).setValue(transaction)
+        databaseReference.child(key).setValue(transaction)
             .addOnSuccessListener {
                 hideProgressDialogAdd()
                 onBackPressed()
@@ -701,19 +718,19 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog() {
-        binding.pbTransactionAdd.visibility = View.VISIBLE
+        binding.pbAddTransactionMain.visibility = View.VISIBLE
         binding.svTransactionAdd.visibility = View.GONE
         binding.ibScanImage.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
-        binding.pbTransactionAdd.visibility = View.INVISIBLE
+        binding.pbAddTransactionMain.visibility = View.INVISIBLE
         binding.svTransactionAdd.visibility = View.VISIBLE
         binding.ibScanImage.visibility = View.VISIBLE
     }
 
     private fun showProgressDialogAdd() {
-        binding.pbAddTransaction.visibility = View.VISIBLE
+        binding.pbAddTransactionAction.visibility = View.VISIBLE
         window.setFlags(
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -721,7 +738,7 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun hideProgressDialogAdd() {
-        binding.pbAddTransaction.visibility = View.INVISIBLE
+        binding.pbAddTransactionAction.visibility = View.INVISIBLE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

@@ -21,6 +21,15 @@
         android:theme="@style/Material.App"
         tools:targetApi="31">
         <activity
+            android:name=".LoanAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlannedPaymentDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlannedPaymentAddActivity"
+            android:exported="false" />
+        <activity
             android:name=".TransactionDetailActivity"
             android:exported="false" />
         <activity

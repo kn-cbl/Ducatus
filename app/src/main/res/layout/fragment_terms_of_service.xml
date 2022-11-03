@@ -76,17 +76,12 @@
             android:text="@string/toc_1_description_5"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 2 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_2_header"
             android:textColor="@color/off_black"
@@ -116,17 +111,12 @@
             android:text="@string/toc_2_description_3"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 3 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_3_header"
             android:textColor="@color/off_black"
@@ -140,17 +130,12 @@
             android:text="@string/toc_3_description_1"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 4 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_4_header"
             android:textColor="@color/off_black"
@@ -180,17 +165,12 @@
             android:text="@string/toc_4_description_2"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 5 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_5_header"
             android:textColor="@color/off_black"
@@ -204,17 +184,12 @@
             android:text="@string/toc_5_description_1"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 6 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_6_header"
             android:textColor="@color/off_black"
@@ -228,17 +203,12 @@
             android:text="@string/toc_6_description_1"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 7 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_7_header"
             android:textColor="@color/off_black"
@@ -268,17 +238,12 @@
             android:text="@string/toc_7_description_3"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 8 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_8_header"
             android:textColor="@color/off_black"
@@ -308,17 +273,12 @@
             android:text="@string/toc_8_description_3"
             android:textColor="@color/off_black" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
 
         <!-- header 9 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/toc_9_header"
             android:textColor="@color/off_black"
@@ -343,20 +303,22 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:text="@string/decline"
                 android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnTOSAgree"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:text="@string/agree"
-                android:textColor="@color/green_primary" />
+                android:textColor="@color/off_white"
+                tools:ignore="ButtonStyle" />
         </LinearLayout>
 
     </LinearLayout>

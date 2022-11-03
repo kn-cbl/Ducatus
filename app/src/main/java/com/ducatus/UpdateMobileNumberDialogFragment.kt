@@ -129,7 +129,7 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
                 var numberKey = false
 
                 for (child in it.children) {
-                    if(mobileNumber == child.child("mobile_number").value.toString()) {
+                    if(mobileNumber == child.child("mobileNumber").value.toString()) {
                         numberKey = true
                         break
                     }
@@ -181,7 +181,7 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
 
     private fun updateDB(uid: String, mobileNumber: String, verificationCode: String) {
         showProgressDialog()
-        databaseReference = database.getReference("users").child(uid).child("mobile_number")
+        databaseReference = database.getReference("users").child(uid).child("mobileNumber")
         databaseReference.setValue(mobileNumber)
             .addOnSuccessListener {
                 val phoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, verificationCode)

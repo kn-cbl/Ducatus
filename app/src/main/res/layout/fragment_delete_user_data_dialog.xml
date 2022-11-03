@@ -19,7 +19,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_semi_bold"
             android:text="@string/delete_user_reauthenticate"
             android:textAlignment="center"
             android:textColor="@color/off_black"
@@ -101,24 +101,22 @@
 
             <Button
                 android:id="@+id/btnDeleteUserCancel"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:text="@string/cancel"
-                android:textAllCaps="false"
                 android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnDeleteUserConfirm"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:text="@string/confirm"
-                android:textAllCaps="false"
                 android:textColor="@color/green_primary" />
         </LinearLayout>
     </LinearLayout>
@@ -135,7 +133,7 @@
             android:id="@+id/tvDeleteUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_semi_bold"
             android:text="@string/deleting_user_warning"
             android:textAlignment="center"
             android:textColor="@color/off_black"

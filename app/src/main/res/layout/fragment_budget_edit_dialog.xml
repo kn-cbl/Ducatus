@@ -45,6 +45,18 @@
             android:indeterminate="true"
             android:visibility="invisible" />
 
+        <TextView
+            android:id="@+id/tvEditBudgetRemainingBudget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/remaining_balance"
+            android:textColor="@color/darker_gray"
+            android:textSize="14sp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfEditBudgetName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -73,63 +85,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfEditBudgetCategory"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="@string/category"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:errorEnabled="true">
-
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_regular"
-                android:inputType="none"
-                android:textColor="@color/off_black"
-                android:textSize="14sp"
-                tools:ignore="LabelFor,TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfEditBudgetAccount"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="@string/account"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:helperTextEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:fontFamily="@font/inter_regular"
-                android:inputType="none"
-                android:textColor="@color/gray"
-                android:textSize="14sp"
-                tools:ignore="LabelFor,TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfEditBudgetAmount"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:hint="@string/budget"
             app:boxCornerRadiusBottomEnd="8dp"
@@ -169,24 +130,23 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_medium"
+                android:fontFamily="@font/inter_semi_bold"
                 android:letterSpacing="0.04"
                 android:text="@string/cancel"
-                android:textAllCaps="false"
-                android:textColor="@color/darker_gray" />
+                android:textColor="@color/green_primary" />
 
             <Button
                 android:id="@+id/btnEditBudgetSave"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="6dp"
                 android:fontFamily="@font/inter_semi_bold"
                 android:letterSpacing="0.04"
-                android:text="@string/confirm"
+                android:text="@string/ok"
                 android:textAllCaps="false"
-                android:textColor="@color/green_secondary" />
+                android:textColor="@color/green_primary" />
         </LinearLayout>
 
     </LinearLayout>

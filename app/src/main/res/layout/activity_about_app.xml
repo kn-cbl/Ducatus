@@ -107,7 +107,6 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/inter_regular"
-        android:justificationMode="inter_word"
         android:text="@string/app_description_2"
         android:textColor="@color/off_black"
         android:textSize="13sp"
