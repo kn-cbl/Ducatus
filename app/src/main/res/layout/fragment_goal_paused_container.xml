@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/frame_bg"
-    tools:context=".GoalActiveFragment">
+    android:background="@color/frame_bg">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ProgressBar
-            android:id="@+id/pbLoading"
+            android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:progress="60" />
+            android:progress="75" />
 
         <TextView
-            android:id="@+id/txtNoActive"
+            android:id="@+id/txtNoPause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
             android:fontFamily="@font/blinker_regular"
-            android:text="There are no active goals"
+            android:text="There are no paused goals"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:visibility="visible" />
@@ -35,23 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
-
-
     </RelativeLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_goalActive"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
-        android:backgroundTint="#007FFF"
-        android:clickable="true"
-        android:src="@drawable/ic_white_add"
-        android:tint="@color/white"
-        android:visibility="visible"
-        app:fabCustomSize="60dp"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_white_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

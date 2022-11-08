@@ -20,4 +20,6 @@ class PagerAdapter2(fragmentActivity: FragmentActivity) : FragmentStateAdapter(f
             else -> { throw Resources.NotFoundException("Position Not Found")}
         }
     }
+
+
 }

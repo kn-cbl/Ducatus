@@ -1,22 +1,31 @@
 package com.ducatus
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.ducatus.adapter.GridIconsAdapter
+import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import com.ducatus.data.LocalEntities
 import com.ducatus.interfaces.FirebaseDatabaseCallback
 import com.ducatus.interfaces.GoalIntf
 import com.ducatus.services.LocalFirebaseDatabase
+import com.ducatus.viewmodel.IconViewModel
 import kotlinx.android.synthetic.main.new_goal.*
-import java.lang.Exception
+import java.time.LocalDate
 
 
 class NewGoal : AppCompatActivity() {
@@ -35,7 +44,13 @@ class NewGoal : AppCompatActivity() {
     private lateinit var targetDate: EditText
     private lateinit var notes: EditText
     private var currentColor: Int = 0
+    private var currentColorName: String = ""
     lateinit var listener: GoalIntf
+    lateinit var iconAlertDialog: AlertDialog
+    lateinit var localIcons: List<String>
+    lateinit var gvIcon: GridView
+    private var currentIcon: Int = 0
+    lateinit var pdLoading: ProgressDialog
 
 
     companion object {
@@ -79,54 +94,78 @@ class NewGoal : AppCompatActivity() {
                     ) {
                         Toast.makeText(this, "Please Don't Leave Empty Fields", Toast.LENGTH_SHORT)
                             .show()
-                        true
+                    } else {
+
+                        pdLoading.show()
+                        var goals: Goals = Goals()
+                        goals.accountID = accountID.toString()
+                        goals.goalDescription = goalName.text.toString()
+                        var amount = targetAmount.text.toString().toDouble()
+                        goals.goalAmount = amount
+                        var save = saved.text.toString().toDouble()
+                        goals.earned = saved.text.toString().toDouble()
+                        goals.targetDate = targetDate.text.toString()
+                        goals.color = currentColor;
+                        goals.notes = notes.text.toString()
+                        goals.percentage = save / amount * 100
+                        goals.remaining = amount - save
+                        goals.colorName = currentColorName
+                        goals.icon = currentIcon
+
+
+
+                        Log.w("accountID", accountID.toString())
+
+                        var entities = LocalEntities()
+                        entities.goals = goals
+
+                        val callback: FirebaseDatabaseCallback = object : FirebaseDatabaseCallback {
+                            override fun onSuccessInsert(key: String) {
+                                if (saved.text.toString().toDouble() == 0.0) {
+                                    pdLoading.hide()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Successfully Added Goal",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    finish()
+                                    goalIntf.PressBack()
+                                } else {
+                                    var goalHistory = GoalHistory()
+                                    goalHistory.goalkey = key
+                                    goalHistory.accountID = goals.accountID
+                                    goalHistory.amountPaid = saved.text.toString().toDouble()
+                                    goalHistory.datePaid = LocalDate.now().toString()
+                                    entities.goalHistory = goalHistory
+                                    saveGoalHistory(entities)
+                                }
+
+
+                            }
+
+                            override fun onError(e: Exception) {
+                                pdLoading.hide()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Failed to Add Goal",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                Log.e("ADDING_GOAL_ERR", e.message.toString())
+                            }
+
+                            override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                                TODO("Not yet implemented")
+                            }
+
+                            override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                TODO("Not yet implemented")
+                            }
+                        }
+
+                        db.writeToDb(entities, "Goals", callback)
                     }
-                    var goals: Goals = Goals()
-                    goals.accountID = accountID.toString()
-                    goals.goalDescription = goalName.text.toString()
-                    var amount = targetAmount.text.toString().toDouble()
-                    goals.goalAmount = amount
-                    var save = saved.text.toString().toDouble()
-                    goals.earned = saved.text.toString().toDouble()
-                    goals.targetDate = targetDate.text.toString()
-                    goals.color = currentColor;
-                    goals.notes = notes.text.toString()
-                    goals.percentage = save / amount * 100
-                    goals.remaining = amount - save
-//                    goals.icon = icons.tag as Int
 
-                    Log.w("accountID", accountID.toString())
-
-                    var entities: LocalEntities = LocalEntities()
-                    entities.goals = goals
-
-                    val callback: FirebaseDatabaseCallback = object : FirebaseDatabaseCallback {
-                        override fun onSuccessInsert() {
-                            Toast.makeText(
-                                applicationContext,
-                                "Successfully Added Goal",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            finish()
-                            goalIntf.PressBack()
-                        }
-
-                        override fun onError(e: Exception) {
-                            Toast.makeText(
-                                applicationContext,
-                                "Failed to Add Goal",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            Log.e("ADDING_GOAL_ERR", e.message.toString())
-                        }
-
-                        override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                            TODO("Not yet implemented")
-                        }
-                    }
-
-                    db.writeToDb(entities, "Goals", callback)
                     true
                 }
                 else -> false
@@ -182,6 +221,7 @@ class NewGoal : AppCompatActivity() {
                 val db: GradientDrawable = color.background as GradientDrawable
                 db.setColor(listColor[position])
                 currentColor = listColor[position]
+                currentColorName = listItemColor[position]
                 db.cornerRadius = 20f
                 color.background = db
                 return view
@@ -209,6 +249,7 @@ class NewGoal : AppCompatActivity() {
                 val db: GradientDrawable = GradientDrawable()
                 db.setColor(listColor[position])
                 currentColor = listColor[position]
+                currentColorName = listItemColor[position]
                 db.cornerRadius = 20f
                 svv.background = db
             }
@@ -224,18 +265,113 @@ class NewGoal : AppCompatActivity() {
 
         icons.setOnClickListener {
             // do something when the corky2 is clicked
-            val dialog = IconDialogFragment()
+//            val dialog = IconDialogFragment()
 //            dialog.displayIcon = icons
-            dialog.show(supportFragmentManager, "Icon Dialog")
+//            dialog.show(supportFragmentManager, "Icon Dialog")
+            val iBuilder = AlertDialog.Builder(this)
+            val iView =
+                LayoutInflater.from(this).inflate(R.layout.fragment_icon_dialog, null, false)
+            initIconViews(iView)
+            loadIcons(iView)
+            iBuilder.setView(iView)
+
+            iconAlertDialog = iBuilder.create()
+            iconAlertDialog.show()
+
         }
         iconsDropdown.setOnClickListener {
-            val dialog = IconDialogFragment()
-//            dialog.displayIcon = icons
-            dialog.show(supportFragmentManager, "Icon Dialog")
+            val iBuilder = AlertDialog.Builder(this)
+            val iView =
+                LayoutInflater.from(this).inflate(R.layout.fragment_icon_dialog, null, false)
+            initIconViews(iView)
+            loadIcons(iView)
+            iBuilder.setView(iView)
+            iconAlertDialog = iBuilder.create()
+            iconAlertDialog.show()
+        }
+    }
+
+    private fun saveGoalHistory(entities: LocalEntities) {
+        db.writeToDb(entities, "Goal History", object : FirebaseDatabaseCallback {
+            override fun onSuccessInsert(key: String) {
+                pdLoading.hide()
+                Toast.makeText(
+                    applicationContext,
+                    "Successfully Added Goal",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+                goalIntf.PressBack()
+            }
+
+            override fun onError(e: java.lang.Exception) {
+                pdLoading.hide()
+                Log.e("ERROR_GOAL_DETAIL", e.message.toString())
+                Toast.makeText(
+                    applicationContext,
+                    "Failed to Save Amount Info",
+                    Toast.LENGTH_SHORT
+                )
+            }
+
+            override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun initIconViews(iView: View) {
+        gvIcon = iView.findViewById(R.id.gvIcon)
+    }
+
+    private fun loadIcons(iView: View) {
+        try {
+            localIcons = AppResources().getIcons()
+            val adapter = object : ArrayAdapter<String>(this, R.layout.item_icon, localIcons) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val iiView = LayoutInflater.from(applicationContext)
+                        .inflate(R.layout.item_icon, null, false)
+                    val image: ImageView = iiView.findViewById(R.id.ivItemIcon)
+
+                    val icon = resources.getIdentifier(
+                        localIcons[position],
+                        "drawable",
+                        packageName
+                    )
+                    currentIcon = icon
+                    image.setImageResource(icon)
+                    image.setColorFilter(
+                        ResourcesCompat.getColor(
+                            resources,
+                            R.color.darker_gray,
+                            null
+                        )
+                    )
+
+                    image.setOnClickListener {
+                        currentIcon = icon
+                        iconAlertDialog.dismiss()
+                        icons.setImageResource(icon)
+                        return@setOnClickListener
+                    }
+
+                    return iiView
+                }
+            }
+            gvIcon.adapter = adapter
+        } catch (e: Exception) {
+            Log.e("ERROR_LOADING_ICONS", e.message.toString())
+            iconAlertDialog.dismiss()
         }
     }
 
     private fun initViews() {
+        pdLoading = ProgressDialog(this)
+        pdLoading.setMessage("Sending Request ...")
         goalName = findViewById(R.id.editTextName_newGoal)
         targetAmount = findViewById(R.id.edittargetAmount_newGoal)
         saved = findViewById(R.id.textSavedAlready_newGoal)

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".GoalDetailCompleted">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/goalDetailReached_toolbar"
         android:layout_width="match_parent"
@@ -14,11 +15,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/edit_menu"
+        app:menu="@menu/delete_menu"
         app:navigationIcon="@drawable/ic_back"
         app:title="Goal Detail"
-        app:titleTextColor="@color/white">
-    </androidx.appcompat.widget.Toolbar>
+        app:titleTextColor="@color/white"></androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/relativeLayout_goalDetailReached"
@@ -86,9 +86,9 @@
             android:layout_marginBottom="130dp"
             android:gravity="center"
             android:textColor="@color/green_text"
-            android:textSize="60sp"
+            android:textSize="30sp"
             android:textStyle="bold"
-            tools:text="100%" />
+            tools:text="100.00%" />
 
         <TextView
             android:id="@+id/textView_goalEarned"
@@ -102,8 +102,11 @@
             android:layout_marginTop="130dp"
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="110dp"
+            android:textSize="12sp"
             android:gravity="right"
             android:textColor="@color/darker_gray"
+            android:text="Earned: "
+            android:visibility="visible"
             tools:text="Earned: " />
 
         <TextView
@@ -120,6 +123,7 @@
             android:layout_marginBottom="110dp"
             android:gravity="center"
             android:textColor="@color/darker_gray"
+            android:textSize="12sp"
             tools:text="₱150,000" />
 
         <TextView
@@ -135,7 +139,10 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="90dp"
             android:gravity="right"
+            android:text="Goal: "
+            android:textSize="12sp"
             android:textColor="@color/darker_gray"
+            android:visibility="visible"
             tools:text="Goal: " />
 
         <TextView
@@ -152,6 +159,7 @@
             android:layout_marginBottom="90dp"
             android:gravity="center"
             android:textColor="@color/darker_gray"
+            android:textSize="12sp"
             tools:text="₱200,000" />
 
         <TextView
@@ -168,6 +176,9 @@
             android:layout_marginBottom="70dp"
             android:gravity="right"
             android:textColor="@color/darker_gray"
+            android:textSize="12sp"
+            android:visibility="visible"
+            android:text="Remaining: "
             tools:text="Remaining: " />
 
         <TextView
@@ -184,6 +195,7 @@
             android:layout_marginBottom="70dp"
             android:gravity="center"
             android:textColor="@color/darker_gray"
+            android:textSize="12sp"
             tools:text="₱50,000" />
 
     </RelativeLayout>
@@ -192,8 +204,8 @@
         android:id="@+id/linearLayout_goalDetailReached1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
@@ -216,11 +228,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:letterSpacing="0.05"
             android:paddingStart="8dp"
             android:text="₱150,000"
-            android:letterSpacing="0.05"
-            android:textSize="16sp"
-            android:textColor="@color/darker_gray" />
+            android:textColor="@color/darker_gray"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -228,8 +240,8 @@
         android:id="@+id/savedAmountHistory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="Saved Amount History"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -247,7 +259,7 @@
         app:layout_constraintTop_toBottomOf="@+id/savedAmountHistory"
         tools:layout_editor_absoluteY="522dp">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/savedAmountHistoryListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -268,6 +280,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_line">
 
@@ -276,11 +289,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="27dp"
-            android:padding="16dp"
             android:background="@drawable/curved_bg"
+            android:clickable="true"
+            android:padding="16dp"
             android:text="ADD SAVED AMOUNT"
-            android:textColor="@color/black"
-            android:clickable="true"/>
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/btn_setGoalReached"
@@ -289,12 +302,12 @@
             android:layout_alignParentRight="true"
             android:layout_marginEnd="27dp"
             android:background="@drawable/btn_red_bg"
+            android:clickable="true"
             android:paddingLeft="10dp"
             android:paddingTop="16dp"
             android:paddingRight="10dp"
             android:paddingBottom="16dp"
             android:text="SET GOAL AS REACHED"
-            android:textColor="@color/white"
-            android:clickable="true"/>
+            android:textColor="@color/white" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

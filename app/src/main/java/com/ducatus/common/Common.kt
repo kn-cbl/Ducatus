@@ -1,6 +1,7 @@
 package com.ducatus.common
 
 import android.util.Log
+import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import kotlinx.serialization.json.JsonArray
 import org.json.JSONObject
@@ -20,7 +21,11 @@ class Common {
         goalMap["goalAmount"] = goals.goalAmount as Object
         goalMap["notes"] = goals.notes as Object
         goalMap["color"] = goals.color as Object
+        goalMap["colorName"] = goals.colorName as Object
         goalMap["icon"] = goals.icon as Object
+        goalMap["status"] = goals.status as Object
+        goalMap["dateGoalPaused"] = goals.dateGoalPaused as Object
+
         return goalMap
     }
 
@@ -39,9 +44,42 @@ class Common {
             goal.earned = data["earned"].toString().toDouble()
             goal.remaining = data["remaining"].toString().toDouble()
             goal.notes = data["notes"].toString()
+            goal.colorName = data["colorName"].toString()
             goal.color = data["color"].toString().toInt()
             goal.icon = data["icon"].toString().toInt()
+            goal.status = data["status"].toString().toInt()
+            goal.dateGoalPaused = data["dateGoalPaused"].toString()
             list.add(goal)
+        }
+        return list
+    }
+
+    fun toGoalHistory(goalHistory: GoalHistory): Map<String, Object> {
+        var goalMap = HashMap<String, Object>()
+        goalMap["accountID"] = goalHistory.accountID as Object
+        goalMap["goalkey"] = goalHistory.goalkey as Object
+        goalMap["goalHistoryKey"] = goalHistory.goalHistoryKey as Object
+        goalMap["datePaid"] = goalHistory.datePaid as Object
+        goalMap["timePaid"] = goalHistory.timePaid as Object
+        goalMap["amountPaid"] = goalHistory.amountPaid as Object
+
+        return goalMap
+    }
+
+    fun parseGoalsHistory(hash: Map<String, Object>): List<GoalHistory> {
+        var list = mutableListOf<GoalHistory>()
+        var hashData = hash.values
+        for (goalHistoryData in hashData) {
+            var data = goalHistoryData as Map<String, Object>
+            var goalHistory = GoalHistory()
+            goalHistory.accountID = data["accountID"].toString()
+            goalHistory.goalkey = data["goalkey"].toString()
+            goalHistory.goalHistoryKey = data["goalHistoryKey"].toString()
+            goalHistory.datePaid = data["datePaid"].toString()
+            goalHistory.timePaid = data["timePaid"].toString()
+            goalHistory.amountPaid = data["amountPaid"].toString().toDouble()
+            list.add(goalHistory)
+
         }
         return list
     }

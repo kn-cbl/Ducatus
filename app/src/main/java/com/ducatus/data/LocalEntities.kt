@@ -1,6 +1,13 @@
 package com.ducatus.data
 
-data class LocalEntities(
-    var goals: Goals = Goals(),
-    var listOfGoals: List<Goals> = mutableListOf()
-)
+class LocalEntities() {
+    lateinit var goals: Goals
+    lateinit var goalHistory: GoalHistory
+    lateinit var listOfGoals: List<Goals>
+
+    fun newInstance(g: Goals, gh: GoalHistory, list: List<Goals>) {
+        this.goals = g
+        this.goalHistory = gh
+        this.listOfGoals = list
+    }
+}

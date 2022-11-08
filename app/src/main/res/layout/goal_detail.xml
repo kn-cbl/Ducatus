@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GoalDetail"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".GoalDetail">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/goalDetail_toolbar"
@@ -19,8 +19,7 @@
         app:menu="@menu/edit_menu"
         app:navigationIcon="@drawable/ic_back"
         app:title="Goal Detail"
-        app:titleTextColor="@color/white">
-    </androidx.appcompat.widget.Toolbar>
+        app:titleTextColor="@color/white"></androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/relativeLayout_goalDetail"
@@ -88,7 +87,7 @@
             android:layout_marginBottom="130dp"
             android:gravity="center"
             android:textColor="@color/green_text"
-            android:textSize="60sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             tools:text="75%" />
 
@@ -105,6 +104,7 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="110dp"
             android:gravity="right"
+            android:text="Earned: "
             android:textColor="@color/darker_gray"
             tools:text="Earned: " />
 
@@ -137,7 +137,9 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="90dp"
             android:gravity="right"
+            android:text="Goal: "
             android:textColor="@color/darker_gray"
+            android:visibility="visible"
             tools:text="Goal: " />
 
         <TextView
@@ -169,6 +171,7 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="70dp"
             android:gravity="right"
+            android:text="Remaining: "
             android:textColor="@color/darker_gray"
             tools:text="Remaining: " />
 
@@ -194,8 +197,8 @@
         android:id="@+id/linearLayout_goalDetail1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
@@ -218,11 +221,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:letterSpacing="0.05"
             android:paddingStart="8dp"
             android:text="₱150,000"
-            android:letterSpacing="0.05"
-            android:textSize="16sp"
-            android:textColor="@color/darker_gray" />
+            android:textColor="@color/darker_gray"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -230,8 +233,8 @@
         android:id="@+id/savedAmountHistory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="Saved Amount History"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -249,7 +252,7 @@
         app:layout_constraintTop_toBottomOf="@+id/savedAmountHistory"
         tools:layout_editor_absoluteY="522dp">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/savedAmountHistoryListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -269,34 +272,47 @@
         android:id="@+id/relativeLayout_goalHistory1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_line">
 
-        <Button
-            android:id="@+id/btn_savedGoalAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="27dp"
-            android:padding="16dp"
-            android:background="@drawable/btn_green_bg"
-            android:text="ADD SAVED AMOUNT"
-            android:textColor="@color/white"
-            android:clickable="true"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_setGoalReached"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="27dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/curved_bg"
-            android:text="SET GOAL AS REACHED"
-            android:textColor="@color/black"
-            android:clickable="true"/>
+            <Button
+                android:id="@+id/btn_savedGoalAmount"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="27dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_green_bg"
+                android:clickable="true"
+                android:padding="10dp"
+                android:text="ADD SAVED AMOUNT"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_setGoalReached"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="27dp"
+                android:layout_weight="1"
+                android:background="@drawable/curved_bg"
+                android:clickable="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:text="SET GOAL AS REACHED"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

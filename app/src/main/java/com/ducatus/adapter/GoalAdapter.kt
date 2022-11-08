@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -27,13 +28,8 @@ class GoalAdapter(
         var txtGoalAmount: TextView = itemView.findViewById(R.id.goalAmount_goalActive1)
         var txtTargetDate: TextView = itemView.findViewById(R.id.targetDate_goalActive1)
         var imgCircle: ImageView = itemView.findViewById(R.id.sample_img_goalActive1)
+        var lowerPB: ProgressBar = itemView.findViewById(R.id.progressBar_goalActive1)
 
-        init {
-            itemView.setOnClickListener { mView ->
-//                listener.OnClickListener(mView, adapterPosition)
-
-            }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,12 +43,17 @@ class GoalAdapter(
         var goal: Goals = mList.get(position)
         holder.txtDescription.text = goal.goalDescription
         holder.txtTargetDate.text = "Target date on " + goal.targetDate
-        holder.txtGoalAmount.text = goal.goalAmount.toString()
-        holder.txtEarned.text = goal.earned.toString()
-        holder.txtRemaining.text = goal.remaining.toString()
+        holder.txtGoalAmount.text = "P" + goal.goalAmount.toString()
+        holder.txtEarned.text = "P" + goal.earned.toString()
+        holder.txtRemaining.text = "P" + goal.remaining.toString()
         var percentage = goal.percentage.toInt()
-        holder.txtPercentage.text = percentage.toString() + "%"
+        holder.txtPercentage.text = String.format("%.2f", goal.percentage) + "%"
+        holder.lowerPB.progress = percentage
         holder.imgCircle.setBackgroundColor(goal.color)
+        holder.imgCircle.setImageResource(goal.icon)
+        holder.itemView.setOnClickListener { mView ->
+            listener.OnClickListener(mView, position)
+        }
     }
 
     override fun getItemCount(): Int {

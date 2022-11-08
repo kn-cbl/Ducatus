@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewGoal">
+    android:background="#2B2B2B"
+    android:backgroundTint="#FFFFFF"
+    android:backgroundTintMode="screen"
+    tools:context=".EditGoal">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/newGoal_toolbar"
+        android:id="@+id/editGoal_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/green_primary"
@@ -15,41 +18,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/check_menu"
+        app:menu="@menu/editgoal_menu_pause"
         app:navigationIcon="@drawable/ic_close"
-        app:title="New Goal"
+        app:title="Edit Goal"
         app:titleTextColor="@color/white">
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/savingFor_newGoal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="WHAT ARE YOU SAVING FOR?"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:layout_marginTop="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newGoal_toolbar" />
-
     <LinearLayout
-        android:id="@+id/linearLayout1_newGoal"
+        android:id="@+id/linearLayout1_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/savingFor_newGoal"
+        app:layout_constraintTop_toBottomOf="@+id/editGoal_toolbar"
         tools:layout_editor_absoluteX="10dp">
 
         <TextView
-            android:id="@+id/Name_newGoal"
+            android:id="@+id/Name_editGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -59,7 +48,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/editTextName_newGoal"
+            android:id="@+id/editTextName_editGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -73,14 +62,14 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout2_newGoal"
+        android:id="@+id/linearLayout2_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout1_newGoal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout1_editGoal"
         tools:layout_editor_absoluteX="10dp">
 
         <RelativeLayout
@@ -89,7 +78,7 @@
             android:background="@drawable/text_input">
 
             <TextView
-                android:id="@+id/Color_newGoal"
+                android:id="@+id/Color_editGoal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -100,9 +89,9 @@
 
             <Spinner
                 android:id="@+id/spinner_color"
-                android:layout_width="200dp"
+                android:layout_width="242dp"
                 android:layout_height="15dp"
-                android:layout_below="@id/Color_newGoal"
+                android:layout_below="@id/Color_editGoal"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
@@ -116,7 +105,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/relativeLayout3"
-            android:layout_width="100dp"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -124,7 +113,7 @@
             android:visibility="visible">
 
             <TextView
-                android:id="@+id/Icon_newGoal"
+                android:id="@+id/Icon_editGoal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -142,8 +131,8 @@
                 app:srcCompat="@drawable/ic_baseline_directions_car_24"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/Icon_newGoal"
-                app:layout_constraintTop_toBottomOf="@+id/Icon_newGoal"
+                app:layout_constraintStart_toEndOf="@+id/Icon_editGoal"
+                app:layout_constraintTop_toBottomOf="@+id/Icon_editGoal"
                 app:layout_constraintVertical_bias="1.0" />
 
             <ImageView
@@ -155,24 +144,24 @@
                 app:layout_constraintBottom_toBottomOf="@+id/spinner_icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/spinner_icon"
-                app:layout_constraintTop_toBottomOf="@id/Icon_newGoal" />
+                app:layout_constraintTop_toBottomOf="@id/Icon_editGoal" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout3_newGoal"
+        android:id="@+id/linearLayout3_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/text_input"
         android:layout_margin="10dp"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2_newGoal">
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2_editGoal">
 
         <TextView
-            android:id="@+id/targetAmount_newGoal"
+            android:id="@+id/targetAmount_editGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -183,7 +172,7 @@
             />
 
         <EditText
-            android:id="@+id/edittargetAmount_newGoal"
+            android:id="@+id/edittargetAmount_editGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -197,17 +186,17 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout4_newGoal"
+        android:id="@+id/linearLayout4_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/text_input"
         android:layout_margin="10dp"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout3_newGoal">
+        app:layout_constraintTop_toBottomOf="@id/linearLayout3_editGoal">
 
         <TextView
-            android:id="@+id/savedAlready_newGoal"
+            android:id="@+id/savedAlready_editGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -217,8 +206,8 @@
             android:textStyle="bold"
             />
 
-        <EditText
-            android:id="@+id/textSavedAlready_newGoal"
+        <TextView
+            android:id="@+id/textSavedAlready_editGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -232,17 +221,17 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout5_newGoal"
+        android:id="@+id/linearLayout5_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4_newGoal">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4_editGoal">
 
         <TextView
-            android:id="@+id/textDesiredDate_newGGoal"
+            android:id="@+id/textDesiredDate_editGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -252,7 +241,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/editDate_newGGoal"
+            android:id="@+id/editDate_editGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -266,17 +255,17 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout6_newGoal"
+        android:id="@+id/linearLayout6_editGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5_newGoal">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5_editGoal">
 
         <TextView
-            android:id="@+id/editNotes_newGoal"
+            android:id="@+id/editNotes_editGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -286,7 +275,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/editTextNotes_newGoal"
+            android:id="@+id/editTextNotes_editGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -297,5 +286,6 @@
             android:textColorHint="#7A7A7A"
             android:textSize="16sp" />
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

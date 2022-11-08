@@ -11,5 +11,8 @@ data class Goals(
     var goalAmount: Double = 0.0,
     var notes: String = "",
     var color: Int = 0,
-    var icon: Int = 0
+    var colorName: String = "",
+    var icon: Int = 0,
+    var status: Int = 0,
+    var dateGoalPaused: String = ""
 )
