@@ -24,7 +24,9 @@ import com.ducatus.interfaces.FirebaseDatabaseCallback
 import com.ducatus.interfaces.GoalDetailIntf
 import com.ducatus.services.LocalFirebaseDatabase
 import kotlinx.android.synthetic.main.edit_goal.*
+import kotlinx.android.synthetic.main.fragment_goal_active_container.*
 import java.lang.Exception
+import java.time.LocalDate
 
 
 class EditGoal : AppCompatActivity() {
@@ -52,12 +54,15 @@ class EditGoal : AppCompatActivity() {
     private var currentIcon: Int = 0
     lateinit var icons: ImageButton
     lateinit var ghList: List<GoalHistory>
+    var isFromReach: Boolean = false
+    lateinit var iconsDropdown: ImageView
 
 
     companion object {
         lateinit var goal: Goals
         lateinit var detailIntf: GoalDetailIntf
         var isFromPause: Boolean = false
+        var isFromDetailPassedFromReach: Boolean = false
         lateinit var goalHistoryList: List<GoalHistory>
 
         fun start(
@@ -65,12 +70,14 @@ class EditGoal : AppCompatActivity() {
             g: Goals,
             d: GoalDetailIntf,
             flag: Boolean,
+            isFromReach: Boolean,
             gh: List<GoalHistory>
         ) {
             goal = g
             detailIntf = d
             isFromPause = flag
             goalHistoryList = gh
+            isFromDetailPassedFromReach = isFromReach
             val intent: Intent = Intent(mContext, EditGoal::class.java)
             mContext.startActivity(intent)
         }
@@ -86,12 +93,19 @@ class EditGoal : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         flag = EditGoal.isFromPause
-        if (flag) {
-            setContentView(R.layout.edit_goal_pause)
+        isFromReach = EditGoal.isFromDetailPassedFromReach
+        mGoal = EditGoal.goal
+        if (isFromReach) {
+            setContentView(R.layout.edit_goal_reached_passed)
         } else {
-            setContentView(R.layout.edit_goal)
+            if (flag) {
+                setContentView(R.layout.edit_goal_pause)
+            } else {
+                setContentView(R.layout.edit_goal)
+            }
         }
-        initViews()
+
+
         context = this
         addColor("color_one", getColor(R.color.color_one))
         addColor("color_two", getColor(R.color.color_two))
@@ -179,8 +193,8 @@ class EditGoal : AppCompatActivity() {
         spinner.setSelection(listItemColor.indexOf(mGoal.colorName))
 
         icons = findViewById<ImageButton>(R.id.spinner_icon)
-        val iconsDropdown = findViewById<ImageView>(R.id.icon_dropdown)
-
+        iconsDropdown = findViewById<ImageView>(R.id.icon_dropdown)
+        initViews()
         icons.setOnClickListener {
             val iBuilder = AlertDialog.Builder(this)
             val iView =
@@ -209,15 +223,6 @@ class EditGoal : AppCompatActivity() {
         icons.setImageResource(goal.icon)
         currentIcon = goal.icon
 
-        if (flag) {
-            spinner.isEnabled = false
-            icons.isEnabled = false
-            iconsDropdown.isEnabled = false
-        } else {
-            spinner.isEnabled = true
-            icons.isEnabled = true
-            iconsDropdown.isEnabled = true
-        }
 
         initOtherListeners()
     }
@@ -276,12 +281,12 @@ class EditGoal : AppCompatActivity() {
         editGoal_toolbar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.editGoalPause -> {
-                    pb.show()
                     val alertDialog = AlertDialog.Builder(this)
                     val dlistener = object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface?, which: Int) {
                             when (which) {
                                 DialogInterface.BUTTON_NEGATIVE -> {
+                                    pb.show()
                                     var entities = LocalEntities()
                                     entities.goals = mGoal
                                     database.updateToDb(
@@ -320,7 +325,7 @@ class EditGoal : AppCompatActivity() {
                                         })
                                 }
                                 DialogInterface.BUTTON_POSITIVE -> {
-
+                                    pb.dismiss()
                                 }
                             }
                         }
@@ -333,6 +338,7 @@ class EditGoal : AppCompatActivity() {
                     true
                 }
                 R.id.editGoalPlay -> {
+
                     pb.show()
                     val alertDialog = AlertDialog.Builder(this)
                     val dlistener = object : DialogInterface.OnClickListener {
@@ -356,7 +362,9 @@ class EditGoal : AppCompatActivity() {
 
                                             }
 
-                                            override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                            override fun onSuccessListOfGoalHistory(
+                                                goalHistoryList: List<GoalHistory>
+                                            ) {
                                                 TODO("Not yet implemented")
                                             }
 
@@ -377,7 +385,7 @@ class EditGoal : AppCompatActivity() {
                                         })
                                 }
                                 DialogInterface.BUTTON_POSITIVE -> {
-
+                                    pb.dismiss()
                                 }
                             }
                         }
@@ -388,6 +396,7 @@ class EditGoal : AppCompatActivity() {
                         .setCancelable(false)
                         .show()
                     true
+
                 }
                 R.id.editGoalDelete -> {
                     val alertDialog = AlertDialog.Builder(this)
@@ -413,7 +422,7 @@ class EditGoal : AppCompatActivity() {
                                             }
 
                                             override fun onSuccessInsert(key: String) {
-                                                for(gh in ghList){
+                                                for (gh in ghList) {
                                                     deleteGoalHistory(
                                                         "Goal History",
                                                         mGoal.accountID,
@@ -445,66 +454,98 @@ class EditGoal : AppCompatActivity() {
                     true
                 }
                 R.id.iconCheck -> {
-                    if (editGoalName.text.toString().equals("") ||
-                        editTargetAmount.text.toString().equals("") ||
-                        editTargetDate.text.toString().equals("") ||
-                        editNote.text.toString().equals("")
-                    ) {
-                        Toast.makeText(this, "Please Don't Leave Empty Fields", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        pb.show()
-                        var goals: Goals = Goals()
-                        goals.accountID = mGoal.accountID
-                        goals.goalDescription = editGoalName.text.toString()
-                        var amount = editTargetAmount.text.toString().toDouble()
-                        goals.goalAmount = amount
-                        var save = txtSaved.text.toString().toDouble()
-                        goals.earned = txtSaved.text.toString().toDouble()
-                        goals.targetDate = editTargetDate.text.toString()
-                        goals.color = currentColor;
-                        goals.notes = editNote.text.toString()
-                        goals.percentage = save / amount * 100
-                        goals.remaining = amount - save
-                        goals.key = mGoal.key
-                        goals.colorName = currentColorName
-                        goals.icon = currentIcon
-
-                        var entities = LocalEntities()
-                        entities.goals = goals
-
-                        db.updateToDb(entities, "Goals", object : FirebaseDatabaseCallback {
-                            override fun onSuccessInsert(key: String) {
-                                pb.dismiss()
+                    var isProceed = true
+                    if (isFromReach) {
+                        if (editTargetDate.text.toString().equals("")) {
+                            Toast.makeText(
+                                applicationContext,
+                                "Target Date must be filled",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            isProceed = false
+                        } else {
+                            var strArr = editTargetDate.text.toString().split("/")
+                            var convertedDate = strArr[2] + "-" + strArr[0] + "-" + strArr[1]
+                            if (LocalDate.parse(convertedDate).isBefore(LocalDate.now())) {
                                 Toast.makeText(
                                     applicationContext,
-                                    "Successfull Updated Goals",
+                                    "Target Date must not be before current date",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                eventListener.onSuccessUpdate()
-                                finish()
-
+                                isProceed = false
+                            }else{
+                                isProceed = true
                             }
+                        }
 
-                            override fun onError(e: Exception) {
-                                Log.e("ERROR_UPDATE", e.message.toString())
-                                pb.dismiss()
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Failed to update goal",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                    }
 
-                            }
+                    if (isProceed) {
+                        if (editGoalName.text.toString().equals("") ||
+                            editTargetAmount.text.toString().equals("") ||
+                            editTargetDate.text.toString().equals("") ||
+                            editNote.text.toString().equals("")
+                        ) {
+                            Toast.makeText(
+                                this,
+                                "Please Don't Leave Empty Fields",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        } else {
+                            pb.show()
+                            var goals: Goals = Goals()
+                            goals.accountID = mGoal.accountID
+                            goals.goalDescription = editGoalName.text.toString()
+                            var amount = editTargetAmount.text.toString().toDouble()
+                            goals.goalAmount = amount
+                            var save = txtSaved.text.toString().toDouble()
+                            goals.earned = txtSaved.text.toString().toDouble()
+                            goals.targetDate = editTargetDate.text.toString()
+                            goals.color = currentColor;
+                            goals.notes = editNote.text.toString()
+                            goals.percentage = save / amount * 100
+                            goals.remaining = amount - save
+                            goals.key = mGoal.key
+                            goals.colorName = currentColorName
+                            goals.icon = currentIcon
 
-                            override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                                TODO("Not yet implemented")
-                            }
+                            var entities = LocalEntities()
+                            entities.goals = goals
 
-                            override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
-                                TODO("Not yet implemented")
-                            }
-                        })
+                            db.updateToDb(entities, "Goals", object : FirebaseDatabaseCallback {
+                                override fun onSuccessInsert(key: String) {
+                                    pb.dismiss()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Successfull Updated Goals",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    eventListener.onSuccessUpdate()
+                                    finish()
+
+                                }
+
+                                override fun onError(e: Exception) {
+                                    Log.e("ERROR_UPDATE", e.message.toString())
+                                    pb.dismiss()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Failed to update goal",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                }
+
+                                override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                                    TODO("Not yet implemented")
+                                }
+
+                                override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                    TODO("Not yet implemented")
+                                }
+                            })
+                        }
                     }
                     true
                 }
@@ -540,6 +581,7 @@ class EditGoal : AppCompatActivity() {
         eventListener = EditGoal.detailIntf
         flag = EditGoal.isFromPause
         ghList = EditGoal.goalHistoryList
+        isFromReach = EditGoal.isFromDetailPassedFromReach
         pb = ProgressDialog(this)
         pb.setMessage("Sending Request ...")
         pb.setCancelable(false)
@@ -563,13 +605,32 @@ class EditGoal : AppCompatActivity() {
             txtSaved.isEnabled = false
             editTargetDate.isEnabled = false
             editNote.isEnabled = false
+            spinner.isEnabled = false
+            icons.isEnabled = false
+            iconsDropdown.isEnabled = false
         } else {
             editGoalName.isEnabled = true
             editTargetAmount.isEnabled = true
             txtSaved.isEnabled = true
             editTargetDate.isEnabled = true
             editNote.isEnabled = true
+            spinner.isEnabled = true
+            icons.isEnabled = true
+            iconsDropdown.isEnabled = true
         }
+
+
+        if (isFromReach) {
+            editGoalName.isEnabled = false
+            editTargetAmount.isEnabled = false
+            txtSaved.isEnabled = false
+            editTargetDate.isEnabled = true
+            editNote.isEnabled = false
+            spinner.isEnabled = false
+            icons.isEnabled = false
+            iconsDropdown.isEnabled = false
+        }
+
 
 
         db = LocalFirebaseDatabase()

@@ -110,6 +110,14 @@ class NewGoal : AppCompatActivity() {
                         goals.percentage = save / amount * 100
                         goals.remaining = amount - save
                         goals.colorName = currentColorName
+                        if (currentIcon == 0) {
+                            val iconTmp = resources.getIdentifier(
+                                "ic_baseline_home_24",
+                                "drawable",
+                                packageName
+                            )
+                            currentIcon = iconTmp
+                        }
                         goals.icon = currentIcon
 
 
@@ -331,6 +339,7 @@ class NewGoal : AppCompatActivity() {
     private fun loadIcons(iView: View) {
         try {
             localIcons = AppResources().getIcons()
+            var first = true
             val adapter = object : ArrayAdapter<String>(this, R.layout.item_icon, localIcons) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val iiView = LayoutInflater.from(applicationContext)
@@ -344,6 +353,7 @@ class NewGoal : AppCompatActivity() {
                     )
                     currentIcon = icon
                     image.setImageResource(icon)
+
                     image.setColorFilter(
                         ResourcesCompat.getColor(
                             resources,

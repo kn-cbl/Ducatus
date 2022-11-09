@@ -15,6 +15,7 @@ import com.ducatus.common.Constants
 import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import com.ducatus.interfaces.FirebaseDatabaseCallback
+import com.ducatus.interfaces.GoalDetailIntf
 import com.ducatus.interfaces.ReachGoalIntf
 import com.ducatus.services.LocalFirebaseDatabase
 
@@ -80,7 +81,20 @@ class GoalReachedFragment : Fragment() {
                             if (goal.remaining == 0.0) {
                                 GoalDetailCompleted.start(requireContext(), goal)
                             } else {
-                                GoalDetailCompleted.start(requireContext(), goal)
+                                GoalDetailPassed.start(
+                                    requireContext(),
+                                    goal,
+                                    object : GoalDetailIntf {
+                                        override fun onSuccessUpdate() {
+                                            recyclerView.adapter = null
+                                            loadData(parentView)
+                                        }
+
+                                        override fun deleteSubmitted() {
+                                            recyclerView.adapter = null
+                                            loadData(parentView)
+                                        }
+                                    })
                             }
                         }
                     })

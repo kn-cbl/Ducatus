@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.ducatus.databinding.ActivityHomeBinding
 import com.ducatus.interfaces.GoalIntf
+import com.ducatus.interfaces.TipsIntf
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,6 +32,13 @@ class HomeActivity : AppCompatActivity() {
 
         override fun PressBack() {
             TODO("Not yet implemented")
+        }
+    }
+
+    private var tipsListener: TipsIntf = object : TipsIntf {
+        override fun onToolBarClickListener() {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
         }
     }
 
@@ -91,9 +99,11 @@ class HomeActivity : AppCompatActivity() {
 //                R.id.nav_challenges -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ChallengesFragment()).commit()
 //                }
-//                R.id.nav_tips -> {
+                R.id.nav_tips -> {
+                    fIndex = 6
+                    TipsMainActivity.start(this, tipsListener)
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, TipsFragment()).commit()
-//                }
+                }
 //                R.id.nav_help -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }

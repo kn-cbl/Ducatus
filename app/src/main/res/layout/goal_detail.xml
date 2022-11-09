@@ -244,7 +244,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="138dp"
+        android:layout_height="118dp"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -278,7 +278,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
@@ -287,13 +287,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="27dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_green_bg"
+                android:layout_weight="0.8"
                 android:clickable="true"
                 android:padding="10dp"
                 android:text="ADD SAVED AMOUNT"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="10sp"
+                app:backgroundTint="@color/green_text" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
 
             <Button
                 android:id="@+id/btn_setGoalReached"
@@ -302,8 +307,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="27dp"
-                android:layout_weight="1"
-                android:background="@drawable/curved_bg"
+                android:layout_weight="0.8"
                 android:clickable="true"
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
@@ -311,7 +315,8 @@
                 android:paddingBottom="10dp"
                 android:text="SET GOAL AS REACHED"
                 android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:textSize="10sp"
+                app:backgroundTint="@color/off_white" />
         </LinearLayout>
 
     </RelativeLayout>

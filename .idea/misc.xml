@@ -70,6 +70,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_subscriptions.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_tips.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_transactions.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_white_add.xml" value="0.117" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/receipt.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/remaining_balance.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/shape2.xml" value="0.1945" />
@@ -77,13 +78,15 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/square_shape_lightgreen.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/activity_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/activity_transaction_detail.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/activity_user_profile.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/dialog_icon.xml" value="0.25" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/dialog_input_amount.xml" value="0.33" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/dialog_item_icon.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal_pause.xml" value="0.1" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal_pause.xml" value="0.2728592162554427" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal_reached_passed.xml" value="0.2728592162554427" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_container.xml" value="0.2600276625172891" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_container.xml" value="0.7932489451476793" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_origg.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_paused.xml" value="0.33" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_paused_container.xml" value="0.153125" />
@@ -95,7 +98,8 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_icon_dialog.xml" value="0.25" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions_breakdown.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail.xml" value="0.33" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_user_profile.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail.xml" value="0.34814814814814815" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail_completed.xml" value="0.33" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail_history.xml" value="0.67" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/goal_detail_passed.xml" value="0.20416666666666666" />
@@ -104,6 +108,8 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_icon.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/list_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/new_goal.xml" value="0.3650485436893204" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/new_goal_orig.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/tipsactivity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/check_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/cropimage_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/delete_menu.xml" value="0.1" />
@@ -113,6 +119,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/menu/editbudget_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/editgoal_menu.xml" value="0.1" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/editgoal_menu_pause.xml" value="0.1" />
+        <entry key="..\:/Ducatus/app/src/main/res/menu/editgoal_menu_reach.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/notifications_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/subscriptions_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/transactions_menu.xml" value="0.20416666666666666" />

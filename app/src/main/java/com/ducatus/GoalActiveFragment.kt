@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.adapter.GoalAdapter
+import com.ducatus.common.Constants
 import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import com.ducatus.data.LocalEntities
@@ -25,6 +26,7 @@ import com.ducatus.interfaces.GoalIntf
 import com.ducatus.services.LocalFirebaseDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.lang.Exception
+import java.time.LocalDate
 
 
 class GoalActiveFragment() : Fragment() {
@@ -157,7 +159,34 @@ class GoalActiveFragment() : Fragment() {
     private fun createGoalTemp(mView: View, list: List<Goals>) {
         val newList = mutableListOf<Goals>()
         for (l in list) {
-            if (l.status == 0) {
+            if (l.status != Constants().GOAL_IN_PROGRESS) {
+                continue
+            }
+            var strArr = l.targetDate.split("/")
+            var convertedDate = strArr[2] + "-" + strArr[0] + "-" + strArr[1]
+            if (LocalDate.parse(convertedDate).isBefore(LocalDate.now())) {
+                val entities = LocalEntities()
+                entities.goals = l
+                db.updateToDb(entities, "Goal Reached", object : FirebaseDatabaseCallback {
+                    override fun onSuccessInsert(key: String) {
+                        Log.d("SUCCESS", "Key: " + key)
+                    }
+
+                    override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onError(e: Exception) {
+                        Log.e("ERROR", e.message.toString())
+                    }
+                })
+                continue
+            }
+            if (l.status == Constants().GOAL_IN_PROGRESS) {
                 newList.add(l)
             }
         }

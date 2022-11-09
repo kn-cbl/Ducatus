@@ -9,6 +9,7 @@
     android:backgroundTintMode="screen"
     tools:context=".EditGoal">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -22,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:menu="@menu/editgoal_menu_pause"
+            app:menu="@menu/editgoal_menu_reach"
             app:navigationIcon="@drawable/ic_close"
             app:title="Edit Goal"
             app:titleTextColor="@color/white"></androidx.appcompat.widget.Toolbar>
@@ -132,13 +133,10 @@
                     android:id="@+id/spinner_icon"
                     android:layout_width="38dp"
                     android:layout_height="38dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@+id/icon_dropdown"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/Icon_editGoal"
                     android:textAlignment="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/Icon_editGoal"
-                    app:layout_constraintTop_toBottomOf="@+id/Icon_editGoal"
-                    app:layout_constraintVertical_bias="1.0"
                     app:srcCompat="@drawable/ic_baseline_directions_car_24" />
 
                 <ImageView
@@ -148,6 +146,10 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="TODO"
+                    app:layout_constraintBottom_toBottomOf="@+id/spinner_icon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/spinner_icon"
+                    app:layout_constraintTop_toBottomOf="@id/Icon_editGoal"
                     app:srcCompat="@drawable/ic_dropdown" />
 
             </RelativeLayout>

@@ -18,8 +18,7 @@
         app:menu="@menu/edit_menu"
         app:navigationIcon="@drawable/ic_back"
         app:title="Goal Detail"
-        app:titleTextColor="@color/white">
-    </androidx.appcompat.widget.Toolbar>
+        app:titleTextColor="@color/white"></androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/relativeLayout_goalDetailReached"
@@ -65,10 +64,10 @@
             android:id="@+id/warning_goalPassed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/img_goalDetailReached"
             android:layout_below="@id/targetDate_goalDetailReached"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="10dp"
+            android:layout_toRightOf="@id/img_goalDetailReached"
             app:srcCompat="@drawable/ic_warning" />
 
         <TextView
@@ -89,6 +88,7 @@
             android:layout_height="260dp"
             android:layout_below="@id/img_goalDetailReached"
             android:layout_centerInParent="true"
+            android:layout_marginTop="20dp"
             android:indeterminateOnly="false"
             android:progressDrawable="@drawable/circle_progressbar"
             tools:progress="75" />
@@ -108,9 +108,9 @@
             android:layout_marginBottom="130dp"
             android:gravity="center"
             android:textColor="@color/green_text"
-            android:textSize="60sp"
+            android:textSize="30sp"
             android:textStyle="bold"
-            tools:text="75%" />
+            tools:text="100.00%" />
 
         <TextView
             android:id="@+id/textView_goalEarned"
@@ -125,6 +125,7 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="110dp"
             android:gravity="right"
+            android:text="Earned: "
             android:textColor="@color/darker_gray"
             tools:text="Earned: " />
 
@@ -157,6 +158,7 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="90dp"
             android:gravity="right"
+            android:text="Goal: "
             android:textColor="@color/darker_gray"
             tools:text="Goal: " />
 
@@ -189,6 +191,7 @@
             android:layout_marginEnd="180dp"
             android:layout_marginBottom="70dp"
             android:gravity="right"
+            android:text="Remaining: "
             android:textColor="@color/darker_gray"
             tools:text="Remaining: " />
 
@@ -214,8 +217,8 @@
         android:id="@+id/linearLayout_goalDetailReached1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/text_input"
         android:orientation="vertical"
@@ -238,11 +241,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:letterSpacing="0.05"
             android:paddingStart="8dp"
             android:text="₱150,000"
-            android:letterSpacing="0.05"
-            android:textSize="16sp"
-            android:textColor="@color/darker_gray" />
+            android:textColor="@color/darker_gray"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -250,8 +253,8 @@
         android:id="@+id/savedAmountHistory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:text="Saved Amount History"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -269,7 +272,7 @@
         app:layout_constraintTop_toBottomOf="@+id/savedAmountHistory"
         tools:layout_editor_absoluteY="522dp">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/savedAmountHistoryListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -290,6 +293,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_line">
 

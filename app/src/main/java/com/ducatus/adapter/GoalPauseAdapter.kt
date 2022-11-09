@@ -44,13 +44,14 @@ class GoalPauseAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val goals = list.get(position)
         holder.txtDescription.setText(goals.goalDescription)
-        holder.txtPercentage.setText(goals.percentage.toString() + "%")
+        holder.txtPercentage.setText(String.format("%.2f", goals.percentage) + "%")
         holder.lowerPB.progress = goals.percentage.toInt()
         holder.txtTargetDate.setText("Target Date on " + goals.targetDate)
-        holder.txtGoalAmount.setText("P" + goals.goalAmount.toString())
-        holder.txtEarned.setText("P" + goals.earned.toString())
-        holder.txtRemaining.setText("P" + goals.remaining.toString())
+        holder.txtGoalAmount.setText(String.format("P%.2f", goals.goalAmount))
+        holder.txtEarned.setText(String.format("P%.2f", goals.earned))
+        holder.txtRemaining.setText(String.format("P%.2f", goals.remaining))
         holder.imgCircle.setBackgroundColor(goals.color)
+        holder.imgCircle.setImageResource(goals.icon)
         holder.txtDatePaused.setText(
             LocalDate.parse(goals.dateGoalPaused).month.toString()
                 .substring(0, 3) + " " + LocalDate.parse(goals.dateGoalPaused).year.toString()

@@ -99,12 +99,16 @@ class GoalDetail : AppCompatActivity() {
         imgGoal = findViewById(R.id.img_goalDetail)
         recycler = findViewById(R.id.savedAmountHistoryListView)
 
+        btnSetReached.isEnabled = goals.remaining == 0.0
+
         txtPercentage.setText(String.format("%.2f", goals.percentage) + "%")
         if (goals.earned == 0.0) {
             pb.setProgress(0)
         } else {
             pb.setProgress(goals.percentage.toInt())
         }
+
+
 
         txtGoalAmount.setText(String.format("P%.2f", goals.goalAmount))
         txtGoalRemainingAmount.setText(String.format("P%.2f", goals.remaining))
@@ -177,7 +181,7 @@ class GoalDetail : AppCompatActivity() {
                                 finish()
                             }
                         },
-                        isFromPause, ghList
+                        isFromPause, false, ghList
                     )
                     true
                 }
@@ -196,53 +200,58 @@ class GoalDetail : AppCompatActivity() {
             alertDiag.show()
         })
         btnSetReached.setOnClickListener(View.OnClickListener {
-            val iBuilder = AlertDialog.Builder(this)
-            val dialogListener = object : DialogInterface.OnClickListener {
-                override fun onClick(dialog: DialogInterface?, which: Int) {
-                    when (which) {
-                        DialogInterface.BUTTON_NEGATIVE -> {
-                            progressDiag.show()
-                            var newGoal = goals
-                            newGoal.earned = newGoal.remaining
-                            newGoal.remaining = 0.0
-                            newGoal.percentage = 100.00
-                            var entities = LocalEntities()
-                            entities.goals = newGoal
-                            db.updateToDb(
-                                entities,
-                                "Goal Reached",
-                                object : FirebaseDatabaseCallback {
-                                    override fun onSuccessInsert(key: String) {
-                                        var gh: GoalHistory = GoalHistory()
-                                        gh.goalkey = newGoal.key
-                                        gh.accountID = newGoal.accountID
-                                        gh.datePaid = LocalDate.now().toString()
-                                        gh.amountPaid = newGoal.earned
-                                        entities.goalHistory = gh
-                                        saveGoalHistory(entities)
-                                    }
+            if (goals.remaining == 0.0 && goals.earned == goals.goalAmount) {
+                val iBuilder = AlertDialog.Builder(this)
+                val dialogListener = object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        when (which) {
+                            DialogInterface.BUTTON_NEGATIVE -> {
+                                progressDiag.show()
+                                var newGoal = goals
+                                var entities = LocalEntities()
+                                entities.goals = newGoal
+                                db.updateToDb(
+                                    entities,
+                                    "Goal Reached",
+                                    object : FirebaseDatabaseCallback {
+                                        override fun onSuccessInsert(key: String) {
+                                            progressDiag.dismiss()
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Successfully Saved Amount Info",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            finish()
+                                        }
 
-                                    override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                                        TODO("Not yet implemented")
-                                    }
+                                        override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                                            TODO("Not yet implemented")
+                                        }
 
-                                    override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
-                                        TODO("Not yet implemented")
-                                    }
+                                        override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                            TODO("Not yet implemented")
+                                        }
 
-                                    override fun onError(e: Exception) {
-                                        progressDiag.hide()
-                                        Log.e("ERROR_UPDATE", e.message.toString())
-                                    }
-                                })
+                                        override fun onError(e: Exception) {
+                                            progressDiag.dismiss()
+                                            Log.e("ERROR_UPDATE", e.message.toString())
+                                        }
+                                    })
+                            }
                         }
                     }
                 }
+                iBuilder.setMessage("You are about to set this goal as reached.\nBy clicking yes, You certified that the Goal Amount: P" + goals.goalAmount.toString() + " has been satisfied")
+                    .setNegativeButton("Yes", dialogListener)
+                    .setPositiveButton("No", dialogListener)
+                    .show()
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "You need to have at least 100% of the goal to set this to reach",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            iBuilder.setMessage("You are about to set this goal as reached.\nBy clicking yes, You certified that the remaining: P" + goals.remaining.toString() + " has been satisfied")
-                .setNegativeButton("Yes", dialogListener)
-                .setPositiveButton("No", dialogListener)
-                .show()
         })
     }
 
@@ -300,9 +309,9 @@ class GoalDetail : AppCompatActivity() {
                 entities.goals = newGoal
 
                 var entityName = "Goals"
-                if ((newGoal.earned == newGoal.goalAmount) && (newGoal.remaining == 0.0)) {
-                    entityName = "Goal Reached"
-                }
+//                if ((newGoal.earned == newGoal.goalAmount) && (newGoal.remaining == 0.0)) {
+//                    entityName = "Goal Reached"
+//                }
 
                 db.updateToDb(entities, entityName, object : FirebaseDatabaseCallback {
                     override fun onSuccessInsert(key: String) {

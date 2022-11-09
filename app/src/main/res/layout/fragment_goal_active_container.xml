@@ -45,13 +45,13 @@
         android:layout_height="60dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="10dp"
-        android:backgroundTint="#007FFF"
+        android:background="@color/white"
         android:clickable="true"
         android:src="@drawable/ic_white_add"
-        android:tint="@color/white"
         android:visibility="visible"
+        app:backgroundTint="#007FFF"
         app:fabCustomSize="60dp"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_white_add" />
+        app:fabSize="normal"
+        app:tint="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
