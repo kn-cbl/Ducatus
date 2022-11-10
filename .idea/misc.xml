@@ -86,7 +86,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal_pause.xml" value="0.2728592162554427" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/edit_goal_reached_passed.xml" value="0.2728592162554427" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active.xml" value="0.20416666666666666" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_container.xml" value="0.7932489451476793" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_container.xml" value="0.21378504672897197" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_active_origg.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_paused.xml" value="0.33" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goal_paused_container.xml" value="0.153125" />
@@ -96,7 +96,11 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goals.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_home.xml" value="0.1" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_icon_dialog.xml" value="0.25" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles.xml" value="0.5" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles.xml" value="0.3388888888888889" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles_container.xml" value="0.19947916666666668" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_videos.xml" value="0.5" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_videos_container.xml" value="0.19947916666666668" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_videos_orig.xml" value="0.19947916666666668" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_transactions_breakdown.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_user_profile.xml" value="0.20416666666666666" />
@@ -110,6 +114,8 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/list_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/new_goal.xml" value="0.3650485436893204" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/new_goal_orig.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/tips_detail_article.xml" value="0.25" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/tips_detail_video.xml" value="0.19947916666666668" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/tipsactivity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/check_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/menu/cropimage_menu.xml" value="0.20416666666666666" />
