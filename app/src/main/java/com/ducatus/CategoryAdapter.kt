@@ -35,7 +35,7 @@ class CategoryAdapter(
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
-                currentCategory.category_color.toString(),
+                currentCategory.color.toString(),
                 "color",
                 activity.packageName
             )
@@ -43,7 +43,7 @@ class CategoryAdapter(
             findViewById<FrameLayout>(R.id.flItemCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             val icon = resources.getIdentifier(
-                currentCategory.category_icon.toString(),
+                currentCategory.icon.toString(),
                 "drawable",
                 activity.packageName
             )
@@ -57,9 +57,9 @@ class CategoryAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvItemCategoryName).text = currentCategory.category_name
+            findViewById<TextView>(R.id.tvItemCategoryName).text = currentCategory.name
             findViewById<ImageView>(R.id.ibItemCategoryEdit).setOnClickListener {
-                listener.showPopup(it, position, currentCategory.category_id.toString())
+                listener.showPopup(it, position, currentCategory.id.toString())
             }
         }
     }

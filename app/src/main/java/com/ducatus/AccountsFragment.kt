@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -22,6 +21,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -29,7 +29,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class AccountsFragment : Fragment(), AccountInterface {
-    private lateinit var accountAdapter: AccountAdapter
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentAccountsBinding
@@ -38,30 +37,15 @@ class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var rootLayout: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
+    private var firebaseUser: FirebaseUser? = null
     private val accountViewModel: AccountViewModel by activityViewModels()
     private var updated: Boolean = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity()
-        auth = Firebase.auth
-        val firebaseUser = auth.currentUser
-
-        if (firebaseUser != null) {
-            database = Firebase.database
-            databaseReference = database.getReference("accounts").child(firebaseUser.uid)
-            sharedPreferences = SharedPreferences(activity)
-        }
-        else {
-            sessionExpired()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llAccounts)
         toolbar = activity.findViewById(R.id.tbAccounts)
         toolbar.title = getString(R.string.accounts)
@@ -133,19 +117,32 @@ class AccountsFragment : Fragment(), AccountInterface {
 
     private fun loadData() {
         showProgressDialog()
-        val currentAccountId = sharedPreferences.accountId.toString()
-        loadAccounts(currentAccountId)
-        loadMainAccount(currentAccountId)
-
-        // limit accounts to 5 per user
-        if (accountAdapter.itemCount == 4) binding.rlAddAccount.visibility = View.GONE
+        auth = Firebase.auth
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            database = Firebase.database
+            sharedPreferences = SharedPreferences(activity)
+            loadAccountsData()
+        }
+        else {
+            sessionExpired()
+        }
     }
 
-    private fun loadAccounts(currentAccountId: String) {
-        accountAdapter = AccountAdapter(mutableListOf(), this)
+    private fun loadAccountsData() {
+        firebaseUser?.let {
+            val currentAccountId = sharedPreferences.accountId.toString()
+            loadAccounts(it.uid, currentAccountId)
+            loadMainAccount(currentAccountId)
+        }
+    }
+
+    private fun loadAccounts(uid: String, currentAccountId: String) {
+        val accountAdapter = AccountAdapter(mutableListOf(), this)
         binding.rvAccounts.adapter = accountAdapter
         binding.rvAccounts.layoutManager = LinearLayoutManager(activity)
 
+        databaseReference = database.getReference("accounts").child(uid)
         databaseReference.get()
             .addOnSuccessListener {
                 for (child in it.children) {
@@ -156,6 +153,9 @@ class AccountsFragment : Fragment(), AccountInterface {
                         }
                     }
                 }
+
+                // limit accounts to 5 per user
+                if (accountAdapter.itemCount == 4) binding.rlAddAccount.visibility = View.GONE
             }
             .addOnFailureListener {
                 Snackbar
@@ -171,21 +171,21 @@ class AccountsFragment : Fragment(), AccountInterface {
                 if (account != null) {
                     try {
                         val iconColor = resources.getIdentifier(
-                            account.account_color.toString(),
+                            account.color.toString(),
                             "color",
                             activity.packageName
                         )
 
-                        binding.tvSelectedAccountIcon.text = account.account_name?.get(0)?.uppercase()
+                        binding.tvSelectedAccountIcon.text = account.name?.get(0)?.uppercase()
                         binding.flSelectedAccountIcon.backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
                     }
                     catch (e: Exception) {}
 
-                    val budget = "₱" + String.format("%,.2f", account.account_monthly_budget)
+                    val budget = "₱" + String.format("%,.2f", account.monthlyBudget)
                     binding.tvSelectedAccountBudget.text = budget
-                    binding.tvSelectedAccountName.text = account.account_name
+                    binding.tvSelectedAccountName.text = account.name
                     binding.ivEditSelectedAccount.setOnClickListener {
-                        showPopup(it, 1, account.account_id.toString())
+                        showPopup(it, 1, account.id.toString())
                     }
 
                     hideProgressDialog()
@@ -220,9 +220,9 @@ class AccountsFragment : Fragment(), AccountInterface {
                     .addOnSuccessListener {
                         val account = snapshot.getValue<Account>()
                         sharedPreferences.accountId = accountId
-                        sharedPreferences.accountName = account?.account_name
-                        sharedPreferences.accountColor = account?.account_color
-                        loadData()
+                        sharedPreferences.accountName = account?.name
+                        sharedPreferences.accountColor = account?.color
+                        loadAccountsData()
                     }
                     .addOnFailureListener {
                         hideProgressDialog()
@@ -249,17 +249,8 @@ class AccountsFragment : Fragment(), AccountInterface {
     }
 
     private fun deleteAccount(accountId: String) {
-        showProgressDialog()
-        databaseReference.child(accountId).removeValue()
-            .addOnSuccessListener {
-                loadData()
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-            }
+        val action = AccountsFragmentDirections.actionAccountsFragmentToDeleteAccountDialogFragment(accountId)
+        findNavController().navigate(action)
     }
 
     private fun sessionExpired() {

@@ -42,14 +42,14 @@ class BudgetEditDialogFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
-    private lateinit var selectedCategory: String
     private lateinit var currentAccountId: String
-    private var accountMonthlyBudget: Double = 0.0
-    private var accountRemainingBudget: Double = 0.0
-    private var essentialCategories = 0
-    private var wantCategories = 0
-    private var savingCategories = 0
-    private var editable: Boolean = true
+    private lateinit var selectedCategory: Category
+    private var accountBudget = mutableMapOf(
+        "monthly" to 0.0,
+        "remaining" to 0.0,
+    )
+
+    private var natureCount = mutableListOf(0, 0, 0)
     private val args: BudgetEditDialogFragmentArgs by navArgs()
     private val amountViewModel: AmountViewModel by activityViewModels()
     private val viewModel: BudgetViewModel by activityViewModels()
@@ -66,50 +66,33 @@ class BudgetEditDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadData()
-        loadAccount(firebaseUser.uid, currentAccountId)
+        inputObserver()
 
         // disable editing of budget category and budget total when user has already added
         // a transaction record for the budget
-        if (args.budgetSpent.toDouble() > 0) {
-            binding.tfEditBudgetCategory.editText?.setText(args.categoryName)
-            binding.tfEditBudgetCategory.editText?.setTextColor(ContextCompat.getColor(activity, R.color.gray))
-            binding.tfEditBudgetCategory.editText?.isEnabled = false
-            binding.tfEditBudgetAmount.editText?.isEnabled = false
-            binding.tfEditBudgetAmount.editText?.setTextColor(ContextCompat.getColor(activity, R.color.gray))
-            selectedCategory = args.categoryId
-            editable = false
+//        if (args.budgetSpent.toDouble() > 0) {
+//            binding.tfEditBudgetAmount.editText?.isEnabled = false
+//            binding.tfEditBudgetAmount.editText?.setTextColor(ContextCompat.getColor(activity, R.color.gray))
+//            editable = false
+//        }
+//        else {
+//
+//        }
+
+        amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
+            binding.tfEditBudgetAmount.editText?.setText(amount)
         }
-        else {
-            loadCategories(firebaseUser.uid, currentAccountId)
 
-            val spCategory = (binding.tfEditBudgetCategory.editText as? AutoCompleteTextView)
-            spCategory?.onItemClickListener =
-                AdapterView.OnItemClickListener { parent, _, position, _ ->
-                    val string: StringWithTag = parent?.getItemAtPosition(position) as StringWithTag
+        binding.tfEditBudgetAmount.editText?.setOnClickListener {
+            val fragmentManager = childFragmentManager
+            val newFragment = AmountDialogFragment()
 
-                    // store id of selected category
-                    selectedCategory = string.tag
+            val bundle = Bundle()
+            bundle.putString("budget", "budget")
+            newFragment.arguments = bundle
 
-                    // determine budget based on selected category
-                    determineRecommendedBudget(string.tag2!!)
-                }
-
-            amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
-                binding.tfEditBudgetAmount.editText?.setText(amount)
-            }
-
-            binding.tfEditBudgetAmount.editText?.setOnClickListener {
-                val fragmentManager = childFragmentManager
-                val newFragment = AmountDialogFragment()
-
-                val bundle = Bundle()
-                bundle.putString("budget", "budget")
-                newFragment.arguments = bundle
-
-                newFragment.show(fragmentManager, "dialog")
-            }
+            newFragment.show(fragmentManager, "dialog")
         }
 
         binding.tfEditBudgetName.editText?.setText(args.budgetName)
@@ -128,112 +111,86 @@ class BudgetEditDialogFragment : DialogFragment() {
         auth = Firebase.auth
         if (auth.currentUser != null) {
             firebaseUser = auth.currentUser!!
+            database = Firebase.database
+
             val sharedPreferences = SharedPreferences(activity)
             currentAccountId = sharedPreferences.accountId.toString()
+
+            getAccountRemainingBudget(firebaseUser.uid, currentAccountId)
+            getCategories(firebaseUser.uid, currentAccountId)
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadAccount(uid: String, accountId: String) {
+    private fun getAccountRemainingBudget(uid: String, accountId: String) {
         showProgressDialog()
-        database = Firebase.database
         databaseReference = database.getReference("accounts").child(uid).child(accountId)
         databaseReference.get()
-            .addOnSuccessListener {
-                val account = it.getValue<Account>()
+            .addOnSuccessListener { snapshot ->
+                val account = snapshot.getValue<Account>()
                 if (account != null) {
-                    // set remaining budget
-                    accountMonthlyBudget = account.account_monthly_budget
-                    accountRemainingBudget = account.account_remaining_budget
-                    val text = "Remaining budget: ₱" + String.format("%,.2f", accountRemainingBudget)
+                    if (account.id == accountId) {
+                        accountBudget["monthly"] = account.monthlyBudget
+                        accountBudget["remaining"] = account.remainingBudget
 
-                    binding.tfEditBudgetAccount.helperText = text
-                    binding.tfEditBudgetAccount.editText?.setText(account.account_name)
+                        val text = "Remaining budget: ₱" + String.format("%,.2f", accountBudget["monthly"])
+                        binding.tvEditBudgetRemainingBudget.text = text
+                    }
                 }
-                inputObserver()
-                hideProgressDialog()
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Toast
-                    .makeText(activity, it.localizedMessage!!.toString(), Toast.LENGTH_LONG)
+                    .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
                     .show()
             }
     }
 
-    private fun loadCategories(uid: String, accountId: String) {
+    private fun getCategories(uid: String, accountId: String) {
         showProgressDialog()
         databaseReference = database.getReference("categories").child(uid).child(accountId)
         databaseReference.get()
             .addOnSuccessListener {
-                essentialCategories = 0
-                wantCategories = 0
-                savingCategories = 0
-
-                var selectedCategoryTags: StringWithTag? = null
-
-                val categories = mutableListOf<StringWithTag>()
                 for (child in it.children) {
                     val category = child.getValue<Category>()
                     if (category != null) {
                         // count total number of each category nature to be used in determining
                         // recommended budget
-                        when (category.category_nature) {
-                            0 -> essentialCategories++
-                            1 -> wantCategories++
-                            2 -> savingCategories++
+                        when (category.nature) {
+                            0 -> natureCount[0]++
+                            1 -> natureCount[1]++
+                            2 -> natureCount[2]++
                         }
 
-                        if (category.category_id.toString() == args.categoryId) {
-                            selectedCategoryTags = StringWithTag(
-                                category.category_name.toString(),
-                                category.category_id.toString(),
-                                category.category_nature.toString(),
-                                null
-                            )
+                        if (category.id!! == args.budgetId) {
+                            selectedCategory = category
                         }
-
-                        categories.add(
-                            StringWithTag(
-                                category.category_name.toString(),
-                                category.category_id.toString(),
-                                category.category_nature.toString(),
-                                null
-                            )
-                        )
                     }
                 }
 
-                // store category id
-                selectedCategory = selectedCategoryTags!!.tag
-                determineRecommendedBudget(selectedCategoryTags.tag2!!)
-
-                val adapter = ArrayAdapter(activity, R.layout.list_item, categories)
-                val spinner = (binding.tfEditBudgetCategory.editText as? AutoCompleteTextView)
-                spinner?.setAdapter(adapter)
-                spinner?.setText(selectedCategoryTags.toString(), false)
+                determineRecommendedBudget(selectedCategory.nature)
                 hideProgressDialog()
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Toast
-                    .makeText(activity, it.localizedMessage!!.toString(), Toast.LENGTH_LONG)
+                    .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
                     .show()
             }
     }
 
     // determine budget based on selected category using 50:30:20 rule
-    private fun determineRecommendedBudget(categoryNature: String) {
+    private fun determineRecommendedBudget(categoryNature: Int) {
         var recommendedBudget = 0.0
         when (categoryNature) {
-            "0" -> recommendedBudget = (accountMonthlyBudget * 0.50) / essentialCategories
-            "1" -> recommendedBudget = (accountMonthlyBudget * 0.30) / wantCategories
-            "2" -> recommendedBudget = (accountMonthlyBudget * 0.20) / savingCategories
+            0 -> recommendedBudget = (accountBudget["monthly"]!! * 0.50) / natureCount[0]
+            1 -> recommendedBudget = (accountBudget["monthly"]!! * 0.30) / natureCount[1]
+            2 -> recommendedBudget = (accountBudget["monthly"]!! * 0.20) / natureCount[2]
         }
 
-        val text = "Recommended budget for the selected category: ₱" + String.format("%,.2f", recommendedBudget)
+        val text = "Recommended budget: ₱" + String.format("%,.2f", recommendedBudget)
         binding.tfEditBudgetAmount.helperText = text
     }
 
@@ -248,11 +205,10 @@ class BudgetEditDialogFragment : DialogFragment() {
         }
         binding.tfEditBudgetAmount.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
-                binding.tfEditBudgetAmount.error = getString(R.string.budget_amount_empty)
+                binding.tfEditBudgetAmount.error = getString(R.string.amount_empty)
             }
-            else if (text.toString().toDouble() > accountRemainingBudget) {
-                Toast.makeText(activity, accountRemainingBudget.toString(), Toast.LENGTH_LONG).show()
-                binding.tfEditBudgetAmount.error = getString(R.string.budget_amount_overflow)
+            else if (text.toString().toDouble() > accountBudget["remaining"]!!) {
+                binding.tfEditBudgetAmount.error = getString(R.string.amount_overflow)
             }
             else {
                 binding.tfEditBudgetAmount.error = null
@@ -261,11 +217,6 @@ class BudgetEditDialogFragment : DialogFragment() {
         binding.tfEditBudgetAmount.editText?.doAfterTextChanged { text ->
             if (text.toString().startsWith("0")) {
                 text?.clear()
-            }
-        }
-        binding.tfEditBudgetCategory.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text != null) {
-                binding.tfEditBudgetCategory.error = null
             }
         }
     }
@@ -280,7 +231,6 @@ class BudgetEditDialogFragment : DialogFragment() {
         catch (e: Exception){}
 
         val budgetName =  binding.tfEditBudgetName.editText?.text.toString().trim { it <= ' ' }
-        val budgetCategory = binding.tfEditBudgetCategory.editText?.text.toString().trim { it <= ' ' }
         val budgetAmount = binding.tfEditBudgetAmount.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
 
@@ -288,117 +238,94 @@ class BudgetEditDialogFragment : DialogFragment() {
             binding.tfEditBudgetName.error = getString(R.string.budget_name_empty)
             errors++
         }
-        if (TextUtils.isEmpty(budgetCategory)) {
-            binding.tfEditBudgetCategory.error = getString(R.string.category_empty)
-            errors++
-        }
         if (TextUtils.isEmpty(budgetAmount)) {
-            binding.tfEditBudgetAmount.error = getString(R.string.budget_amount_empty)
+            binding.tfEditBudgetAmount.error = getString(R.string.amount_empty)
             errors++
         }
         else {
             if (budgetAmount.startsWith("0")) {
-                binding.tfEditBudgetAmount.error = getString(R.string.budget_amount_0)
+                binding.tfEditBudgetAmount.error = getString(R.string.amount_starts_0)
                 errors++
             }
-            if (budgetAmount.toDouble() > accountRemainingBudget) {
-                binding.tfEditBudgetAmount.error = getString(R.string.budget_amount_overflow)
+            if (budgetAmount.toDouble() > accountBudget["remaining"]!!) {
+                binding.tfEditBudgetAmount.error = getString(R.string.amount_overflow)
                 errors++
             }
         }
 
         if (errors == 0) {
-            if (budgetName == args.budgetName && selectedCategory == args.categoryId && budgetAmount.toDouble() == args.budgetAmount.toDouble()) {
+            if (budgetName == args.budgetName && selectedCategory.id == args.budgetId && budgetAmount.toDouble() == args.budgetAmount.toDouble()) {
                 dismiss()
             }
             else {
-                getAccount(firebaseUser.uid, currentAccountId, budgetName, selectedCategory, budgetAmount.toDouble())
+                updateAccountRemainingBudget(firebaseUser.uid, currentAccountId, budgetName, selectedCategory, budgetAmount.toDouble())
             }
         }
     }
 
-    private fun getAccount(uid: String, accountId: String, budgetName: String, categoryId: String, newBudgetAmount: Double) {
+    private fun updateAccountRemainingBudget(uid: String, accountId: String, budgetName: String, category: Category, newBudgetAmount: Double) {
         showProgressDialogEdit()
-        databaseReference = database.getReference("accounts").child(uid).child(accountId).child("account_remaining_budget")
-        databaseReference.get()
-            .addOnSuccessListener {
-                val remainingBudget = it.value.toString().toDouble()
+        databaseReference = database.getReference("accounts").child(uid).child(accountId)
+        databaseReference.child("remainingBudget").get()
+            .addOnSuccessListener { snapshot ->
+                val remainingBudget = snapshot.value.toString().toDouble()
                 val reallocatedBudget = remainingBudget + args.budgetAmount.toDouble() - newBudgetAmount
-                setAccountBudget(uid, accountId, budgetName, categoryId, reallocatedBudget, newBudgetAmount)
+
+                databaseReference.setValue(reallocatedBudget)
+                    .addOnSuccessListener {
+                        updateBudget(uid, accountId, budgetName, category, newBudgetAmount)
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialog()
+                        Toast
+                            .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
+                            .show()
+                    }
             }
             .addOnFailureListener {
-                hideProgressDialogEdit()
+                hideProgressDialog()
                 Toast
                     .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
                     .show()
             }
     }
 
-    private fun setAccountBudget(uid: String, accountId: String, budgetName: String, categoryId: String, reallocatedBudget: Double, newBudgetAmount: Double) {
-        databaseReference.setValue(reallocatedBudget)
-            .addOnSuccessListener {
-                getCategory(uid, accountId, budgetName, categoryId, newBudgetAmount)
-            }
-            .addOnFailureListener {
-                hideProgressDialogEdit()
-                Toast
-                    .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
-                    .show()
-            }
-    }
-
-    private fun getCategory(uid: String, accountId: String, budgetName: String, categoryId: String, newBudgetAmount: Double) {
-        databaseReference = database.getReference("categories").child(uid).child(accountId).child(categoryId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                val category = it.getValue<Category>()
-                if (category != null) {
-                    getBudget(uid, accountId, budgetName, category, newBudgetAmount)
-                }
-            }
-            .addOnFailureListener {
-                hideProgressDialogEdit()
-                Toast
-                    .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
-                    .show()
-            }
-    }
-
-    private fun getBudget(uid: String, accountId: String, budgetName: String, category: Category, newBudgetAmount: Double) {
+    private fun updateBudget(uid: String, accountId: String, budgetName: String, category: Category, newBudgetAmount: Double) {
         databaseReference = database.getReference("budgets").child(uid).child(accountId).child(args.budgetId)
         databaseReference.get()
-            .addOnSuccessListener {
-                val currentBudget = it.getValue<Budget>()
+            .addOnSuccessListener { snapshot ->
+                val currentBudget = snapshot.getValue<Budget>()
                 if (currentBudget != null) {
                     val newBudget = Budget(
-                        currentBudget.budget_id, budgetName, newBudgetAmount, 0.0,
-                        currentBudget.budget_created_at, category.category_id, category.category_name,
-                        category.category_color, category.category_icon
+                        currentBudget.id,
+                        budgetName,
+                        budgetName.lowercase(),
+                        newBudgetAmount,
+                        0.0,
+                        currentBudget.createdAt,
+                        category.name,
+                        category.color,
+                        category.icon
                     )
 
-                    updateBudget(uid, accountId, newBudget)
+                    databaseReference.setValue(newBudget)
+                        .addOnSuccessListener {
+                            hideProgressDialogEdit()
+                            viewModel.update(true)
+                            dismiss()
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialog()
+                            Toast
+                                .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
+                                .show()
+                        }
                 }
             }
             .addOnFailureListener {
-                hideProgressDialogEdit()
+                hideProgressDialog()
                 Toast
                     .makeText(activity, it.localizedMessage!!, Toast.LENGTH_LONG)
-                    .show()
-            }
-    }
-
-    private fun updateBudget(uid: String, accountId: String, budget: Budget) {
-        databaseReference = database.getReference("budgets").child(uid).child(accountId)
-        databaseReference.child(budget.budget_id.toString()).setValue(budget)
-            .addOnSuccessListener {
-                hideProgressDialogEdit()
-                viewModel.update(true)
-                dismiss()
-            }
-            .addOnFailureListener {
-                hideProgressDialogEdit()
-                Toast
-                    .makeText(activity, it.localizedMessage!!.toString(), Toast.LENGTH_LONG)
                     .show()
             }
     }

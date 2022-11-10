@@ -4,13 +4,13 @@ import java.sql.Date
 import java.sql.Timestamp
 
 data class Budget(
-    val budget_id: String? = null,
-    val budget_name: String? = null,
-    val budget_amount_total: Double = 0.0,
-    val budget_amount_spent: Double = 0.0,
-    val budget_created_at: Long? = null,
-    val category_id: String? = null,
-    val category_name: String? = null,
-    val category_color: String? = null,
-    val category_icon: String? = null
+    val id: String? = null, // category id
+    val name: String? = null,
+    val nameLower: String? = null,
+    val amountTotal: Double = 0.0,
+    val amountSpent: Double = 0.0,
+    val createdAt: Long? = null,
+    val categoryName: String? = null,
+    val categoryColor: String? = null,
+    val categoryIcon: String? = null
 )

@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.data.Transaction
+import java.text.DateFormat
+import java.util.*
 
 class TransactionHistoryAdapter(
     private val transactions: MutableList<Transaction>,
@@ -31,13 +33,40 @@ class TransactionHistoryAdapter(
         val currentTransaction = transactions[position]
 
         holder.itemView.apply {
-            val date = currentTransaction.transaction_date
-            val hour = currentTransaction.transaction_hour
-            val minute = currentTransaction.transaction_minute
-            val dateTime = "$date at $hour:$minute"
+            val formattedDate =
+                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+                    .format(Date(currentTransaction.date!!))
+
+            val meridian: String
+            val hour = (currentTransaction.hour!! / 1000 / 60).toString().toInt()
+            val minute = (currentTransaction.minute!! / 1000 / 60).toString().toInt()
+
+            val formattedHour: Int
+            if (hour > 12) {
+                formattedHour = hour - 12
+                meridian = "PM"
+            }
+            else if (hour == 12) {
+                formattedHour = hour
+                meridian = "PM"
+            }
+            else if (hour == 0) {
+                formattedHour = hour + 12
+                meridian = "AM"
+            }
+            else { // < 12
+                formattedHour = hour
+                meridian = "AM"
+            }
+
+            val formattedMinute =
+                if (minute > 9) minute
+                else "0${minute}"
+
+            val dateTime = "$formattedDate at $formattedHour:$formattedMinute $meridian"
             findViewById<TextView>(R.id.tvTransactionHistoryDate).text = dateTime
 
-            when (currentTransaction.transaction_receipt) {
+            when (currentTransaction.receipt) {
                 null -> {
                     findViewById<TextView>(R.id.tvTransactionHistoryReceipt).text = context.getString(R.string.no_receipt)
                 }
@@ -47,23 +76,23 @@ class TransactionHistoryAdapter(
                 }
             }
 
-            val amount = "₱" + String.format("%,.2f", currentTransaction.transaction_amount)
+            val amount = "₱" + String.format("%,.2f", currentTransaction.amount)
             findViewById<TextView>(R.id.tvTransactionHistoryAmount).text = amount
 
-            when (currentTransaction.transaction_type) {
+            when (currentTransaction.type) {
                 0 -> {
                     findViewById<TextView>(R.id.tvTransactionHistoryAmount).setTextColor(
-                        ContextCompat.getColor(activity, R.color.green_secondary)
+                        ContextCompat.getColor(activity, R.color.bright_red)
                     )
                 }
                 else -> {
                     findViewById<TextView>(R.id.tvTransactionHistoryAmount).setTextColor(
-                        ContextCompat.getColor(activity, R.color.dark_red)
+                        ContextCompat.getColor(activity, R.color.green_secondary)
                     )
                 }
             }
 
-            findViewById<TextView>(R.id.tvTransactionHistoryPaymentType).text = currentTransaction.transaction_payment_type
+            findViewById<TextView>(R.id.tvTransactionHistoryPaymentType).text = currentTransaction.paymentType
         }
     }
 

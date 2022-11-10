@@ -138,18 +138,16 @@ class LoginActivity : AppCompatActivity() {
 
     private fun usernameExists(username: String, password: String) {
         databaseReference = database.getReference("users")
-        databaseReference.get()
-            .addOnSuccessListener {
-                var email: String? = null
-
-                for (child in it.children) {
-                    if(username == child.child("username").value.toString()) {
+        val query = databaseReference.orderByChild("username").equalTo(username)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    var email = ""
+                    for (child in snapshot.children) {
                         email = child.child("email").value.toString()
                         break
                     }
-                }
 
-                if (email != null) {
                     login(email, password)
                 }
                 else {
@@ -192,9 +190,9 @@ class LoginActivity : AppCompatActivity() {
                 for(child in it.children) {
                     if (child.child("selected").value.toString() == "true") {
                         val sharedPreferences = SharedPreferences(applicationContext)
-                        sharedPreferences.accountId = child.child("account_id").value.toString()
-                        sharedPreferences.accountName = child.child("account_name").value.toString()
-                        sharedPreferences.accountColor = child.child("account_color").value.toString()
+                        sharedPreferences.accountId = child.child("id").value.toString()
+                        sharedPreferences.accountName = child.child("name").value.toString()
+                        sharedPreferences.accountColor = child.child("color").value.toString()
                         break
                     }
                 }
@@ -247,6 +245,7 @@ class LoginActivity : AppCompatActivity() {
                     val account = Account(
                         key,
                         username,
+                        username.lowercase(),
                         resources.getResourceEntryName(randomColor),
                         0.0,
                         0.0,
@@ -257,8 +256,8 @@ class LoginActivity : AppCompatActivity() {
                     databaseReference.child(key!!).setValue(account)
                         .addOnSuccessListener {
                             val sharedPreferences = SharedPreferences(applicationContext)
-                            sharedPreferences.accountName = account.account_name
-                            sharedPreferences.accountColor = account.account_color
+                            sharedPreferences.accountName = account.name
+                            sharedPreferences.accountColor = account.color
 
                             createDefaultCategories(firebaseUser, key)
                         }

@@ -4,8 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.Transaction
 import com.ducatus.databinding.ActivityTransactionDetailBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -26,15 +28,16 @@ class TransactionDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTransactionDetailBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var currentAccountId: String
-    private lateinit var categoryId: String
+    private var firebaseUser: FirebaseUser? = null
+    private var selectedTransaction: Transaction? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTransactionDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        inputObserver()
         loadData()
 
         binding.tbTransactionDetail.setNavigationOnClickListener {
@@ -45,10 +48,11 @@ class TransactionDetailActivity : AppCompatActivity() {
         binding.tbTransactionDetail.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.delete -> {
-                    confirmDelete()
+                    selectedTransaction?.let { confirmDelete(it) }
                     true
                 }
                 R.id.done -> {
+                    validateData()
                     true
                 }
                 else -> false
@@ -63,15 +67,14 @@ class TransactionDetailActivity : AppCompatActivity() {
 
     private fun loadData() {
         auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
             val transactionId = intent.getStringExtra("transactionId").toString()
             val sharedPreferences = SharedPreferences(this)
             currentAccountId = sharedPreferences.accountId.toString()
 
             database = Firebase.database
-            loadTransaction(firebaseUser.uid, currentAccountId, transactionId)
+            loadTransaction(firebaseUser!!.uid, currentAccountId, transactionId)
         }
         else {
             sessionExpired()
@@ -85,15 +88,26 @@ class TransactionDetailActivity : AppCompatActivity() {
             .addOnSuccessListener { snapshot ->
                 val transaction = snapshot.getValue<Transaction>()
                 if (transaction != null) {
-                    categoryId = transaction.category_id.toString()
+                    selectedTransaction = transaction
+
+                    when (transaction.type) {
+                        0 -> {
+                            binding.rbTransactionIncome.isChecked = false
+                            binding.rbTransactionExpense.isChecked = true
+                        }
+                        else -> {
+                            binding.rbTransactionExpense.isChecked = false
+                            binding.rbTransactionIncome.isChecked = true
+                        }
+                    }
 
                     val formattedDate =
                         DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                            .format(Date(transaction.transaction_date!!))
+                            .format(Date(transaction.date!!))
 
                     val meridian: String
-                    val hour = (transaction.transaction_hour!! / 1000 / 60).toString().toInt()
-                    val minute = (transaction.transaction_minute!! / 1000 / 60).toString().toInt()
+                    val hour = (transaction.hour!! / 1000 / 60).toString().toInt()
+                    val minute = (transaction.minute!! / 1000 / 60).toString().toInt()
 
                     val formattedHour: Int
                     if (hour > 12) {
@@ -122,19 +136,19 @@ class TransactionDetailActivity : AppCompatActivity() {
                     binding.tfTransactionDetailDate.editText?.setText(formattedDate)
                     binding.tfTransactionDetailTime.editText?.setText(time)
 
-                    binding.tfTransactionDetailCategory.editText?.setText(transaction.category_name)
+                    binding.tfTransactionDetailCategory.editText?.setText(transaction.categoryName)
 
-                    if (transaction.subcategory_name != null) {
-                        binding.tfTransactionDetailSubcategory.editText?.setText(transaction.subcategory_name)
+                    if (transaction.subcategoryName != null) {
+                        binding.tfTransactionDetailSubcategory.editText?.setText(transaction.subcategoryName)
                     }
                     else {
                         binding.tfTransactionDetailSubcategory.visibility = View.GONE
                     }
 
-                    binding.tfTransactionDetailAmount.editText?.setText(transaction.transaction_amount.toInt().toString())
+                    binding.tfTransactionDetailAmount.editText?.setText(transaction.amount.toInt().toString())
 
-                    binding.tfTransactionDetailPaymentType.editText?.setText(transaction.transaction_payment_type)
-                    binding.tfTransactionDetailNotes.editText?.setText(transaction.transaction_payment_type)
+                    binding.tfTransactionDetailPaymentType.editText?.setText(transaction.paymentType)
+                    binding.tfTransactionDetailNotes.editText?.setText(transaction.notes)
                 }
 
                 hideProgressDialogMain()
@@ -147,20 +161,71 @@ class TransactionDetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun confirmDelete() {
+    private fun inputObserver() {
+        binding.tfTransactionDetailPaymentType.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text == null || text.isEmpty()) {
+                binding.tfTransactionDetailPaymentType.error = getString(R.string.payment_type_empty)
+            }
+            else {
+                binding.tfTransactionDetailPaymentType.error = null
+            }
+        }
+    }
+
+    private fun validateData() {
+        val paymentType = binding.tfTransactionDetailPaymentType.editText?.text.toString().trim { it <= ' ' }
+        val notes = binding.tfTransactionDetailNotes.editText?.text.toString().trim { it <= ' ' }
+
+        if (TextUtils.isEmpty(paymentType)) {
+            binding.tfTransactionDetailPaymentType.error = getString(R.string.payment_type_empty)
+        }
+
+        else {
+            if (paymentType == selectedTransaction?.paymentType) {
+                onBackPressed()
+            }
+            else {
+                showProgressDialogAction()
+
+                selectedTransaction?.paymentType = paymentType
+                selectedTransaction?.notes = notes
+                firebaseUser?.let { updateTransaction(it.uid, currentAccountId, selectedTransaction!!) }
+            }
+        }
+    }
+
+    private fun updateTransaction(uid: String, accountId: String, transaction: Transaction) {
+        databaseReference = database.getReference("transactions").child(uid).child(accountId).child(transaction.id!!)
+        databaseReference.setValue(selectedTransaction)
+            .addOnSuccessListener {
+                hideProgressDialogAction()
+                onBackPressed()
+            }
+            .addOnFailureListener {
+                hideProgressDialogAction()
+                Snackbar
+                    .make(binding.clTransactionDetail, it.localizedMessage!!, 5000)
+                    .show()
+            }
+    }
+
+    private fun confirmDelete(transaction: Transaction) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.delete_transaction))
             .setMessage(resources.getString(R.string.delete_transaction_message))
-            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteTransaction() }
+            .setPositiveButton(resources.getString(R.string.delete)) { _, _ ->
+                firebaseUser?.let { deleteTransaction(it.uid, currentAccountId, transaction) }
+            }
             .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 
-    private fun deleteTransaction() {
+    private fun deleteTransaction(uid: String, accountId: String, transaction: Transaction) {
         showProgressDialogAction()
+        databaseReference = database.getReference("transactions").child(uid).child(accountId).child(transaction.id!!)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                updateBudget()
+                updateBudget(uid, accountId, transaction)
             }
             .addOnFailureListener {
                 hideProgressDialogAction()
@@ -170,14 +235,28 @@ class TransactionDetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateBudget() {
-        databaseReference = database.getReference("budgets").child(firebaseUser.uid)
-            .child(currentAccountId).child(categoryId).child("budget_amount_spent")
+    private fun updateBudget(uid: String, accountId: String, transaction: Transaction) {
+        databaseReference = database.getReference("budgets").child(uid)
+            .child(accountId).child(transaction.id!!).child("amountSpent")
 
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                //val amountSpent = snapshot.value
+                val amountSpent = snapshot.value.toString().toDouble()
+                val newAmount = when (transaction.type) {
+                    0 -> amountSpent - transaction.amount
+                    else -> amountSpent + transaction.amount
+                }
 
+                databaseReference.setValue(newAmount)
+                    .addOnSuccessListener {
+                        updateAccount(uid, accountId, transaction)
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialogAction()
+                        Snackbar
+                            .make(binding.clTransactionDetail, it.localizedMessage!!, 5000)
+                            .show()
+                    }
             }
             .addOnFailureListener {
                 hideProgressDialogAction()
@@ -187,8 +266,36 @@ class TransactionDetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateAccount() {
+    private fun updateAccount(uid: String, accountId: String, transaction: Transaction) {
+        databaseReference = database.getReference("accounts")
+            .child(uid).child(accountId).child("remainingBalance")
 
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val remainingBalance = snapshot.value.toString().toDouble()
+                val newBalance = when (transaction.type) {
+                    0 -> remainingBalance + transaction.amount
+                    else -> remainingBalance - transaction.amount
+                }
+
+                databaseReference.setValue(newBalance)
+                    .addOnSuccessListener {
+                        hideProgressDialogAction()
+                        onBackPressed()
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialogAction()
+                        Snackbar
+                            .make(binding.clTransactionDetail, it.localizedMessage!!, 5000)
+                            .show()
+                    }
+            }
+            .addOnFailureListener {
+                hideProgressDialogAction()
+                Snackbar
+                    .make(binding.clTransactionDetail, it.localizedMessage!!, 5000)
+                    .show()
+            }
     }
 
     private fun sessionExpired() {

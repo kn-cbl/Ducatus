@@ -36,53 +36,53 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
     private lateinit var binding: FragmentBudgetDetailBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
-    private lateinit var transactionHistoryAdapter: TransactionHistoryAdapter
     private lateinit var budgetId: String
-    private lateinit var accountId: String
+    private lateinit var currentAccountId: String
+    private var firebaseUser: FirebaseUser? = null
     private val budgetViewModel: BudgetViewModel by activityViewModels()
     private var updated: Boolean = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity()
-        auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-            val sharedPreferences = SharedPreferences(activity)
-            accountId = sharedPreferences.accountId.toString()
-            budgetId = activity.intent.getStringExtra("budgetId").toString()
-            database = Firebase.database
-        }
-        else {
-            sessionExpired()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llBudgetDetailRoot)
-
         binding = FragmentBudgetDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadBudget(firebaseUser.uid, accountId, budgetId)
+        loadData()
 
         budgetViewModel.isUpdated.observe(viewLifecycleOwner) { isUpdated ->
             updated = isUpdated
-            if (updated) loadBudget(firebaseUser.uid, accountId, budgetId)
+            if (updated) {
+                firebaseUser?.let { loadBudget(it.uid, currentAccountId, budgetId) }
+            }
         }
     }
 
     override fun getActivityInterface(): Activity {
         return activity
+    }
+
+    private fun loadData() {
+        auth = Firebase.auth
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            val sharedPreferences = SharedPreferences(activity)
+            currentAccountId = sharedPreferences.accountId.toString()
+            budgetId = activity.intent.getStringExtra("budgetId").toString()
+            database = Firebase.database
+
+            loadBudget(firebaseUser!!.uid, currentAccountId, budgetId)
+        }
+        else {
+            sessionExpired()
+        }
     }
 
     private fun loadBudget(uid: String, accountId: String, budgetId: String) {
@@ -92,10 +92,10 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             .addOnSuccessListener { snapshot ->
                 val budget = snapshot.getValue<Budget>()
                 if (budget != null) {
-                    loadTransactionHistory(uid, accountId, budget.category_id.toString())
+                    loadTransactionHistory(uid, accountId, budget.id.toString())
 
                     val iconColor = resources.getIdentifier(
-                        budget.category_color,
+                        budget.categoryColor,
                         "color",
                         activity.packageName
                     )
@@ -103,7 +103,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
                     binding.flBudgetDetailCategoryIcon.backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
                     val icon = resources.getIdentifier(
-                        budget.category_icon,
+                        budget.categoryIcon,
                         "drawable",
                         activity.packageName
                     )
@@ -117,24 +117,27 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
                         )
                     )
 
+                    val budgetData = mapOf(
+                        "name" to budget.name!!,
+                        "total" to budget.amountTotal.toString(),
+                        "spent" to budget.amountSpent.toString(),
+                        "categoryName" to budget.categoryName!!
+                    )
+
                     binding.ibBudgetDetailEdit.setOnClickListener {
                         showPopup(
                             it,
                             uid,
                             accountId,
-                            budget.budget_name.toString(),
-                            budget.budget_amount_total.toString(),
-                            budget.budget_amount_spent.toString(),
-                            budget.category_id.toString(),
-                            budget.category_name.toString(),
+                            budgetData
                         )
                     }
 
-                    binding.tvBudgetDetailName.text = budget.budget_name
-                    binding.tvBudgetDetailCategory.text = budget.category_name
+                    binding.tvBudgetDetailName.text = budget.name
+                    binding.tvBudgetDetailCategory.text = budget.categoryName
 
-                    val budgetTotal = budget.budget_amount_total.toString().toDouble()
-                    val budgetSpent = budget.budget_amount_spent.toString().toDouble()
+                    val budgetTotal = budget.amountTotal.toString().toDouble()
+                    val budgetSpent = budget.amountSpent.toString().toDouble()
                     val budgetLeft = budgetTotal.minus(budgetSpent)
 
                     val spentText = "₱" + String.format("%,.2f", budgetSpent)
@@ -157,6 +160,34 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
 
                     binding.pbBudgetDetailStatus.progress = ((budgetSpent / budgetTotal) * 100).toInt()
                     binding.pbBudgetDetailStatus.setIndicatorColor(ContextCompat.getColor(activity, iconColor))
+
+                    // determine icon and text to display
+                    var statusIcon = ""
+                    var statusText = ""
+
+                    when (binding.pbBudgetDetailStatus.progress) {
+                        in 0..59 -> {
+                            statusIcon = "ic_budget_status_1"
+                            statusText = "Your budget is on track"
+                        }
+                        in 60..99 -> {
+                            statusIcon = "ic_budget_status_2"
+                            statusText = "You have almost reached your budget limit"
+                        }
+                        100 -> {
+                            statusIcon = "ic_budget_status_3"
+                            statusText = "You have reached your budget limit"
+                        }
+                    }
+
+                    val statusIconRes = resources.getIdentifier(
+                        statusIcon,
+                        "drawable",
+                        activity.packageName
+                    )
+
+                    binding.ivBudgetDetailStatus.setImageResource(statusIconRes)
+                    binding.tvBudgetDetailStatus.text = statusText
                 }
             }
             .addOnFailureListener {
@@ -168,14 +199,15 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
 
     private fun loadTransactionHistory(uid: String, accountId: String, categoryId: String) {
         showProgressDialog()
-        transactionHistoryAdapter = TransactionHistoryAdapter(mutableListOf(), this)
-        binding.rvTransactionHistory.adapter = transactionHistoryAdapter
-        binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
+        databaseReference = database.getReference("transactions").child(uid).child(accountId)
+        val query = databaseReference.orderByChild("categoryId").equalTo(categoryId)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                val transactionHistoryAdapter = TransactionHistoryAdapter(mutableListOf(), this)
+                binding.rvTransactionHistory.adapter = transactionHistoryAdapter
+                binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
 
-        databaseReference = database.getReference("transactions").child(uid).child(accountId).child(categoryId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                for (child in it.children) {
+                for (child in snapshot.children) {
                     val transaction = child.getValue<Transaction>()
                     if (transaction != null) {
                         transactionHistoryAdapter.addTransaction(transaction)
@@ -191,16 +223,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
             }
     }
 
-    private fun showPopup(
-        view: View,
-        uid: String,
-        accountId: String,
-        budgetName: String,
-        budgetAmount: String,
-        budgetSpent: String,
-        categoryId: String,
-        categoryName: String
-    ) {
+    private fun showPopup(view: View, uid: String, accountId: String, budgetData: Map<String, String>) {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -209,18 +232,17 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
                         BudgetDetailFragmentDirections
                             .actionBudgetDetailFragmentToBudgetEditDialogFragment(
                                 budgetId,
-                                budgetName,
-                                budgetAmount,
-                                budgetSpent,
-                                categoryId,
-                                categoryName,
+                                budgetData["name"]!!,
+                                budgetData["total"]!!,
+                                budgetData["spent"]!!,
+                                budgetData["categoryName"]!!,
                             )
 
                     findNavController().navigate(action)
                     true
                 }
                 R.id.optionDelete-> {
-                    confirmDelete(uid, accountId, categoryId)
+                    confirmDelete(uid, accountId, budgetId)
                     true
                 }
                 else -> false
@@ -257,7 +279,7 @@ class BudgetDetailFragment : Fragment(), TransactionHistoryInterface {
     private fun unallocateCategory(uid: String, accountId: String, categoryId: String) {
         showProgressDialog()
         databaseReference = database.getReference("categories").child(uid).child(accountId).child(categoryId)
-        databaseReference.child("category_allocated").setValue(false)
+        databaseReference.child("allocated").setValue(false)
             .addOnSuccessListener {
                 hideProgressDialog()
                 activity.onBackPressed()

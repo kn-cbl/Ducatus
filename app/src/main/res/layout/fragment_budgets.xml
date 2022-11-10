@@ -60,19 +60,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/ibAddBudget"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_circle"
         android:backgroundTint="@color/bright_blue"
-        android:contentDescription="@string/add_subcategory"
-        android:elevation="4dp"
+        android:contentDescription="@string/add_budget"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_add_24"
-        app:tint="@color/white" />
+        app:tint="@color/off_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

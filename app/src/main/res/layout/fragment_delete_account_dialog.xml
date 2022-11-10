@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/off_white"
+    tools:context=".DeleteAccountDialogFragment">
+
+    <LinearLayout
+        android:id="@+id/llDeleteAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/tvDeleteAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_semi_bold"
+            android:text="@string/deleting_account_warning"
+            android:textAlignment="center"
+            android:textColor="@color/off_black"
+            android:textSize="16sp" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/pbDeleteAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:indeterminate="false" />
+    </LinearLayout>
+
+</RelativeLayout>

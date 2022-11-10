@@ -100,17 +100,10 @@ class CategoryEditNameDialogFragment : DialogFragment() {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("categories").child(uid).child(accountId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                var nameKey = false
-                for (child in it.children) {
-                    if (categoryName == child.child("category_name").value.toString()) {
-                        nameKey = true
-                        break
-                    }
-                }
-
-                if (!nameKey) {
+        val query = databaseReference.orderByChild("nameLower").equalTo(categoryName)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
                     saveChanges(categoryName)
                 }
                 else {
@@ -126,10 +119,19 @@ class CategoryEditNameDialogFragment : DialogFragment() {
     }
 
     private fun saveChanges(categoryName: String) {
-        databaseReference.child(args.categoryId).child("category_name").setValue(categoryName)
+        databaseReference.child(args.categoryId).child("name").setValue(categoryName)
             .addOnSuccessListener {
-                hideProgressDialog()
-                dismiss()
+                databaseReference.child(args.categoryId).child("nameLower").setValue(categoryName.lowercase())
+                    .addOnSuccessListener {
+                        hideProgressDialog()
+                        dismiss()
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialog()
+                        Toast
+                            .makeText(activity, it.localizedMessage, Toast.LENGTH_LONG)
+                            .show()
+                    }
             }
             .addOnFailureListener {
                 hideProgressDialog()

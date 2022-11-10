@@ -86,7 +86,7 @@ class ResetPasswordMobileNumberActivity : AppCompatActivity() {
                 var mobileNumberExists = false
 
                 for (child in it.children) {
-                    if(mobileNumber == child.child("mobile_number").value.toString()) {
+                    if(mobileNumber == child.child("mobileNumber").value.toString()) {
                         mobileNumberExists = true
                         break
                     }

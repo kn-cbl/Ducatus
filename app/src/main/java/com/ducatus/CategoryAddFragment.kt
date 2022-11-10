@@ -191,13 +191,17 @@ class CategoryAddFragment : Fragment() {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
 
+                val categoryData = mapOf(
+                    "name" to categoryName,
+                    "nature" to nature.toString(),
+                    "color" to categoryColor.toString(),
+                    "icon" to categoryIcon.toString()
+                )
+
                 categoryExists(
                     firebaseUser.uid,
                     accountId,
-                    categoryName,
-                    nature,
-                    categoryColor.toString(),
-                    categoryIcon.toString()
+                    categoryData
                 )
             }
             else {
@@ -207,22 +211,23 @@ class CategoryAddFragment : Fragment() {
         }
     }
 
-    private fun categoryExists(uid: String, accountId: String, categoryName: String, categoryNature: Int, categoryColor: String, categoryIcon: String) {
+    private fun categoryExists(uid: String, accountId: String, categoryData: Map<String, String>) {
         database = Firebase.database
         databaseReference = database.getReference("categories").child(uid).child(accountId)
-        databaseReference.get()
+        val query = databaseReference.orderByChild("nameLower").equalTo(categoryData["name"])
+        query.get()
             .addOnSuccessListener { snapshot ->
-                var nameKey = false
-                for (child in snapshot.children) {
-                    if (categoryName == child.child("category_name").value.toString()) {
-                        nameKey = true
-                        break
-                    }
-                }
-
-                if (!nameKey) {
+                if (!snapshot.exists()) {
                     val key = databaseReference.push().key
-                    val category = Category(key!!, categoryName, categoryNature, categoryColor, categoryIcon)
+                    val category = Category(
+                        key!!,
+                        categoryData["name"],
+                        categoryData["name"]!!.lowercase(),
+                        categoryData["nature"]!!.toInt(),
+                        categoryData["color"],
+                        categoryData["icon"]
+                    )
+
                     addCategory(key, category)
                 }
                 else {

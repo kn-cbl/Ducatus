@@ -101,17 +101,10 @@ class SubcategoryEditNameDialogFragment : DialogFragment() {
         showProgressDialog()
         database = Firebase.database
         databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                var nameKey = false
-                for (child in it.children) {
-                    if (subcategoryName == child.child("subcategory_name").value.toString()) {
-                        nameKey = true
-                        break
-                    }
-                }
-
-                if (!nameKey) {
+        val query = databaseReference.orderByChild("nameLower").equalTo(subcategoryName)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
                     saveChanges(subcategoryName)
                 }
                 else {
@@ -128,10 +121,20 @@ class SubcategoryEditNameDialogFragment : DialogFragment() {
     }
 
     private fun saveChanges(subcategoryName: String) {
-        databaseReference.child(args.subcategoryId).child("subcategory_name").setValue(subcategoryName)
+        databaseReference = databaseReference.child(args.subcategoryId)
+        databaseReference.child("name").setValue(subcategoryName)
             .addOnSuccessListener {
-                hideProgressDialog()
-                dismiss()
+                databaseReference.child("nameLower").setValue(subcategoryName.lowercase())
+                    .addOnSuccessListener {
+                        hideProgressDialog()
+                        dismiss()
+                    }
+                    .addOnFailureListener {
+                        hideProgressDialog()
+                        Toast
+                            .makeText(activity, it.localizedMessage, Toast.LENGTH_LONG)
+                            .show()
+                    }
             }
             .addOnFailureListener {
                 hideProgressDialog()

@@ -35,7 +35,7 @@ class SubcategoryAdapter(
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
-                currentSubcategory.subcategory_color.toString(),
+                currentSubcategory.color.toString(),
                 "color",
                 activity.packageName
             )
@@ -43,7 +43,7 @@ class SubcategoryAdapter(
             findViewById<FrameLayout>(R.id.flItemSubcategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             val icon = resources.getIdentifier(
-                currentSubcategory.subcategory_icon.toString(),
+                currentSubcategory.icon.toString(),
                 "drawable",
                 activity.packageName
             )
@@ -57,8 +57,8 @@ class SubcategoryAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvItemSubcategoryName).text = currentSubcategory.subcategory_name
-            findViewById<ImageView>(R.id.ibItemSubcategoryEdit).tag = currentSubcategory.subcategory_id
+            findViewById<TextView>(R.id.tvItemSubcategoryName).text = currentSubcategory.name
+            findViewById<ImageView>(R.id.ibItemSubcategoryEdit).tag = currentSubcategory.id
             findViewById<ImageView>(R.id.ibItemSubcategoryEdit).setOnClickListener {
                 listener.showPopup(it, position)
             }

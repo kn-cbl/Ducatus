@@ -34,7 +34,6 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentCategoryEditBinding
     private lateinit var database: FirebaseDatabase
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var categoryReference: DatabaseReference
     private lateinit var subcategoryReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
@@ -49,23 +48,11 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     private lateinit var currentCategoryNature: String
     private val args: CategoryEditFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity()
-        auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-        }
-        else {
-            sessionExpired()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llCategories)
         toolbar = activity.findViewById(R.id.tbCategories)
         toolbar.title = getString(R.string.edit_category)
@@ -79,18 +66,25 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         super.onStart()
         showProgressDialog()
 
-        sharedPreferences = SharedPreferences(activity)
-        val currentAccountId = sharedPreferences.accountId.toString()
+        auth = Firebase.auth
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            sharedPreferences = SharedPreferences(activity)
+            val currentAccountId = sharedPreferences.accountId.toString()
 
-        setSelectedCategoryListener()
-        setSubcategoriesListener()
+            setSelectedCategoryListener()
+            setSubcategoriesListener()
 
-        database = Firebase.database
-        categoryReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
-        categoryReference.addValueEventListener(selectedCategoryListener)
+            database = Firebase.database
+            categoryReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
+            categoryReference.addValueEventListener(selectedCategoryListener)
 
-        subcategoryReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
-        subcategoryReference.addChildEventListener(subcategoriesListener)
+            subcategoryReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
+            subcategoryReference.addChildEventListener(subcategoriesListener)
+        }
+        else {
+            sessionExpired()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -120,6 +114,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
 
     override fun onStop() {
         super.onStop()
+
         categoryReference.removeEventListener(selectedCategoryListener)
         subcategoryReference.removeEventListener(subcategoriesListener)
     }
@@ -134,10 +129,10 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val category = snapshot.getValue<Category>()
                 if (category != null) {
-                    currentCategoryColor = category.category_color.toString()
-                    currentCategoryIcon = category.category_icon.toString()
-                    currentCategoryName = category.category_name.toString()
-                    currentCategoryNature = when (category.category_nature) {
+                    currentCategoryColor = category.color.toString()
+                    currentCategoryIcon = category.icon.toString()
+                    currentCategoryName = category.name.toString()
+                    currentCategoryNature = when (category.nature) {
                         0 -> "Essentials"
                         1 -> "Wants"
                         2 -> "Savings"
@@ -145,7 +140,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                     }
 
                     val iconColor = resources.getIdentifier(
-                        category.category_color.toString(),
+                        category.color.toString(),
                         "color",
                         activity.packageName
                     )
@@ -153,7 +148,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                     binding.flCategoryIcon.backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
                     val icon = resources.getIdentifier(
-                        category.category_icon.toString(),
+                        category.icon.toString(),
                         "drawable",
                         activity.packageName
                     )
@@ -167,8 +162,8 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                         )
                     )
 
-                    binding.tvSelectedCategoryName.text = category.category_name
-                    when (category.category_nature) {
+                    binding.tvSelectedCategoryName.text = category.name
+                    when (category.nature) {
                         0 -> binding.tvSelectedCategoryNature.text = getString(R.string.essentials)
                         1 -> binding.tvSelectedCategoryNature.text = getString(R.string.wants)
                         2 -> binding.tvSelectedCategoryNature.text = getString(R.string.savings)
@@ -178,7 +173,7 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                     hideProgressDialog()
                 }
 
-                if (subcategoryAdapter.itemCount >= 20) {
+                if (subcategoryAdapter.itemCount >= 30) {
                     binding.fabAddSubcategory.visibility = View.GONE
                 }
             }

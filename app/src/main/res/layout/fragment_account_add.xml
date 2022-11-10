@@ -16,33 +16,6 @@
         android:visibility="invisible"
         app:indicatorColor="@color/bright_blue" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tfAddAccountName"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:hint="@string/account_name"
-        app:boxCornerRadiusBottomEnd="8dp"
-        app:boxCornerRadiusBottomStart="8dp"
-        app:boxCornerRadiusTopEnd="8dp"
-        app:boxCornerRadiusTopStart="8dp"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_regular"
-            android:inputType="text"
-            android:maxLength="50"
-            android:textColor="@color/off_black"
-            android:textSize="14sp"
-            tools:ignore="TextContrastCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <include
         layout="@layout/grid_amount_presets"
         android:layout_width="match_parent"
@@ -51,14 +24,21 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp" />
 
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:dividerInsetEnd="16dp"
+        app:dividerInsetStart="16dp" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfAddAccountBudget"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:hint="@string/monthly_budget"
         app:boxCornerRadiusBottomEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
@@ -83,13 +63,40 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tfAddAccountName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/account_name"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
+        app:endIconMode="clear_text"
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:inputType="text"
+            android:maxLength="50"
+            android:textColor="@color/off_black"
+            android:textSize="14sp"
+            tools:ignore="TextContrastCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfAddAccountColor"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:hint="@string/color"
         app:boxCornerRadiusBottomEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
@@ -102,7 +109,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
+            android:hint="@string/select_a_color"
             android:inputType="none"
+            android:textColorHint="@color/gray"
             android:textSize="14sp"
             tools:ignore="LabelFor,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>

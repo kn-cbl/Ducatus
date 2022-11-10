@@ -3,6 +3,7 @@ package com.ducatus.common
 import android.util.Log
 import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
+import com.ducatus.data.Tips
 import kotlinx.serialization.json.JsonArray
 import org.json.JSONObject
 import java.util.*
@@ -81,6 +82,89 @@ class Common {
             list.add(goalHistory)
 
         }
+        return list
+    }
+
+    fun getTipsMap(): List<Tips> {
+        var list = mutableListOf<Tips>()
+        var tips = Tips(
+            "https://www.realsimple.com/work-life/money/money-planning/tips-for-first-time-budgeting",
+            "2022-08-09",
+            "4 Tips For First-time Budgeting",
+            "Hiranmayi Srinivasan"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://moneytamer.com/budgeting-tips-for-beginners/",
+            "2020-01-29",
+            "Budgeting Tips For Beginners: How To Start A Budget That Works",
+            "Steffa Mantilla, CFEI"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://www.prulifeuk.com.ph/en/explore-pulse/health-financial-wellness/50-30-20-budgeting-hack/",
+            "2022",
+            "Is The 50-30-20 Budgeting Hack Right For You?",
+            "Prolife UK"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://www.mymoneycoach.ca/blog/how-to-save-money-on-low-income",
+            "2022",
+            "4 Tips to Save Money on Low Income",
+            "Kevin Sun"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://mint.intuit.com/blog/planning/money-101-27-financial-tips-to-live-by/",
+            "2022-05-04",
+            "Financial Advice: 12 Personal Finance Tips",
+            "Matthew Amster-Burton"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://www.investopedia.com/articles/younginvestors/08/eight-tips.asp",
+            "2022-05-14",
+            "8 Financial Tips for Young Adults",
+            "AMY FONTINELLE"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://www.sunlife.com.ph/en/life-goals/grow-your-money/how-to-achieve-financial-stability-in-changing-times/",
+            "2022-08-24",
+            "How to achieve financial stability in changing times",
+            "Sunlife"
+        )
+        list.add(tips)
+
+        return list
+    }
+
+    fun getTipsVideoMap(): List<Tips> {
+        var list = mutableListOf<Tips>()
+
+        var tips = Tips(
+            "https://www.youtube.com/watch?v=CFrhSBwPJwU",
+            "2021-10-08",
+            "Budgeting 101 Guide for Pinoy",
+            "Pinay Investor"
+        )
+        list.add(tips)
+
+        tips = Tips(
+            "https://www.youtube.com/watch?v=CFrhSBwPJwU",
+            "2021-10-08",
+            "Budgeting 101 Guide for Pinoy",
+            "Pinay Investor"
+        )
+        list.add(tips)
+
         return list
     }
 }

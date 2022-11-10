@@ -25,12 +25,11 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentBudgetsBinding
-    private lateinit var budgetAdapter: BudgetAdapter
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: DrawerLayout
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var currentAccountId: String
+    private var firebaseUser: FirebaseUser? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +43,9 @@ class BudgetsFragment : Fragment(), BudgetInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadData()
 
-        binding.ibAddBudget.setOnClickListener {
+        binding.fabAddBudget.setOnClickListener {
             startActivity(Intent(activity, BudgetAddActivity::class.java))
             activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -53,7 +53,7 @@ class BudgetsFragment : Fragment(), BudgetInterface {
 
     override fun onResume() {
         super.onResume()
-        loadData()
+        firebaseUser?.let { loadBudgets(it.uid, currentAccountId) }
     }
 
     // get activity to be used in adapter
@@ -69,19 +69,12 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     }
 
     private fun loadData() {
-        activity = requireActivity()
         auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-            sharedPreferences = SharedPreferences(activity)
-            val currentAccountId = sharedPreferences.accountId.toString()
-
-            budgetAdapter = BudgetAdapter(mutableListOf(), this)
-            binding.rvBudgets.adapter = budgetAdapter
-            binding.rvBudgets.layoutManager = LinearLayoutManager(activity)
-
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            val sharedPreferences = SharedPreferences(activity)
+            currentAccountId = sharedPreferences.accountId.toString()
             database = Firebase.database
-            loadBudgets(firebaseUser.uid, currentAccountId)
         }
         else {
             sessionExpired()
@@ -91,23 +84,44 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     private fun loadBudgets(uid: String, accountId: String) {
         showProgressDialog()
         databaseReference = database.getReference("budgets").child(uid).child(accountId)
-        databaseReference.get()
+        val query = databaseReference.orderByChild("name")
+        query.get()
             .addOnSuccessListener { snapshot ->
-                val budgets = mutableListOf<Budget>()
+                val budgetAdapter = BudgetAdapter(mutableListOf(), this)
+                binding.rvBudgets.adapter = budgetAdapter
+                binding.rvBudgets.layoutManager = LinearLayoutManager(activity)
+
                 for (child in snapshot.children) {
                     val budget = child.getValue<Budget>()
                     if (budget != null) {
-                        budgets.add(budget)
+                        budgetAdapter.addBudget(budget)
                     }
                 }
 
-                budgets.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.budget_name!! })
-                for (item in budgets) {
-                    budgetAdapter.addBudget(item)
+                if (budgetAdapter.itemCount > 0) {
+                    getCategoryCount(uid, accountId, budgetAdapter)
+                }
+                else {
+                    binding.cvBudgetsEmpty.visibility = View.VISIBLE
+                    hideProgressDialog()
                 }
 
-                if (budgetAdapter.itemCount <= 0) binding.cvBudgetsEmpty.visibility = View.VISIBLE
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+            }
+    }
 
+    private fun getCategoryCount(uid: String, accountId: String, adapter: BudgetAdapter) {
+        databaseReference = database.getReference("categories").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val categoryCount = snapshot.childrenCount
+                if (adapter.itemCount >= categoryCount) {
+                    binding.fabAddBudget.visibility = View.GONE
+                }
                 hideProgressDialog()
             }
             .addOnFailureListener {
@@ -143,12 +157,12 @@ class BudgetsFragment : Fragment(), BudgetInterface {
         binding.cvBudgetsEmpty.visibility = View.GONE
         binding.pbBudgets.visibility = View.VISIBLE
         binding.rvBudgets.visibility = View.GONE
-        binding.ibAddBudget.visibility = View.GONE
+        binding.fabAddBudget.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbBudgets.visibility = View.INVISIBLE
         binding.rvBudgets.visibility = View.VISIBLE
-        binding.ibAddBudget.visibility = View.VISIBLE
+        binding.fabAddBudget.visibility = View.VISIBLE
     }
 }

@@ -32,9 +32,6 @@
             android:name="budgetSpent"
             app:argType="string" />
         <argument
-            android:name="categoryId"
-            app:argType="string" />
-        <argument
             android:name="categoryName"
             app:argType="string" />
     </dialog>

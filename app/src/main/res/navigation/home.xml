@@ -19,6 +19,12 @@
         <action
             android:id="@+id/action_homeFragment_to_transactionsFragment"
             app:destination="@id/transactionsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_loansFragment"
+            app:destination="@id/loansFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_plannedPaymentsFragment"
+            app:destination="@id/plannedPaymentsFragment" />
     </fragment>
 
     <fragment
@@ -36,4 +42,15 @@
         android:name="com.ducatus.TransactionsFragment"
         android:label="fragment_transactions"
         tools:layout="@layout/fragment_transactions" />
+    <fragment
+        android:id="@+id/loansFragment"
+        android:name="com.ducatus.LoansFragment"
+        android:label="fragment_loans"
+        tools:layout="@layout/fragment_loans" />
+    <fragment
+        android:id="@+id/plannedPaymentsFragment"
+        android:name="com.ducatus.PlannedPaymentsFragment"
+        android:label="fragment_planned_payments"
+        tools:layout="@layout/fragment_planned_payments" />
+
 </navigation>

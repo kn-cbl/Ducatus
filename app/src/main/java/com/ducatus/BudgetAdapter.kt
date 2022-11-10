@@ -40,13 +40,13 @@ class BudgetAdapter(
             val currentBudgetDate =
                 DateFormat
                     .getDateInstance(DateFormat.MEDIUM, Locale.US)
-                    .format(Date(currentBudget.budget_created_at!!.toLong() * 1000))
+                    .format(Date(currentBudget.createdAt!!.toLong() * 1000))
 
             if (position > 0) {
                 val previousBudgetDate =
                     DateFormat
                         .getDateInstance(DateFormat.MEDIUM, Locale.US)
-                        .format(Date(budgets[position - 1].budget_created_at!!.toLong() * 1000))
+                        .format(Date(budgets[position - 1].createdAt!!.toLong() * 1000))
 
                 if (previousBudgetDate == currentBudgetDate) {
                     findViewById<TextView>(R.id.tvItemBudgetDate).visibility = View.GONE
@@ -60,7 +60,7 @@ class BudgetAdapter(
             }
 
             val iconColor = resources.getIdentifier(
-                currentBudget.category_color,
+                currentBudget.categoryColor,
                 "color",
                 activity.packageName
             )
@@ -68,7 +68,7 @@ class BudgetAdapter(
             findViewById<FrameLayout>(R.id.flItemBudgetCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
             val icon = resources.getIdentifier(
-                currentBudget.category_icon,
+                currentBudget.categoryIcon,
                 "drawable",
                 activity.packageName
             )
@@ -82,11 +82,11 @@ class BudgetAdapter(
                 )
             )
 
-            findViewById<TextView>(R.id.tvItemBudgetName).text = currentBudget.budget_name
-            findViewById<TextView>(R.id.tvItemBudgetCategory).text = currentBudget.category_name
+            findViewById<TextView>(R.id.tvItemBudgetName).text = currentBudget.name
+            findViewById<TextView>(R.id.tvItemBudgetCategory).text = currentBudget.categoryName
 
-            val budgetTotal = currentBudget.budget_amount_total.toString().toDouble()
-            val budgetSpent = currentBudget.budget_amount_spent.toString().toDouble()
+            val budgetTotal = currentBudget.amountTotal.toString().toDouble()
+            val budgetSpent = currentBudget.amountSpent.toString().toDouble()
             val budgetLeft = budgetTotal.minus(budgetSpent)
 
             val spentText = "₱" + String.format("%,.2f", budgetSpent)
@@ -110,9 +110,9 @@ class BudgetAdapter(
             val budgetProgress = ((budgetSpent / budgetTotal) * 100).toInt()
             findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress = budgetProgress
             findViewById<LinearProgressIndicator>(R.id.pbItemBudget).setIndicatorColor(ContextCompat.getColor(activity, iconColor))
-            findViewById<ImageView>(R.id.ibViewItemBudget).tag = currentBudget.budget_id
+            findViewById<ImageView>(R.id.ibViewItemBudget).tag = currentBudget.id
             findViewById<ImageView>(R.id.ibViewItemBudget).setOnClickListener {
-                listener.viewItem(currentBudget.budget_id.toString())
+                listener.viewItem(currentBudget.id.toString())
             }
 
             // determine icon and text to display

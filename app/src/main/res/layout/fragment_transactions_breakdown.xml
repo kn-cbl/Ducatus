@@ -129,7 +129,6 @@
             android:id="@+id/rvTransactionsBreakdown"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darker_white_2"
             android:clipToPadding="false"
             android:paddingBottom="80dp" />
 

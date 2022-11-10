@@ -1,8 +1,9 @@
 package com.ducatus.data
 
 class Subcategory(
-    val subcategory_id: String? = null,
-    val subcategory_name: String? = null,
-    val subcategory_color: String? = null,
-    val subcategory_icon: String? = null,
+    val id: String? = null,
+    val name: String? = null,
+    val nameLower: String? = null,
+    val color: String? = null,
+    val icon: String? = null,
 )

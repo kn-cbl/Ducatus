@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_deleteAccountDialogFragment"
+            app:destination="@id/deleteAccountDialogFragment" />
     </fragment>
     <dialog
         android:id="@+id/accountEditDialogFragment"
@@ -37,4 +40,13 @@
             app:popUpTo="@id/accountsFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/deleteAccountDialogFragment"
+        android:name="com.ducatus.DeleteAccountDialogFragment"
+        android:label="fragment_delete_account_dialog"
+        tools:layout="@layout/fragment_delete_account_dialog" >
+        <argument
+            android:name="accountId"
+            app:argType="string" />
+    </dialog>
 </navigation>

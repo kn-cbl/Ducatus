@@ -30,32 +30,18 @@ class SubcategoryEditFragment : Fragment() {
     private lateinit var binding: FragmentSubcategoryEditBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var firebaseUser: FirebaseUser
     private lateinit var rootLayout: LinearLayout
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var selectedSubcategoryListener: ValueEventListener
     private lateinit var currentSubcategoryColor: String
     private lateinit var currentSubcategoryIcon: String
     private lateinit var currentSubcategoryName: String
     private val args: SubcategoryEditFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity()
-        auth = Firebase.auth
-        if (auth.currentUser != null) {
-            firebaseUser = auth.currentUser!!
-        }
-        else {
-            sessionExpired()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llCategories)
         binding = FragmentSubcategoryEditBinding.inflate(inflater, container, false)
         return binding.root
@@ -65,14 +51,21 @@ class SubcategoryEditFragment : Fragment() {
         super.onStart()
         showProgressDialog()
 
-        sharedPreferences = SharedPreferences(activity)
-        val currentAccountId = sharedPreferences.accountId.toString()
+        auth = Firebase.auth
+        val firebaseUser: FirebaseUser? = auth.currentUser
+        if (firebaseUser != null) {
+            val sharedPreferences = SharedPreferences(activity)
+            val currentAccountId = sharedPreferences.accountId.toString()
 
-        setSelectedSubcategoryListener()
+            setSelectedSubcategoryListener()
 
-        database = Firebase.database
-        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId).child(args.subcategoryId)
-        databaseReference.addValueEventListener(selectedSubcategoryListener)
+            database = Firebase.database
+            databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId).child(args.subcategoryId)
+            databaseReference.addValueEventListener(selectedSubcategoryListener)
+        }
+        else {
+            sessionExpired()
+        }
     }
 
     override fun onStop() {
@@ -99,12 +92,12 @@ class SubcategoryEditFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val subcategory = snapshot.getValue<Subcategory>()
                 if (subcategory != null) {
-                    currentSubcategoryColor = subcategory.subcategory_color.toString()
-                    currentSubcategoryIcon = subcategory.subcategory_icon.toString()
-                    currentSubcategoryName = subcategory.subcategory_name.toString()
+                    currentSubcategoryColor = subcategory.color.toString()
+                    currentSubcategoryIcon = subcategory.icon.toString()
+                    currentSubcategoryName = subcategory.name.toString()
 
                     val iconColor = resources.getIdentifier(
-                        subcategory.subcategory_color.toString(),
+                        subcategory.color.toString(),
                         "color",
                         activity.packageName
                     )
@@ -112,7 +105,7 @@ class SubcategoryEditFragment : Fragment() {
                     binding.flSubcategoryIcon.backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
 
                     val icon = resources.getIdentifier(
-                        subcategory.subcategory_icon.toString(),
+                        subcategory.icon.toString(),
                         "drawable",
                         activity.packageName
                     )
@@ -126,7 +119,7 @@ class SubcategoryEditFragment : Fragment() {
                         )
                     )
 
-                    binding.tvSelectedSubcategoryName.text = subcategory.subcategory_name
+                    binding.tvSelectedSubcategoryName.text = subcategory.name
                     hideProgressDialog()
                 }
             }
