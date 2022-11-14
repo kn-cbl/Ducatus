@@ -3,6 +3,7 @@ package com.ducatus.services
 import android.util.Log
 import com.ducatus.common.Common
 import com.ducatus.common.Constants
+import com.ducatus.data.ChallengeHistory
 import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import com.ducatus.data.LocalEntities
@@ -128,6 +129,23 @@ class LocalFirebaseDatabase {
                         listener.onError(e)
                     })
             }
+            "Challenge History" -> {
+                val challengeHistory: ChallengeHistory = entities.challengeHistory
+                val key = db.getReference("challengeHistory")
+                    .child(challengeHistory.accountID).push().key!!
+                challengeHistory.key = key
+                val finalMap = Common().toChallengeHistoryMap(challengeHistory)
+                db.getReference("challengeHistory")
+                    .child(challengeHistory.accountID)
+                    .child(key)
+                    .setValue(finalMap)
+                    .addOnSuccessListener {
+                        listener.onSuccessInsert(key)
+                    }
+                    .addOnFailureListener { e ->
+                        listener.onError(e)
+                    }
+            }
         }
     }
 
@@ -199,6 +217,28 @@ class LocalFirebaseDatabase {
                         .addOnFailureListener { e ->
                             listener.onError(e)
                         }
+                } catch (e: Exception) {
+                    listener.onError(e)
+                }
+            }
+            "Challenge History" -> {
+                try {
+                    db.getReference("challengeHistory")
+                        .child(accountID)
+                        .get()
+                        .addOnSuccessListener(OnSuccessListener { dataSnapShot ->
+                            try {
+                                var hash = dataSnapShot.getValue<Map<String, Object>>()!!
+                                Log.e("HASH", hash.toString())
+                                listener.onSuccessListOfChallengeHistory(
+                                    Common().parseChallengeHistory(
+                                        hash
+                                    )
+                                )
+                            } catch (de: Exception) {
+                                listener.onError(de)
+                            }
+                        })
                 } catch (e: Exception) {
                     listener.onError(e)
                 }

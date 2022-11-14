@@ -3,12 +3,12 @@ package com.ducatus
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +17,7 @@ import com.ducatus.data.GoalHistory
 import com.ducatus.data.Goals
 import com.ducatus.interfaces.FirebaseDatabaseCallback
 import com.ducatus.services.LocalFirebaseDatabase
-import kotlinx.android.synthetic.main.goal_detail.*
 import kotlinx.android.synthetic.main.goal_detail_completed.*
-import java.lang.Exception
 
 class GoalDetailCompleted : AppCompatActivity() {
 
@@ -172,7 +170,11 @@ class GoalDetailCompleted : AppCompatActivity() {
         txtTargetDate.setText("Target Date: " + goals.targetDate)
         txtGoalDescription.setText(goals.goalDescription)
         imgGoal.setBackgroundColor(goals.color)
-        imgGoal.setImageResource(goals.icon)
+        try {
+            imgGoal.setImageResource(goals.icon)
+        } catch (e: Exception) {
+            Log.e("ERROR_LOADING_IMG", e.message.toString())
+        }
         txtSavedAmount.setText(String.format("P%.2f", goals.earned))
         loadHistory()
     }

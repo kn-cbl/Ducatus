@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.ducatus.databinding.ActivityHomeBinding
+import com.ducatus.interfaces.ChallengesIntf
 import com.ducatus.interfaces.GoalIntf
 import com.ducatus.interfaces.TipsIntf
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +38,13 @@ class HomeActivity : AppCompatActivity() {
 
     private var tipsListener: TipsIntf = object : TipsIntf {
         override fun onToolBarClickListener() {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
+        }
+    }
+
+    private var challengesListener: ChallengesIntf = object : ChallengesIntf {
+        override fun OnToolBarListener() {
             binding.nvHome.setCheckedItem(R.id.nav_home)
             binding.dlHome.open()
         }
@@ -89,9 +97,9 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_goals -> {
                     GoalMainActivity.start(this, mListener)
                 }
-//                R.id.nav_challenges -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ChallengesFragment()).commit()
-//                }
+                R.id.nav_challenges -> {
+                    ChallengesMainActivity.start(this, challengesListener)
+                }
                 R.id.nav_tips -> {
                     fIndex = 6
                     TipsMainActivity.start(this, tipsListener)

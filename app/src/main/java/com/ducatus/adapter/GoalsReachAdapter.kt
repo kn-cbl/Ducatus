@@ -38,7 +38,11 @@ class GoalsReachAdapter(
         holder.txtTargetDate.text = "Reached " + goals.targetDate
         holder.txtGoalAmount.text = "P" + goals.goalAmount.toString()
         holder.imgCircle.setBackgroundColor(goals.color)
-        holder.imgCircle.setImageResource(goals.icon)
+        try {
+            holder.imgCircle.setImageResource(goals.icon)
+        } catch (e: Exception) {
+            holder.imgCircle.setImageResource(R.drawable.ic_baseline_home_24)
+        }
         holder.itemView.setOnClickListener(View.OnClickListener { it ->
             listener.OnClick(it, position)
         })
