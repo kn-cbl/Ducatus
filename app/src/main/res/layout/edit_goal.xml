@@ -89,7 +89,7 @@
 
             <Spinner
                 android:id="@+id/spinner_color"
-                android:layout_width="242dp"
+                android:layout_width="200dp"
                 android:layout_height="15dp"
                 android:layout_below="@id/Color_editGoal"
                 android:layout_marginStart="8dp"
@@ -105,7 +105,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/relativeLayout3"
-            android:layout_width="110dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
