@@ -26,4 +26,10 @@ interface FirebaseDatabaseCallback {
     fun onSuccessListOfChallengeHistory(chList: List<ChallengeHistory>) {
         /* Default empty implementation*/
     }
+
+    fun onSuccessDelete() {
+        /**
+         * Default empty implementation
+         */
+    }
 }

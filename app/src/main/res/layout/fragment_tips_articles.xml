@@ -57,39 +57,46 @@
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/image_author1"
+                    <RelativeLayout
+                        android:id="@+id/authRel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_article1"
-                        android:layout_margin="10dp"
-                        android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/ic_author" />
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="10dp">
 
-                    <TextView
-                        android:id="@+id/textView_authorName1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_article1"
-                        android:layout_marginTop="8dp"
-                        android:layout_toRightOf="@id/image_author1"
-                        android:text="Martin Berrote"
-                        android:textSize="10sp" />
+                        <ImageView
+                            android:id="@+id/image_author1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:scaleType="centerCrop"
+                            app:srcCompat="@drawable/ic_author" />
 
-                    <TextView
-                        android:id="@+id/textView_publishDate1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_authorName1"
-                        android:layout_marginBottom="10dp"
-                        android:layout_toRightOf="@id/image_author1"
-                        android:text="Aug 2, 2022"
-                        android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/textView_authorName1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_toRightOf="@id/image_author1"
+                            android:text="Martin Berrote"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:id="@+id/textView_publishDate1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/textView_authorName1"
+                            android:layout_marginBottom="10dp"
+                            android:layout_toRightOf="@id/image_author1"
+                            android:text="Aug 2, 2022"
+                            android:textSize="10sp" />
+                    </RelativeLayout>
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
         </GridLayout>
+
 
         <ProgressBar
             android:id="@+id/pb"

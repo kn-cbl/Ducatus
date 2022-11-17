@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.R
-import com.ducatus.data.ChallengeDetailListener
+import com.ducatus.interfaces.ChallengeDetailListener
 
 class ChallengeDetailAdapter(
     private val context: Context,

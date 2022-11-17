@@ -6,7 +6,11 @@ data class Challenges(
     var amount: Double = 0.0,
     var earned: Double = 0.0,
     var remaining: Double = 0.0,
-    var values: Array<Int> = arrayOf<Int>()
+    var isFinished: Boolean = false,
+    var startDatePaid: String = "",
+    var countMatch: Int = 0,
+    var values: Array<Int> = arrayOf<Int>(),
+    var availedChallengeMap: HashMap<Int, Int> = HashMap<Int, Int>()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

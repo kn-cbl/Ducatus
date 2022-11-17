@@ -229,7 +229,6 @@ class LocalFirebaseDatabase {
                         .addOnSuccessListener(OnSuccessListener { dataSnapShot ->
                             try {
                                 var hash = dataSnapShot.getValue<Map<String, Object>>()!!
-                                Log.e("HASH", hash.toString())
                                 listener.onSuccessListOfChallengeHistory(
                                     Common().parseChallengeHistory(
                                         hash
@@ -271,6 +270,17 @@ class LocalFirebaseDatabase {
                         .child(key)
                         .removeValue()
                     listener.onSuccessInsert(key)
+                } catch (e: Exception) {
+                    listener.onError(e)
+                }
+            }
+            "Challenge History" -> {
+                try {
+                    db.getReference("challengeHistory")
+                        .child(accountID)
+                        .child(key)
+                        .removeValue()
+                    listener.onSuccessDelete()
                 } catch (e: Exception) {
                     listener.onError(e)
                 }

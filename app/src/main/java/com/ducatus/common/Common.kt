@@ -94,6 +94,7 @@ class Common {
         map["timePaid"] = challengeHistory.timePaid as Object
         map["amount"] = challengeHistory.amount as Object
         map["valueIndex"] = challengeHistory.valueIndex as Object
+        map["isFinished"] = challengeHistory.isFinished as Object
         return map
     }
 
@@ -109,6 +110,7 @@ class Common {
             challengeHistory.datePaid = data["datePaid"].toString()
             challengeHistory.timePaid = data["timePaid"].toString()
             challengeHistory.amount = data["amount"].toString().toInt()
+            challengeHistory.isFinished = data["isFinished"].toString().toBoolean()
             challengeHistory.valueIndex = data["valueIndex"].toString().toInt()
             list.add(challengeHistory)
         }
@@ -574,6 +576,19 @@ class Common {
         map["P3000 in 30 Days"] = 3000
         map["P10000 in 60 Days"] = 10000
         map["P20000 in 90 Days"] = 20000
+        return map
+    }
+
+    fun getChallengeDaysMap(): Map<String, Int> {
+        val map = HashMap<String, Int>()
+        map["P50 in 7 Days"] = 6
+        map["P100 in 7 Days"] = 6
+        map["P500 in 14 Days"] = 13
+        map["P1000 in 14 Days"] = 13
+        map["P5000 in 30 Days"] = 29
+        map["P3000 in 30 Days"] = 29
+        map["P10000 in 60 Days"] = 59
+        map["P20000 in 90 Days"] = 89
         return map
     }
 

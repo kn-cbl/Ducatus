@@ -19,7 +19,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
-                android:layout_height="525px"
+                android:layout_height="485px"
                 android:layout_row="0"
                 android:layout_column="0"
                 android:layout_margin="10dp"
@@ -28,9 +28,9 @@
 
                 <RelativeLayout
                     android:id="@+id/rel"
-                    android:visibility="invisible"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible">
 
                     <ImageView
                         android:id="@+id/image_video1"
@@ -55,33 +55,37 @@
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/image_artist1"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_video1"
-                        android:layout_margin="10dp"
-                        app:srcCompat="@drawable/ic_author" />
+                        android:layout_alignParentBottom="true">
 
-                    <TextView
-                        android:id="@+id/textView_artistName1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_video1"
-                        android:layout_marginTop="8dp"
-                        android:layout_toRightOf="@id/image_artist1"
-                        android:text="Martin Berrote"
-                        android:textSize="12sp" />
+                        <ImageView
+                            android:id="@+id/image_artist1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            app:srcCompat="@drawable/ic_author" />
 
-                    <TextView
-                        android:id="@+id/textView_publishVideoDate1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/textView_artistName1"
-                        android:layout_marginBottom="10dp"
-                        android:layout_toRightOf="@id/image_artist1"
-                        android:text="Aug 2, 2022"
-                        android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/textView_artistName1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_toRightOf="@id/image_artist1"
+                            android:text="Martin Berrote"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/textView_publishVideoDate1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/textView_artistName1"
+                            android:layout_marginBottom="10dp"
+                            android:layout_toRightOf="@id/image_artist1"
+                            android:text="Aug 2, 2022"
+                            android:textSize="10sp" />
+                    </RelativeLayout>
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>

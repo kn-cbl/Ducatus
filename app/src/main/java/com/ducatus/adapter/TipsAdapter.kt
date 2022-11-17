@@ -36,6 +36,7 @@ class TipsAdapter(
         var grid: GridLayout = itemView.findViewById(R.id.grid)
         var pb: ProgressBar = itemView.findViewById(R.id.pb)
         var rel: RelativeLayout = itemView.findViewById(R.id.rel)
+        var authRel: RelativeLayout = itemView.findViewById(R.id.authRel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

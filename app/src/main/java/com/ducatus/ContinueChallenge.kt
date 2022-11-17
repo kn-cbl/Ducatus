@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,11 +11,15 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.adapter.ChallengeDetailAdapter
-import com.ducatus.data.*
-import com.ducatus.interfaces.ChallengeDetailListener
+import com.ducatus.adapter.ContinueChallengeAdapter
+import com.ducatus.common.Common
+import com.ducatus.data.ChallengeHistory
+import com.ducatus.data.Challenges
+import com.ducatus.data.LocalEntities
 import com.ducatus.interfaces.ChallengesIntf
 import com.ducatus.interfaces.FirebaseDatabaseCallback
 import com.ducatus.services.LocalFirebaseDatabase
@@ -25,12 +28,12 @@ import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
-class ChallengesDetail1 : AppCompatActivity() {
-    lateinit var challenges: Challenges
+class ContinueChallenge : AppCompatActivity() {
     lateinit var txtChallengeName: TextView
     lateinit var recycler: RecyclerView
-    lateinit var detailAdapter: ChallengeDetailAdapter
+    lateinit var detailAdapter: ContinueChallengeAdapter
     lateinit var txtAmount: TextView
     lateinit var txtDate: TextView
     lateinit var txtTime: TextView
@@ -38,16 +41,19 @@ class ChallengesDetail1 : AppCompatActivity() {
     lateinit var pd: ProgressDialog
     lateinit var db: LocalFirebaseDatabase
     lateinit var currentDate: LocalDate
+    var supposedDays = 0
+    var tmpAmount: Int = 0
     var accountID: String = ""
+    lateinit var challenges: Challenges
+    lateinit var listener: ChallengesIntf
 
     companion object {
-        lateinit var ch: Challenges
+        lateinit var ch: Challenges;
         lateinit var cIntf: ChallengesIntf
-
-        fun start(context: Context, c: Challenges, cListener: ChallengesIntf) {
+        fun start(context: Context, c: Challenges, ci: ChallengesIntf) {
             ch = c
-            cIntf = cListener
-            val intent = Intent(context, ChallengesDetail1::class.java)
+            cIntf = ci
+            val intent = Intent(context, ContinueChallenge::class.java)
             context.startActivity(intent)
         }
     }
@@ -57,13 +63,14 @@ class ChallengesDetail1 : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right)
         setContentView(R.layout.challenges_detail1)
         initViews()
-        initListener()
+        initListeners()
     }
 
-    private fun initListener() {
+    private fun initListeners() {
         toolbarChallenges.setOnClickListener(View.OnClickListener {
-            finish()
+            onBackPressed()
         })
+
         btnSave.setOnClickListener(View.OnClickListener {
             val mBuilder = AlertDialog.Builder(this)
             val dListener = object : DialogInterface.OnClickListener {
@@ -76,8 +83,11 @@ class ChallengesDetail1 : AppCompatActivity() {
                             challengeHistory.challengeName = challenges.challengeName
                             challengeHistory.datePaid = currentDate.toString()
                             challengeHistory.timePaid = txtTime.text.toString()
-                            challengeHistory.amount = challenges.values.get(0)
-                            challengeHistory.valueIndex = 0
+                            challengeHistory.amount = tmpAmount
+                            challengeHistory.valueIndex = supposedDays
+                            if (supposedDays == challenges.values.size - 1) {
+                                challengeHistory.isFinished = true
+                            }
 
                             var entities = LocalEntities()
                             entities.challengeHistory = challengeHistory
@@ -93,7 +103,7 @@ class ChallengesDetail1 : AppCompatActivity() {
                                             "Successfully Added Saved Amount On This Challenge",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        cIntf.OnProccessDone()
+                                        listener.OnProccessDone()
                                         finish()
                                     }
 
@@ -121,9 +131,9 @@ class ChallengesDetail1 : AppCompatActivity() {
         })
     }
 
-
     private fun initViews() {
-        challenges = ChallengesDetail1.ch
+        challenges = ContinueChallenge.ch
+        listener = ContinueChallenge.cIntf
         txtChallengeName = findViewById(R.id.goalSavings_Text)
         recycler = findViewById(R.id.recyclerText)
         accountID = SharedPreferences(this).accountId.toString()
@@ -135,7 +145,11 @@ class ChallengesDetail1 : AppCompatActivity() {
         btnSave = findViewById(R.id.btn_confirmSavedAmount)
         txtDate = findViewById(R.id.textDate_challenges1)
         txtTime = findViewById(R.id.textTime_challenges1)
-        txtAmount.text = "₱" + challenges.values.get(0).toString()
+        val inBetweenDays =
+            ChronoUnit.DAYS.between(LocalDate.parse(challenges.startDatePaid), LocalDate.now())
+        supposedDays = inBetweenDays.toInt()
+        txtAmount.text = "₱" + challenges.values.get(inBetweenDays.toInt()).toString()
+        tmpAmount = challenges.values.get(inBetweenDays.toInt())
         val detFormatter = DateTimeFormatter.ofPattern("MMM dd, YYYY")
         currentDate = LocalDate.now()
         txtDate.text = detFormatter.format(currentDate)
@@ -143,27 +157,24 @@ class ChallengesDetail1 : AppCompatActivity() {
         txtTime.text =
             timeFormatter.format(LocalDateTime.now()).toString()
 
+        if (challenges.availedChallengeMap.containsKey(inBetweenDays.toInt())) {
+            btnSave.isEnabled = false
+        }
+
         txtChallengeName.text = challenges.challengeName
 
-        if (challenges.values.isNotEmpty()) {
-            detailAdapter =
-                ChallengeDetailAdapter(this, challenges.values, object : ChallengeDetailListener {
-                    override fun onTextListener(position: Int) {
-                        Toast.makeText(applicationContext, "Clicked", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            recycler.layoutManager =
-                object : GridLayoutManager(this, 6, GridLayoutManager.VERTICAL, false) {
-                    override fun canScrollVertically(): Boolean {
-                        return false
-                    }
-                }
-            recycler.adapter = detailAdapter
-            recycler.scrollToPosition(0)
-        }
+        loadChallengeItem()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    private fun loadChallengeItem() {
+        detailAdapter =
+            ContinueChallengeAdapter(this, challenges)
+        recycler.layoutManager = object :
+            GridLayoutManager(this, 6, GridLayoutManager.VERTICAL, false) {
+            override fun canScrollVertically(): Boolean {
+                return false
+            }
+        }
+        recycler.adapter = detailAdapter
     }
 }

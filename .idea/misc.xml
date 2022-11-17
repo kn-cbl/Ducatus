@@ -45,9 +45,11 @@
         <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_selector2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/btn_uncheck2.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_bluebg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_greenbg.xml" value="0.1175" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_pinkbg.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_purplebg.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_redbg.xml" value="0.1945" />
+        <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_redbg_2.xml" value="0.1175" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/custom_progress_tealbg.xml" value="0.1945" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_add.xml" value="0.117" />
         <entry key="..\:/Ducatus/app/src/main/res/drawable/ic_back.xml" value="0.117" />
@@ -81,6 +83,9 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/activity_user_profile.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/challenges_detail1.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/challenges_detail1_orig.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/challenges_detail2.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/challenges_missed.xml" value="0.20416666666666666" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/challenges_total_earned.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/challengesactivity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/challengesactivity_main_container.xml" value="0.33" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/challengesactivity_main_origg.xml" value="0.20416666666666666" />
@@ -101,7 +106,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_goals.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_home.xml" value="0.1" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_icon_dialog.xml" value="0.25" />
-        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles.xml" value="0.3388888888888889" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles.xml" value="0.39595959595959596" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_articles_container.xml" value="0.19947916666666668" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_videos.xml" value="0.5" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/fragment_tips_videos_container.xml" value="0.19947916666666668" />
@@ -117,6 +122,7 @@
         <entry key="..\:/Ducatus/app/src/main/res/layout/goalactivity_main.xml" value="0.25" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_challenges_list.xml" value="0.203125" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_current_challenges.xml" value="0.33" />
+        <entry key="..\:/Ducatus/app/src/main/res/layout/item_current_missed_challenges.xml" value="0.175" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_icon.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_new_challenges.xml" value="0.20416666666666666" />
         <entry key="..\:/Ducatus/app/src/main/res/layout/item_text_challenges.xml" value="0.20416666666666666" />
