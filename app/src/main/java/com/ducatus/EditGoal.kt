@@ -493,58 +493,90 @@ class EditGoal : AppCompatActivity() {
                             )
                                 .show()
                         } else {
-                            pb.show()
-                            var goals: Goals = Goals()
-                            goals.accountID = mGoal.accountID
-                            goals.goalDescription = editGoalName.text.toString()
-                            var amount = editTargetAmount.text.toString().toDouble()
-                            goals.goalAmount = amount
-                            var save = txtSaved.text.toString().toDouble()
-                            goals.earned = txtSaved.text.toString().toDouble()
-                            goals.targetDate = editTargetDate.text.toString()
-                            goals.color = currentColor;
-                            goals.notes = editNote.text.toString()
-                            goals.percentage = save / amount * 100
-                            goals.remaining = amount - save
-                            goals.key = mGoal.key
-                            goals.colorName = currentColorName
-                            goals.icon = currentIcon
 
-                            var entities = LocalEntities()
-                            entities.goals = goals
-
-                            db.updateToDb(entities, "Goals", object : FirebaseDatabaseCallback {
-                                override fun onSuccessInsert(key: String) {
-                                    pb.dismiss()
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Successfull Updated Goals",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    eventListener.onSuccessUpdate()
-                                    finish()
+                            var tgd = editTargetDate.text.toString().replace("/", "")
+                            if (tgd.length < 8) {
+                                Toast.makeText(
+                                    this,
+                                    "Please Fill Valid Target Date",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }else{
+                                var targetDateStr = ""
+                                var tmpStr = ""
+                                var tgdCount = 0
+                                var tgdCharArr = tgd.toCharArray()
+                                for (i in tgdCharArr.indices) {
+                                    tgdCount++
+                                    tmpStr += tgdCharArr.get(i).toString()
+                                    if (tgdCount == 2) {
+                                        targetDateStr = tmpStr + "/"
+                                        tmpStr = ""
+                                    } else if (tgdCount == 4) {
+                                        targetDateStr += tmpStr + "/"
+                                        tmpStr = ""
+                                    } else if (tgdCount == 8) {
+                                        targetDateStr += tmpStr
+                                        tmpStr = ""
+                                    }
 
                                 }
 
-                                override fun onError(e: Exception) {
-                                    Log.e("ERROR_UPDATE", e.message.toString())
-                                    pb.dismiss()
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Failed to update goal",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                pb.show()
+                                var goals: Goals = Goals()
+                                goals.accountID = mGoal.accountID
+                                goals.goalDescription = editGoalName.text.toString()
+                                var amount = editTargetAmount.text.toString().toDouble()
+                                goals.goalAmount = amount
+                                var save = txtSaved.text.toString().toDouble()
+                                goals.earned = txtSaved.text.toString().toDouble()
+                                goals.targetDate = targetDateStr
+                                goals.color = currentColor;
+                                goals.notes = editNote.text.toString()
+                                goals.percentage = save / amount * 100
+                                goals.remaining = amount - save
+                                goals.key = mGoal.key
+                                goals.colorName = currentColorName
+                                goals.icon = currentIcon
 
-                                }
+                                var entities = LocalEntities()
+                                entities.goals = goals
 
-                                override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                                    TODO("Not yet implemented")
-                                }
+                                db.updateToDb(entities, "Goals", object : FirebaseDatabaseCallback {
+                                    override fun onSuccessInsert(key: String) {
+                                        pb.dismiss()
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Successfull Updated Goals",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        eventListener.onSuccessUpdate()
+                                        finish()
 
-                                override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
-                                    TODO("Not yet implemented")
-                                }
-                            })
+                                    }
+
+                                    override fun onError(e: Exception) {
+                                        Log.e("ERROR_UPDATE", e.message.toString())
+                                        pb.dismiss()
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Failed to update goal",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                    }
+
+                                    override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                    override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                        TODO("Not yet implemented")
+                                    }
+                                })
+                            }
+
                         }
                     }
                     true

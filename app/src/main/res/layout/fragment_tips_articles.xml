@@ -20,7 +20,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
-                android:layout_height="425px"
+                android:layout_height="525px"
                 android:layout_row="0"
                 android:layout_column="0"
                 android:layout_margin="10dp"
@@ -62,7 +62,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="10dp">
+                        android:layout_marginBottom="20dp">
 
                         <ImageView
                             android:id="@+id/image_author1"

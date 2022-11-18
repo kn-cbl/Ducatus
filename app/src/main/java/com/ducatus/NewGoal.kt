@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +28,7 @@ import com.ducatus.services.LocalFirebaseDatabase
 import com.ducatus.viewmodel.IconViewModel
 import kotlinx.android.synthetic.main.new_goal.*
 import java.time.LocalDate
+import java.util.regex.Pattern
 
 
 class NewGoal : AppCompatActivity() {
@@ -95,83 +98,114 @@ class NewGoal : AppCompatActivity() {
                         Toast.makeText(this, "Please Don't Leave Empty Fields", Toast.LENGTH_SHORT)
                             .show()
                     } else {
-
-                        pdLoading.show()
-                        var goals: Goals = Goals()
-                        goals.accountID = accountID.toString()
-                        goals.goalDescription = goalName.text.toString()
-                        var amount = targetAmount.text.toString().toDouble()
-                        goals.goalAmount = amount
-                        var save = saved.text.toString().toDouble()
-                        goals.earned = saved.text.toString().toDouble()
-                        goals.targetDate = targetDate.text.toString()
-                        goals.color = currentColor;
-                        goals.notes = notes.text.toString()
-                        goals.percentage = save / amount * 100
-                        goals.remaining = amount - save
-                        goals.colorName = currentColorName
-                        if (currentIcon == 0) {
-                            val iconTmp = resources.getIdentifier(
-                                "ic_baseline_home_24",
-                                "drawable",
-                                packageName
+                        var tgd = targetDate.text.toString().replace("/", "")
+                        if (tgd.length < 8) {
+                            Toast.makeText(
+                                this,
+                                "Please Fill Valid Target Date",
+                                Toast.LENGTH_SHORT
                             )
-                            currentIcon = iconTmp
-                        }
-                        goals.icon = currentIcon
-
-
-
-                        Log.w("accountID", accountID.toString())
-
-                        var entities = LocalEntities()
-                        entities.goals = goals
-
-                        val callback: FirebaseDatabaseCallback = object : FirebaseDatabaseCallback {
-                            override fun onSuccessInsert(key: String) {
-                                if (saved.text.toString().toDouble() == 0.0) {
-                                    pdLoading.hide()
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Successfully Added Goal",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    finish()
-                                    goalIntf.PressBack()
-                                } else {
-                                    var goalHistory = GoalHistory()
-                                    goalHistory.goalkey = key
-                                    goalHistory.accountID = goals.accountID
-                                    goalHistory.amountPaid = saved.text.toString().toDouble()
-                                    goalHistory.datePaid = LocalDate.now().toString()
-                                    entities.goalHistory = goalHistory
-                                    saveGoalHistory(entities)
+                                .show()
+                        } else {
+                            var targetDateStr = ""
+                            var tmpStr = ""
+                            var tgdCount = 0
+                            var tgdCharArr = tgd.toCharArray()
+                            for (i in tgdCharArr.indices) {
+                                tgdCount++
+                                tmpStr += tgdCharArr.get(i).toString()
+                                if (tgdCount == 2) {
+                                    targetDateStr = tmpStr + "/"
+                                    tmpStr = ""
+                                } else if (tgdCount == 4) {
+                                    targetDateStr += tmpStr + "/"
+                                    tmpStr = ""
+                                } else if (tgdCount == 8) {
+                                    targetDateStr += tmpStr
+                                    tmpStr = ""
                                 }
 
-
                             }
-
-                            override fun onError(e: Exception) {
-                                pdLoading.hide()
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Failed to Add Goal",
-                                    Toast.LENGTH_SHORT
+                            pdLoading.show()
+                            var goals: Goals = Goals()
+                            goals.accountID = accountID.toString()
+                            goals.goalDescription = goalName.text.toString()
+                            var amount = targetAmount.text.toString().toDouble()
+                            goals.goalAmount = amount
+                            var save = saved.text.toString().toDouble()
+                            goals.earned = saved.text.toString().toDouble()
+                            goals.targetDate = targetDateStr
+                            goals.color = currentColor;
+                            goals.notes = notes.text.toString()
+                            goals.percentage = save / amount * 100
+                            goals.remaining = amount - save
+                            goals.colorName = currentColorName
+                            if (currentIcon == 0) {
+                                val iconTmp = resources.getIdentifier(
+                                    "ic_baseline_home_24",
+                                    "drawable",
+                                    packageName
                                 )
-                                    .show()
-                                Log.e("ADDING_GOAL_ERR", e.message.toString())
+                                currentIcon = iconTmp
                             }
+                            goals.icon = currentIcon
 
-                            override fun onSuccessListOfGoals(goalsList: List<Goals>) {
-                                TODO("Not yet implemented")
-                            }
 
-                            override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
-                                TODO("Not yet implemented")
-                            }
+
+                            Log.w("accountID", accountID.toString())
+
+                            var entities = LocalEntities()
+                            entities.goals = goals
+
+                            val callback: FirebaseDatabaseCallback =
+                                object : FirebaseDatabaseCallback {
+                                    override fun onSuccessInsert(key: String) {
+                                        if (saved.text.toString().toDouble() == 0.0) {
+                                            pdLoading.hide()
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Successfully Added Goal",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            finish()
+                                            goalIntf.PressBack()
+                                        } else {
+                                            var goalHistory = GoalHistory()
+                                            goalHistory.goalkey = key
+                                            goalHistory.accountID = goals.accountID
+                                            goalHistory.amountPaid =
+                                                saved.text.toString().toDouble()
+                                            goalHistory.datePaid = LocalDate.now().toString()
+                                            entities.goalHistory = goalHistory
+                                            saveGoalHistory(entities)
+                                        }
+
+
+                                    }
+
+                                    override fun onError(e: Exception) {
+                                        pdLoading.hide()
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Failed to Add Goal",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                        Log.e("ADDING_GOAL_ERR", e.message.toString())
+                                    }
+
+                                    override fun onSuccessListOfGoals(goalsList: List<Goals>) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                    override fun onSuccessListOfGoalHistory(goalHistoryList: List<GoalHistory>) {
+                                        TODO("Not yet implemented")
+                                    }
+                                }
+
+                            db.writeToDb(entities, "Goals", callback)
                         }
 
-                        db.writeToDb(entities, "Goals", callback)
                     }
 
                     true
@@ -297,6 +331,8 @@ class NewGoal : AppCompatActivity() {
             iconAlertDialog = iBuilder.create()
             iconAlertDialog.show()
         }
+
+
     }
 
     private fun saveGoalHistory(entities: LocalEntities) {
