@@ -63,13 +63,16 @@ class HomeFragment : Fragment() {
             activity.packageName
         )
 
-        binding.ivHomeAccountIcon.setColorFilter(
-            ResourcesCompat.getColor(
-                resources,
-                imageColor,
-                null
+        try{
+            binding.ivHomeAccountIcon.setColorFilter(
+                ResourcesCompat.getColor(
+                    resources,
+                    imageColor,
+                    null
+                )
             )
-        )
+        }catch (x:Exception){
+        }
 
         binding.tvHomeAccountName.text = currentAccountName
 
