@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/iconDelete"
-        android:icon="@drawable/ic_delete"
-        android:iconTint="@color/white"
-        android:title="Delete"
-        android:visible="true"
-        app:showAsAction="ifRoom|collapseActionView" />
+        android:id="@+id/delete"
+        android:contentDescription="@string/delete"
+        android:icon="@drawable/ic_baseline_delete_forever_24"
+        android:title="@string/delete"
+        app:iconTint="@color/white"
+        app:showAsAction="ifRoom" />
 
 </menu>

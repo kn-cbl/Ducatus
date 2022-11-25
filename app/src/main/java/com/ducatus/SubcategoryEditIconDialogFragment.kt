@@ -1,6 +1,7 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -9,15 +10,16 @@ import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentSubcategoryEditIconDialogBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -34,6 +36,7 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
+    private var updated: Boolean = false
     private val args: SubcategoryEditIconDialogFragmentArgs by navArgs()
     private val colorViewModel: ColorViewModel by activityViewModels()
     private val iconViewModel: IconViewModel by activityViewModels()
@@ -55,11 +58,11 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
         setColor(args.subcategoryColor)
         setIcon(args.subcategoryIcon)
 
-        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+        colorViewModel.color.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
         }
 
-        iconViewModel.selectedIcon.observe(viewLifecycleOwner) { selectedIcon ->
+        iconViewModel.icon.observe(viewLifecycleOwner) { selectedIcon ->
             setIcon(selectedIcon)
         }
 
@@ -82,6 +85,16 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
         binding.btnEditSubcategoryIconSave.setOnClickListener {
             // validate data -> save color and icon
             validateData()
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (updated) {
+            val fragment = parentFragmentManager.findFragmentById(R.id.fcCategories)
+            if (fragment is DialogInterface.OnDismissListener) {
+                (fragment as DialogInterface.OnDismissListener?)?.onDismiss(dialog)
+            }
         }
     }
 
@@ -165,6 +178,7 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
         databaseReference.child("icon").setValue(subcategoryIcon)
             .addOnSuccessListener {
                 hideProgressDialog()
+                updated = true
                 dismiss()
             }
 
@@ -177,32 +191,34 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbEditSubcategoryIcon.visibility = View.VISIBLE
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 
     private fun hideProgressDialog() {
         binding.pbEditSubcategoryIcon.visibility = View.INVISIBLE
+        dialog?.setCancelable(true)
+        dialog?.setCanceledOnTouchOutside(true)
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

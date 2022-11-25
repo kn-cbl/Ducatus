@@ -1,104 +1,58 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import com.ducatus.data.Account
+import com.ducatus.adapter.HomeViewPagerAdapter
 import com.ducatus.databinding.FragmentHomeBinding
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private lateinit var activity: Activity
-    private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
-    private lateinit var rootLayout: DrawerLayout
+    private lateinit var toolbar: MaterialToolbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         activity = requireActivity()
-        rootLayout = activity.findViewById(R.id.dlHome)
+        toolbar = activity.findViewById(R.id.tbHome)
+        toolbar.inflateMenu(R.menu.notifications_menu)
+
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
-    }
 
-    private fun loadData() {
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            loadAccount(firebaseUser.uid)
-        }
-    }
+        val adapter = HomeViewPagerAdapter(childFragmentManager, lifecycle)
+        binding.vpHome.adapter = adapter
 
-    private fun loadAccount(uid: String) {
-        showProgressDialog()
-        val sharedPreferences = SharedPreferences(activity)
-        val currentAccountId = sharedPreferences.accountId.toString()
-        val currentAccountName = sharedPreferences.accountName
-        val currentAccountColor = sharedPreferences.accountColor
-
-        val imageColor = resources.getIdentifier(
-            currentAccountColor,
-            "color",
-            activity.packageName
+        val transactionTabs = listOf(
+            activity.getString(R.string.overview),
+            activity.getString(R.string.budgets_and_goals)
         )
 
-        binding.ivHomeAccountIcon.setColorFilter(
-            ResourcesCompat.getColor(
-                resources,
-                imageColor,
-                null
-            )
-        )
+        TabLayoutMediator(binding.tlHome, binding.vpHome) { tab, position ->
+            tab.text = transactionTabs[position]
+        }.attach()
 
-        binding.tvHomeAccountName.text = currentAccountName
-
-        database = Firebase.database
-        databaseReference = database.getReference("accounts").child(uid).child(currentAccountId)
-        databaseReference.get()
-            .addOnSuccessListener {
-                val account = it.getValue<Account>()
-                if (account != null) {
-                    val budget = "₱" + String.format("%,.2f", account.remainingBalance)
-                    binding.tvHomeAccountBalance.text = budget
-                    hideProgressDialog()
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.notifications -> {
+                    startActivity(Intent(activity, NotificationsActivity::class.java))
+                    activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    true
                 }
+                else -> false
             }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
-                    .show()
-            }
-    }
-
-    private fun showProgressDialog() {
-        binding.svHome.visibility = View.GONE
-        binding.pbHome.visibility = View.VISIBLE
-    }
-
-    private fun hideProgressDialog() {
-        binding.svHome.visibility = View.VISIBLE
-        binding.pbHome.visibility = View.GONE
+        }
     }
 }

@@ -1,12 +1,17 @@
 package com.ducatus
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +20,7 @@ import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.Account
 import com.ducatus.data.Budget
 import com.ducatus.data.Category
+import com.ducatus.data.Loan
 import com.ducatus.databinding.ActivityBudgetAddBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -25,15 +31,23 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class BudgetAddActivity : AppCompatActivity() {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityBudgetAddBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var selectedAccount: String
     private lateinit var selectedCategory: Category
     private var firebaseUser: FirebaseUser? = null
+    private var allocatedCategories = 0
     private var natureCount = mutableListOf(0, 0, 0)
     private var accountBudget = mutableMapOf(
         "monthly" to 0.0,
@@ -68,18 +82,6 @@ class BudgetAddActivity : AppCompatActivity() {
 //                loadCategories(firebaseUser.uid, selectedAccount)
 //            }
 
-        val spCategory = (binding.tfAddBudgetCategory.editText as? AutoCompleteTextView)
-        spCategory?.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, _, position, _ ->
-                val category = parent?.getItemAtPosition(position) as CategoryWithTag
-
-                // store data of selected category
-                selectedCategory = category.category
-
-                // determine budget based on selected category
-                determineRecommendedBudget(category.category.nature)
-            }
-
         binding.tbAddBudget.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -94,6 +96,18 @@ class BudgetAddActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        val spCategory = (binding.tfAddBudgetCategory.editText as? AutoCompleteTextView)
+        spCategory?.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, _, position, _ ->
+                val category = parent?.getItemAtPosition(position) as CategoryWithTag
+
+                // store data of selected category
+                selectedCategory = category.category
+
+                // determine budget based on selected category
+                determineRecommendedBudget(category.category.nature)
+            }
     }
 
     override fun onBackPressed() {
@@ -115,7 +129,7 @@ class BudgetAddActivity : AppCompatActivity() {
         auth = Firebase.auth
         if (auth.currentUser != null) {
             firebaseUser = auth.currentUser!!
-            val sharedPreferences = SharedPreferences(this)
+            sharedPreferences = SharedPreferences(this)
             val currentAccountId = sharedPreferences.accountId.toString()
 
             selectedAccount = currentAccountId
@@ -164,7 +178,7 @@ class BudgetAddActivity : AppCompatActivity() {
         databaseReference.child("monthlyBudget").get()
             .addOnSuccessListener { snapshot ->
                 val monthlyBudget = snapshot.value.toString().toDouble()
-                if (monthlyBudget <= 0) {
+                if (monthlyBudget <= 0.0) {
                     MaterialAlertDialogBuilder(this@BudgetAddActivity)
                         .setTitle(resources.getString(R.string.set_monthly_budget))
                         .setMessage(resources.getString(R.string.set_monthly_budget_mark))
@@ -216,6 +230,9 @@ class BudgetAddActivity : AppCompatActivity() {
                                 )
                             )
                         }
+                        else {
+                            allocatedCategories++
+                        }
                     }
                 }
 
@@ -250,6 +267,9 @@ class BudgetAddActivity : AppCompatActivity() {
 
         val text = "Recommended budget for the selected category: ₱" + String.format("%,.2f", recommendedBudget)
         binding.tfAddBudgetAmount.helperText = text
+
+        binding.tvAddBudgetRecommendedBudget.text = recommendedBudget.toString()
+        binding.tvAddBudgetRecommendedBudget.tag = recommendedBudget
     }
 
     private fun setAmountPresetClickListener() {
@@ -270,17 +290,14 @@ class BudgetAddActivity : AppCompatActivity() {
                 binding.tfAddBudgetAmount.editText?.setText(amount)
             }
         }
+
+        binding.tvAddBudgetRecommendedBudget.setOnClickListener {
+            val amount = it.tag.toString()
+            binding.tfAddBudgetAmount.editText?.setText(amount)
+        }
     }
 
     private fun inputObserver() {
-        binding.tfAddBudgetName.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty()) {
-                binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
-            }
-            else {
-                binding.tfAddBudgetName.error = null
-            }
-        }
         binding.tfAddBudgetAmount.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
                 binding.tfAddBudgetAmount.error = getString(R.string.amount_empty)
@@ -312,18 +329,12 @@ class BudgetAddActivity : AppCompatActivity() {
         }
         catch (e: Exception){}
 
-        val budgetName =  binding.tfAddBudgetName.editText?.text.toString().trim { it <= ' ' }
         val budgetCategory = binding.tfAddBudgetCategory.editText?.text.toString().trim { it <= ' ' }
         val budgetAmount = binding.tfAddBudgetAmount.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
 
         if (accountBudget["monthly"]!! <= 0.0) {
             firebaseUser?.let { hasSetBudget(it.uid, selectedAccount) }
-            errors++
-        }
-
-        if (TextUtils.isEmpty(budgetName)) {
-            binding.tfAddBudgetName.error = getString(R.string.budget_name_empty)
             errors++
         }
 
@@ -354,43 +365,21 @@ class BudgetAddActivity : AppCompatActivity() {
             val timestamp = (System.currentTimeMillis() / 1000)
             val budget = Budget(
                 selectedCategory.id,
-                budgetName,
-                budgetName.lowercase(),
                 budgetAmount.toDouble(),
                 0.0,
                 timestamp,
                 selectedCategory.name,
+                selectedCategory.nameLower,
                 selectedCategory.color,
                 selectedCategory.icon
             )
 
-            firebaseUser?.let { budgetExists(it.uid, selectedAccount, budget) }
+            firebaseUser?.let { setAllocated(it.uid, selectedAccount, budget) }
         }
     }
 
-    private fun budgetExists(uid: String, accountId: String, budget: Budget) {
-        showProgressDialogAdd()
-        databaseReference = database.getReference("budgets").child(uid).child(accountId)
-        val query = databaseReference.orderByChild("nameLower").equalTo(budget.name)
-        query.get()
-            .addOnSuccessListener { snapshot ->
-                if (!snapshot.exists()) {
-                    setAllocated(uid, accountId, budget)
-                }
-                else {
-                    hideProgressDialogAdd()
-                    binding.tfAddBudgetName.error = getString(R.string.budget_name_exists)
-                }
-            }
-            .addOnFailureListener {
-                hideProgressDialogAdd()
-                Snackbar
-                    .make(binding.clBudgetAdd, it.localizedMessage!!, 5000)
-                    .show()
-            }
-    }
-
     private fun setAllocated(uid: String, accountId: String, budget: Budget) {
+        showProgressDialogAdd()
         databaseReference = database.getReference("categories").child(uid).child(accountId).child(budget.id!!)
         databaseReference.child("allocated").setValue(true)
             .addOnSuccessListener {
@@ -399,13 +388,12 @@ class BudgetAddActivity : AppCompatActivity() {
             .addOnFailureListener {
                 hideProgressDialogAdd()
                 Snackbar
-                    .make(binding.clBudgetAdd, it.localizedMessage!!,5000)
+                    .make(binding.clBudgetAdd, getString(R.string.add_budget_error),5000)
                     .show()
             }
     }
 
     private fun decreaseRemainingBudget(uid: String, accountId: String, budget: Budget) {
-        showProgressDialogAdd()
         val remainingBudget = accountBudget["remaining"]!! - budget.amountTotal
 
         databaseReference = database.getReference("accounts").child(uid).child(accountId)
@@ -416,7 +404,7 @@ class BudgetAddActivity : AppCompatActivity() {
             .addOnFailureListener {
                 hideProgressDialogAdd()
                 Snackbar
-                    .make(binding.clBudgetAdd, it.localizedMessage!!,5000)
+                    .make(binding.clBudgetAdd, getString(R.string.add_budget_error),5000)
                     .show()
             }
     }
@@ -425,34 +413,101 @@ class BudgetAddActivity : AppCompatActivity() {
         databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.child(budget.id!!).setValue(budget)
             .addOnSuccessListener {
+                if (allocatedCategories == 0) {
+                    scheduleNotifications(this, accountId)
+                }
+
                 hideProgressDialogAdd()
                 onBackPressed()
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
                 Snackbar
-                    .make(binding.clBudgetAdd, it.localizedMessage!!,5000)
+                    .make(binding.clBudgetAdd, getString(R.string.add_budget_error),5000)
                     .show()
             }
     }
 
-    private fun sessionExpired() {
-        Snackbar
-            .make(binding.clBudgetAdd, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+    private fun createNotificationChannel() {
+        val name = "Expenses"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(sharedPreferences.expensesChannelId, name, importance)
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun enableReceiver(context: Context) {
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        context.packageManager.setComponentEnabledSetting(
+            receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+
+    private fun scheduleNotifications(context: Context, accountId: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.expensesChannelId)
+        if (notificationChannel == null) {
+            createNotificationChannel()
+            notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.expensesChannelId)
+        }
+
+        // create notification if channel is enabled
+        // else do not create
+        if (notificationChannel.importance != NotificationManager.IMPORTANCE_NONE) {
+            enableReceiver(context)
+
+            // pass to broadcast receiver
+            val notificationIntent = Intent(context, NotificationReceiver::class.java)
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.now(),
+                ZoneId.systemDefault()
+            )
+            val eightPm = zdt.with(LocalTime.MIN).plusHours(20)
+
+            val title = "Record your expenses for today"
+            val message = "Tap here to open Ducatus."
+
+            // set notifications for 2 weeks
+            for (i in 0 until 14) {
+                val notificationId = zdt.dayOfYear.plus(i)
+
+                notificationIntent.action = "com.ducatus.EXPENSE"
+                notificationIntent.putExtra(titleExtra, title)
+                notificationIntent.putExtra(messageExtra, message)
+                notificationIntent.putExtra(notificationIdExtra, notificationId)
+                notificationIntent.putExtra(accountIdExtra, accountId)
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    notificationId,
+                    notificationIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                val day = eightPm.plusDays(i.toLong()).toInstant().toEpochMilli()
+                alarmManager.set(AlarmManager.RTC_WAKEUP, day, pendingIntent)
             }
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-        }.start()
+        }
+    }
+
+    private fun sessionExpired() {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
+
+        dialog.setOnDismissListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
@@ -466,12 +521,15 @@ class BudgetAddActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialogAdd() {
-        binding.pbAddBudget.visibility = View.VISIBLE
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.adding))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(supportFragmentManager, "dialog")
     }
 
     private fun hideProgressDialogAdd() {
-        binding.pbAddBudget.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        actionDialog.dismiss()
     }
 }

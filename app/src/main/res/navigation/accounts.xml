@@ -24,7 +24,7 @@
         android:id="@+id/accountEditDialogFragment"
         android:name="com.ducatus.AccountEditDialogFragment"
         android:label="fragment_account_settings"
-        tools:layout="@layout/fragment_account_edit">
+        tools:layout="@layout/fragment_account_edit_dialog">
         <argument
             android:name="accountId"
             app:argType="string" />

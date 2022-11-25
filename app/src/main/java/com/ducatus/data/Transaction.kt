@@ -1,15 +1,16 @@
 package com.ducatus.data
 
 data class Transaction(
-    val id: String? = null,
+    var id: String? = null,
+    var name: String? = null,
+    var nameLower: String? = null,
     val amount: Double = 0.0,
     val type: Int = 0,
     var paymentType: String? = null,
     var notes: String? = null,
-    val receipt: String? = null,
-    val date: Long? = null,
-    val hour: Long? = null,
-    val minute: Long? = null,
+    var imagePath: String? = null,
+    var date: Long? = null,
+    val dateString: String? = null,
     val categoryId: String? = null,
     val categoryName: String? = null,
     val categoryNameLower: String? = null,

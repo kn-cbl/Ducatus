@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/off_white"
+    android:orientation="vertical"
     tools:context=".PrivacyFragment">
 
     <TextView
@@ -24,114 +24,115 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
 
-    <RelativeLayout
-        android:id="@+id/rlPrivacyPolicy"
+    <LinearLayout
+        android:id="@+id/llPrivacyPolicy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/imageView10"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
             app:srcCompat="@drawable/privacy_policy" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imageView10"
             android:fontFamily="@font/inter_medium"
             android:text="@string/privacy_policy"
             android:textColor="@color/off_black"
             android:textSize="14sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
 
-    <RelativeLayout
-        android:id="@+id/rlTOS"
+    <LinearLayout
+        android:id="@+id/llTOS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/imageView11"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_centerVertical="true"
             android:contentDescription="@string/icon_hint"
             app:srcCompat="@drawable/terms" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imageView11"
             android:fontFamily="@font/inter_medium"
             android:text="@string/terms_of_service"
             android:textColor="@color/off_black"
             android:textSize="14sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
 
-    <RelativeLayout
-        android:id="@+id/rlDeactivateAccount"
+    <LinearLayout
+        android:id="@+id/llResetUserData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/imageView13"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:contentDescription="@string/icon_hint"
-            app:srcCompat="@drawable/deactivate_account" />
+            app:srcCompat="@drawable/ic_baseline_settings_backup_restore_24"
+            app:tint="@color/green_secondary" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imageView13"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/deactivate_account"
+            android:text="@string/reset_user_data"
             android:textColor="@color/off_black"
             android:textSize="14sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
 
-    <RelativeLayout
-        android:id="@+id/rlDeleteUserData"
+    <LinearLayout
+        android:id="@+id/llDeleteUserData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/imageView12"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:contentDescription="@string/icon_hint"
@@ -141,14 +142,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imageView12"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/delete_user_data"
+            android:text="@string/delete_user_account"
             android:textColor="@color/off_black"
             android:textSize="14sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"

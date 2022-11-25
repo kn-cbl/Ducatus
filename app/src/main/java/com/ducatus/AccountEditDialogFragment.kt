@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +18,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.ducatus.data.Account
-import com.ducatus.databinding.FragmentAccountEditBinding
-import com.ducatus.viewmodel.AccountViewModel
+import com.ducatus.databinding.FragmentAccountEditDialogBinding
+import com.ducatus.viewmodel.UpdateViewModel
 import com.ducatus.viewmodel.AmountViewModel
 import com.ducatus.viewmodel.ColorViewModel
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -31,19 +30,23 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class AccountEditDialogFragment : DialogFragment() {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
-    private lateinit var binding: FragmentAccountEditBinding
+    private lateinit var binding: FragmentAccountEditDialogBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
-    private lateinit var currentData: Account
+    private lateinit var currentAccount: Account
     private val args: AccountEditDialogFragmentArgs by navArgs()
     private val amountViewModel: AmountViewModel by activityViewModels()
     private val colorViewModel: ColorViewModel by activityViewModels()
-    private val viewModel: AccountViewModel by activityViewModels()
+    private val updateViewModel: UpdateViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +54,7 @@ class AccountEditDialogFragment : DialogFragment() {
     ): View {
         activity = requireActivity()
         rootLayout = activity.findViewById(R.id.llAccounts)
-        binding = FragmentAccountEditBinding.inflate(inflater, container, false)
+        binding = FragmentAccountEditDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -61,21 +64,22 @@ class AccountEditDialogFragment : DialogFragment() {
         inputObserver()
 
         amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
-            binding.tfEditAccountBudget.editText?.setText(amount)
+            amount.getContentIfNotHandled()?.let { content ->
+                binding.tfEditAccountBudget.editText?.setText(content)
+            }
         }
 
-        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+        colorViewModel.color.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
         }
 
         binding.tfEditAccountBudget.editText?.setOnClickListener {
-            val fragmentManager = childFragmentManager
-            val newFragment = AmountDialogFragment()
-
             val bundle = Bundle()
             bundle.putString("account", "account")
-            newFragment.arguments = bundle
 
+            val fragmentManager = childFragmentManager
+            val newFragment = AmountDialogFragment()
+            newFragment.arguments = bundle
             newFragment.show(fragmentManager, "dialog")
         }
 
@@ -112,11 +116,11 @@ class AccountEditDialogFragment : DialogFragment() {
             .addOnSuccessListener {
                 val account = it.getValue<Account>()
                 if (account != null) {
-                    currentData = account
-                    binding.tfEditAccountName.editText?.setText(currentData.name)
-                    binding.tfEditAccountBudget.editText?.setText(currentData.monthlyBudget.toInt().toString())
+                    currentAccount = account
+                    binding.tfEditAccountName.editText?.setText(currentAccount.name)
+                    binding.tfEditAccountBudget.editText?.setText(currentAccount.monthlyBudget.toInt().toString())
 
-                    setColor(currentData.color!!)
+                    setColor(currentAccount.color!!)
                 }
             }
             .addOnFailureListener {
@@ -149,10 +153,10 @@ class AccountEditDialogFragment : DialogFragment() {
         }
         binding.tfEditAccountBudget.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) binding.tfEditAccountBudget.error = getString(R.string.monthly_budget_empty)
-            else if (text.toString().toDouble() < currentData.monthlyBudget) {
-                val amount = currentData.monthlyBudget - text.toString().toDouble()
-                val newRemainingBudget = currentData.remainingBudget - amount
-                val newRemainingBalance = currentData.remainingBalance - amount
+            else if (text.toString().toDouble() < currentAccount.monthlyBudget) {
+                val amount = currentAccount.monthlyBudget - text.toString().toDouble()
+                val newRemainingBudget = currentAccount.remainingBudget - amount
+                val newRemainingBalance = currentAccount.remainingBalance - amount
 
                 if (newRemainingBudget < 0 || newRemainingBalance < 0) {
                     binding.tfEditAccountBudget.error = getString(R.string.amount_overflow_2)
@@ -196,10 +200,10 @@ class AccountEditDialogFragment : DialogFragment() {
                 binding.tfEditAccountBudget.error = getString(R.string.amount_starts_0)
                 errors++
             }
-            if (accountMonthlyBudget.toDouble() < currentData.monthlyBudget) {
-                val amount = currentData.monthlyBudget - accountMonthlyBudget.toDouble()
-                val newRemainingBudget = currentData.remainingBudget - amount
-                val newRemainingBalance = currentData.remainingBalance - amount
+            if (accountMonthlyBudget.toDouble() < currentAccount.monthlyBudget) {
+                val amount = currentAccount.monthlyBudget - accountMonthlyBudget.toDouble()
+                val newRemainingBudget = currentAccount.remainingBudget - amount
+                val newRemainingBalance = currentAccount.remainingBalance - amount
 
                 if (newRemainingBudget < 0 || newRemainingBalance < 0) {
                     binding.tfEditAccountBudget.error = getString(R.string.amount_overflow_2)
@@ -209,35 +213,49 @@ class AccountEditDialogFragment : DialogFragment() {
         }
 
         if (errors == 0) {
-            if (accountName == currentData.name && accountMonthlyBudget.toDouble() == currentData.monthlyBudget && accountColor == currentData.color) {
-                activity.onBackPressed()
+            var changes = 0
+            if (accountName.lowercase() != currentAccount.nameLower) changes++
+            if (accountMonthlyBudget.toDouble() != currentAccount.monthlyBudget) changes++
+            if (accountColor != currentAccount.color) changes++
+
+            if (changes == 0) {
+                dismiss()
             }
             else {
-                val accountData = mapOf(
-                    "id" to args.accountId,
-                    "name" to accountName,
-                    "monthlyBudget" to accountMonthlyBudget,
-                    "color" to accountColor.toString()
+                val account = Account(
+                    currentAccount.id,
+                    accountName,
+                    accountName.lowercase(),
+                    accountColor.toString(),
+                    accountMonthlyBudget.toDouble(),
+                    0.0,
+                    0.0,
+                    null,
+                    currentAccount.selected
                 )
 
-                accountNameExists(accountData)
+                accountNameExists(account)
             }
         }
     }
 
-    private fun accountNameExists(accountData: Map<String, String>) {
+    private fun accountNameExists(account: Account) {
         showProgressDialog()
-        val query = databaseReference.orderByChild("nameLower").equalTo(accountData["name"])
+        val query = databaseReference.orderByChild("nameLower").equalTo(account.nameLower)
         query.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
-                    updateAccount(accountData)
+                    updateAccount(account)
                 }
                 else {
-                    hideProgressDialog()
-                    binding.tfEditAccountName.error = getString(R.string.account_name_exists)
+                    if (currentAccount.nameLower == account.nameLower) {
+                        updateAccount(account)
+                    }
+                    else {
+                        hideProgressDialog()
+                        binding.tfEditAccountName.error = getString(R.string.account_name_exists)
+                    }
                 }
-
             }
             .addOnFailureListener {
                 hideProgressDialog()
@@ -247,37 +265,39 @@ class AccountEditDialogFragment : DialogFragment() {
             }
     }
 
-    private fun updateAccount(accountData: Map<String, String>) {
+    private fun updateAccount(account: Account) {
         showProgressDialog()
         val newRemainingBudget: Double
         val newRemainingBalance: Double
 
-        if (accountData["monthlyBudget"]!!.toDouble() > currentData.monthlyBudget) {
-            val amount = accountData["monthlyBudget"]!!.toDouble() - currentData.monthlyBudget
-            newRemainingBudget = amount + currentData.remainingBudget
-            newRemainingBalance = amount + currentData.remainingBalance
+        if (account.monthlyBudget > currentAccount.monthlyBudget) {
+            val amount = account.monthlyBudget - currentAccount.monthlyBudget
+            newRemainingBudget = amount + currentAccount.remainingBudget
+            newRemainingBalance = amount + currentAccount.remainingBalance
         }
         else {
-            val amount = currentData.monthlyBudget - accountData["monthlyBudget"]!!.toDouble()
-            newRemainingBudget = currentData.remainingBudget - amount
-            newRemainingBalance = currentData.remainingBalance - amount
+            val amount = currentAccount.monthlyBudget - account.monthlyBudget
+            newRemainingBudget = currentAccount.remainingBudget - amount
+            newRemainingBalance = currentAccount.remainingBalance - amount
         }
 
-        val account = Account(
-            accountData["id"],
-            accountData["name"],
-            accountData["name"]!!.lowercase(),
-            accountData["color"],
-            accountData["monthlyBudget"]!!.toDouble(),
-            newRemainingBudget,
-            newRemainingBalance,
-            currentData.selected
+        val zdt = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
         )
+
+        val startOfDay = zdt.with(LocalTime.MIN)
+        val nextMonth = startOfDay.plusMonths(1).toInstant().toEpochMilli()
+        val renewsAt: Long = currentAccount.budgetRenewsAt ?: nextMonth
+
+        account.remainingBudget = newRemainingBudget
+        account.remainingBalance = newRemainingBalance
+        account.budgetRenewsAt = renewsAt
 
         databaseReference.child(account.id!!).setValue(account)
             .addOnSuccessListener {
+                updateViewModel.update(true)
                 hideProgressDialog()
-                viewModel.update(true)
                 dismiss()
             }
             .addOnFailureListener {
@@ -289,34 +309,34 @@ class AccountEditDialogFragment : DialogFragment() {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbEditAccount.visibility = View.VISIBLE
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 
     private fun hideProgressDialog() {
         binding.pbEditAccount.visibility = View.INVISIBLE
+        dialog?.setCancelable(true)
+        dialog?.setCanceledOnTouchOutside(true)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

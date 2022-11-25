@@ -2,12 +2,13 @@ package com.ducatus
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.ducatus.databinding.FragmentSettingsBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -54,7 +55,12 @@ class SettingsFragment : Fragment() {
         }
 
         binding.rlNotifications.setOnClickListener {
-            activityIntent(Intent(activity, NotificationsActivity::class.java), false)
+            if (Build.VERSION.SDK_INT <= 26) {
+                manageNotifications()
+            }
+            else {
+                activityIntent(Intent(activity, NotificationSettingsActivity::class.java), false)
+            }
         }
 
         binding.rlPrivacy.setOnClickListener {
@@ -80,9 +86,15 @@ class SettingsFragment : Fragment() {
             }
 
             if (!providers.contains("password")) {
-                binding.rlUpdatePassword.isEnabled = false
+                binding.rlUpdatePassword.visibility = View.GONE
             }
         }
+    }
+
+    private fun manageNotifications() {
+        val notificationIntent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
+        startActivity(notificationIntent)
     }
 
     private fun activityIntent(intent: Intent, finish: Boolean) {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlItemNotification"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/off_white"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/ivItemNotificationIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/icon"
+        app:srcCompat="@drawable/ic_baseline_handshake_24" />
+
+    <LinearLayout
+        android:id="@+id/llItemNotificationInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@id/ivItemNotificationIcon"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvItemNotificationTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/inter_medium"
+            android:maxLines="2"
+            android:text="@string/title"
+            android:textColor="@color/off_black" />
+
+        <TextView
+            android:id="@+id/tvItemNotificationMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/message"
+            android:textColor="@color/off_black" />
+
+        <TextView
+            android:id="@+id/tvItemNotificationDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/date"
+            android:textColor="@color/slightly_darker_gray"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</RelativeLayout>

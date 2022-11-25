@@ -21,7 +21,7 @@
             android:fontFamily="@font/inter_medium"
             android:text="@string/date"
             android:textAlignment="textStart"
-            android:textColor="@color/darker_gray"
+            android:textColor="@color/slightly_darker_gray"
             android:textSize="12sp" />
 
         <TextView

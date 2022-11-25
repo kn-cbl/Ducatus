@@ -10,8 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.adapter.BudgetAdapter
 import com.ducatus.data.Budget
 import com.ducatus.databinding.FragmentBudgetsBinding
+import com.ducatus.interfaces.BudgetInterface
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -20,6 +23,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 
 class BudgetsFragment : Fragment(), BudgetInterface {
     private lateinit var activity: Activity
@@ -61,9 +65,9 @@ class BudgetsFragment : Fragment(), BudgetInterface {
         return activity
     }
 
-    override fun viewItem(budgetId: String) {
+    override fun viewItem(budget: Budget) {
         val intent = Intent(activity, BudgetDetailActivity::class.java)
-        intent.putExtra("budgetId", budgetId)
+        intent.putExtra("budget", Gson().toJson(budget))
         startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
@@ -91,11 +95,17 @@ class BudgetsFragment : Fragment(), BudgetInterface {
                 binding.rvBudgets.adapter = budgetAdapter
                 binding.rvBudgets.layoutManager = LinearLayoutManager(activity)
 
+                val budgets = mutableListOf<Budget>()
                 for (child in snapshot.children) {
                     val budget = child.getValue<Budget>()
                     if (budget != null) {
-                        budgetAdapter.addBudget(budget)
+                        budgets.add(budget)
                     }
+                }
+
+                budgets.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.categoryName!! })
+                for (budget in budgets) {
+                    budgetAdapter.addBudget(budget)
                 }
 
                 if (budgetAdapter.itemCount > 0) {
@@ -109,7 +119,7 @@ class BudgetsFragment : Fragment(), BudgetInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.load_budgets_error),5000)
                     .show()
             }
     }
@@ -132,25 +142,18 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {

@@ -21,18 +21,6 @@
         app:title="@string/add_budget"
         app:titleTextColor="@color/off_white" />
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/pbAddBudget"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/bright_blue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tbAddBudget" />
-
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbBudgetAdd"
         android:layout_width="wrap_content"
@@ -60,31 +48,31 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/tfAddBudgetAccount"-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="16dp"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:layout_marginEnd="16dp"-->
-<!--                android:hint="@string/account"-->
-<!--                app:boxCornerRadiusBottomEnd="8dp"-->
-<!--                app:boxCornerRadiusBottomStart="8dp"-->
-<!--                app:boxCornerRadiusTopEnd="8dp"-->
-<!--                app:boxCornerRadiusTopStart="8dp"-->
-<!--                app:helperTextEnabled="true">-->
+            <!--            <com.google.android.material.textfield.TextInputLayout-->
+            <!--                android:id="@+id/tfAddBudgetAccount"-->
+            <!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="16dp"-->
+            <!--                android:layout_marginTop="16dp"-->
+            <!--                android:layout_marginEnd="16dp"-->
+            <!--                android:hint="@string/account"-->
+            <!--                app:boxCornerRadiusBottomEnd="8dp"-->
+            <!--                app:boxCornerRadiusBottomStart="8dp"-->
+            <!--                app:boxCornerRadiusTopEnd="8dp"-->
+            <!--                app:boxCornerRadiusTopStart="8dp"-->
+            <!--                app:helperTextEnabled="true">-->
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:focusable="false"-->
-<!--                    android:fontFamily="@font/inter_regular"-->
-<!--                    android:inputType="none"-->
-<!--                    android:textColor="@color/off_black"-->
-<!--                    android:textSize="14sp"-->
-<!--                    tools:ignore="LabelFor,TextContrastCheck" />-->
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
+            <!--                <com.google.android.material.textfield.TextInputEditText-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:focusable="false"-->
+            <!--                    android:fontFamily="@font/inter_regular"-->
+            <!--                    android:inputType="none"-->
+            <!--                    android:textColor="@color/off_black"-->
+            <!--                    android:textSize="14sp"-->
+            <!--                    tools:ignore="LabelFor,TextContrastCheck" />-->
+            <!--            </com.google.android.material.textfield.TextInputLayout>-->
 
             <TextView
                 android:id="@+id/tvAddBudgetRemainingBudget"
@@ -112,6 +100,26 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/tvAddBudgetRecommendedBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="18dp"
+                android:autoSizeMaxTextSize="22sp"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeStepGranularity="2sp"
+                android:autoSizeTextType="uniform"
+                android:background="@drawable/shape_light_green"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="center"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:tag="100"
+                android:text="@string/_100"
+                android:textColor="@color/off_black" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
@@ -152,39 +160,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tfAddBudgetName"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/budget_name"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:endIconMode="clear_text"
-                app:errorEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:inputType="text"
-                    android:maxLength="50"
-                    android:textColor="@color/off_black"
-                    android:textSize="14sp"
-                    tools:ignore="TextContrastCheck" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tfAddBudgetCategory"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:hint="@string/category"
                 app:boxCornerRadiusBottomEnd="8dp"

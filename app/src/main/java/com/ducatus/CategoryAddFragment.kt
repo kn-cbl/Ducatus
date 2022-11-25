@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
@@ -23,6 +22,7 @@ import com.ducatus.databinding.FragmentCategoryAddBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -32,6 +32,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class CategoryAddFragment : Fragment() {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentCategoryAddBinding
@@ -60,11 +61,11 @@ class CategoryAddFragment : Fragment() {
         loadNatures()
         inputObserver()
 
-        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+        colorViewModel.color.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
         }
 
-        iconViewModel.selectedIcon.observe(viewLifecycleOwner) { selectedIcon ->
+        iconViewModel.icon.observe(viewLifecycleOwner) { selectedIcon ->
             setIcon(selectedIcon)
         }
 
@@ -153,25 +154,25 @@ class CategoryAddFragment : Fragment() {
         }
         catch (e: Exception){}
 
-        val categoryName = binding.tfAddCategoryName.editText?.text.toString().trim {it <= ' '}
-        val categoryNature = binding.tfAddCategoryNature.editText?.text.toString().trim {it <= ' '}
-        val categoryColor = binding.tfAddCategoryColor.tag
-        val categoryIcon = binding.tfAddCategoryIcon.tag
+        val name = binding.tfAddCategoryName.editText?.text.toString().trim {it <= ' '}
+        val nature = binding.tfAddCategoryNature.editText?.text.toString().trim {it <= ' '}
+        val color = binding.tfAddCategoryColor.tag
+        val icon = binding.tfAddCategoryIcon.tag
         var errors = 0
 
-        if (TextUtils.isEmpty(categoryName)) {
+        if (TextUtils.isEmpty(name)) {
             binding.tfAddCategoryName.error = getString(R.string.category_name_empty)
             errors++
         }
-        if (TextUtils.isEmpty(categoryNature)) {
+        if (TextUtils.isEmpty(nature)) {
             binding.tfAddCategoryNature.error = getString(R.string.category_nature_empty)
             errors++
         }
-        if (categoryColor == null) {
+        if (color == null) {
             binding.tfAddCategoryColor.error = getString(R.string.select_a_color)
             errors++
         }
-        if (categoryIcon == null) {
+        if (icon == null) {
             binding.tfAddCategoryIcon.error = getString(R.string.select_an_icon)
             errors++
         }
@@ -182,7 +183,7 @@ class CategoryAddFragment : Fragment() {
             val firebaseUser: FirebaseUser? = auth.currentUser
             if (firebaseUser != null) {
                 // parse selected nature
-                val nature = when (categoryNature) {
+                val parsedNature = when (nature) {
                     "Essentials" -> 0
                     "Wants" -> 1
                     "Savings" -> 2
@@ -191,18 +192,17 @@ class CategoryAddFragment : Fragment() {
                 val sharedPreferences = SharedPreferences(activity)
                 val accountId = sharedPreferences.accountId.toString()
 
-                val categoryData = mapOf(
-                    "name" to categoryName,
-                    "nature" to nature.toString(),
-                    "color" to categoryColor.toString(),
-                    "icon" to categoryIcon.toString()
+                val category = Category(
+                    null,
+                    name,
+                    name.lowercase(),
+                    parsedNature,
+                    color.toString(),
+                    icon.toString(),
+                    false
                 )
 
-                categoryExists(
-                    firebaseUser.uid,
-                    accountId,
-                    categoryData
-                )
+                categoryExists(firebaseUser.uid, accountId, category)
             }
             else {
                 hideProgressDialog()
@@ -211,24 +211,16 @@ class CategoryAddFragment : Fragment() {
         }
     }
 
-    private fun categoryExists(uid: String, accountId: String, categoryData: Map<String, String>) {
+    private fun categoryExists(uid: String, accountId: String, category: Category) {
         database = Firebase.database
         databaseReference = database.getReference("categories").child(uid).child(accountId)
-        val query = databaseReference.orderByChild("nameLower").equalTo(categoryData["name"])
+        val query = databaseReference.orderByChild("nameLower").equalTo(category.nameLower)
         query.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
                     val key = databaseReference.push().key
-                    val category = Category(
-                        key!!,
-                        categoryData["name"],
-                        categoryData["name"]!!.lowercase(),
-                        categoryData["nature"]!!.toInt(),
-                        categoryData["color"],
-                        categoryData["icon"]
-                    )
-
-                    addCategory(key, category)
+                    category.id = key
+                    addCategory(category)
                 }
                 else {
                     hideProgressDialog()
@@ -238,13 +230,13 @@ class CategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .make(rootLayout, getString(R.string.add_category_error),5000)
                     .show()
             }
     }
 
-    private fun addCategory(id: String, category: Category) {
-        databaseReference.child(id).setValue(category)
+    private fun addCategory(category: Category) {
+        databaseReference.child(category.id!!).setValue(category)
             .addOnSuccessListener {
                 hideProgressDialog()
                 val action = CategoryAddFragmentDirections.actionCategoryAddFragmentToCategoriesFragment()
@@ -253,40 +245,36 @@ class CategoryAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .make(rootLayout, getString(R.string.add_category_error),5000)
                     .show()
             }
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
-        binding.pbAddCategory.visibility = View.VISIBLE
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.adding))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(childFragmentManager, "dialog")
     }
 
     private fun hideProgressDialog() {
-        binding.pbAddCategory.visibility = View.INVISIBLE
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        actionDialog.dismiss()
     }
 }

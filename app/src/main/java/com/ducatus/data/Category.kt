@@ -1,7 +1,7 @@
 package com.ducatus.data
 
 data class Category(
-    val id: String? = null,
+    var id: String? = null,
     val name: String? = null,
     val nameLower: String? = null,
     val nature: Int = 0,

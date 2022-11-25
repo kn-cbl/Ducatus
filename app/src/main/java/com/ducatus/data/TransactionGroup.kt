@@ -1,6 +1,6 @@
 package com.ducatus.data
 
-import com.ducatus.TransactionAdapter
+import com.ducatus.adapter.TransactionAdapter
 
 data class TransactionGroup(
     val date: Long? = null,

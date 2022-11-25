@@ -5,6 +5,119 @@
     <string name="app_description_2">It is a mobile application that allows users to set their monthly expenses and their amount, assisting them in their financial transactions to reduce their unnecessary expenses, and set a given budget for a given time.</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--  Errors  -->
+    <string name="session_expired">Session expired, please log-in again</string>
+    <string name="email_empty">Enter your email</string>
+    <string name="email_invalid">Enter a valid email</string>
+    <string name="email_exists">Email is already taken</string>
+    <string name="new_email_empty">Enter your new email</string>
+    <string name="new_email_same">New email must not be the same as current email</string>
+    <string name="username_empty">Enter your username</string>
+    <string name="username_exists">Username is already taken</string>
+    <string name="email_username_empty">Enter your email or username</string>
+    <string name="user_does_not_exist">User does not exist</string>
+    <string name="password_empty">Enter your password</string>
+    <string name="password_invalid">Incorrect email or password</string>
+    <string name="password_complexity">Password must be at least 8 characters</string>
+    <string name="current_password_empty">Enter your current password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_password_empty">Confirm your password</string>
+    <string name="new_password_empty">Enter your new password</string>
+    <string name="confirm_new_password_empty">Confirm your new password</string>
+    <string name="new_password_same">New password must not be the same as current password</string>
+    <string name="password_match_error">Passwords do not match</string>
+    <string name="verification_code_empty">Enter verification code</string>
+    <string name="verification_code_error">Invalid code, please try again</string>
+    <string name="mobile_number_empty">Enter your mobile number</string>
+    <string name="mobile_number_invalid">Enter a valid mobile number</string>
+    <string name="mobile_number_exists">Mobile number is already being used by another user</string>
+    <string name="mobile_auth_request_error">Too many requests, please try again</string>
+    <string name="unknown_error">Unknown error occurred, please try again</string>
+    <string name="account_name_empty">Enter account name</string>
+    <string name="account_name_exists">Account already exists</string>
+    <string name="category_name_empty">Enter category name</string>
+    <string name="category_name_exists">Category already exists</string>
+    <string name="category_nature_empty">Select category nature</string>
+    <string name="subcategory_name_empty">Enter category name</string>
+    <string name="subcategory_name_exists">Subcategory already exists</string>
+    <string name="budget_name_empty">Enter budget name</string>
+    <string name="budget_name_exists">Budget name already exists</string>
+    <string name="amount_empty">Enter amount</string>
+    <string name="amount_starts_0">Amount must be greater than 0</string>
+    <string name="amount_overflow">Amount must not be greater than the remaining budget</string>
+    <string name="amount_overflow_2">Monthly budget is too low for your current expenses</string>
+    <string name="categories_remaining_budget_empty">No categories found with remaining budget</string>
+    <string name="category_empty">Select a category</string>
+    <string name="subcategory_empty">Select a subcategory</string>
+    <string name="payment_type_empty">Enter a payment type</string>
+    <string name="date_empty">Select a date</string>
+    <string name="time_empty">Select a time</string>
+    <string name="transaction_name_empty">Enter transaction name</string>
+    <string name="subscription_name_empty">Enter subscription name</string>
+    <string name="subscription_name_exists">Subscription already exists</string>
+    <string name="frequency_empty">Select a frequency</string>
+    <string name="notification_empty">Select a notification</string>
+    <string name="loan_name_empty">Enter loan name</string>
+    <string name="loan_name_exists">Loan already exists</string>
+    <string name="load_account_error">Could not load account</string>
+    <string name="load_accounts_error">Could not load accounts</string>
+    <string name="load_budgets_error">Could not load budgets</string>
+    <string name="load_categories_error">Could not load categories</string>
+    <string name="load_loans_error">Could not load loans</string>
+    <string name="load_subscriptions_error">Could not load subscriptions</string>
+    <string name="load_subcategories_error">Could not load subcategories</string>
+    <string name="load_transactions_error">Could not load transactions</string>
+    <string name="select_account_error">Could not select account</string>
+    <string name="renew_budget_error">Could not renew monthly budget</string>
+    <string name="add_account_error">Could not add account</string>
+    <string name="add_budget_error">Could not add budget</string>
+    <string name="add_category_error">Could not add category</string>
+    <string name="add_categories_error">Could not add categories</string>
+    <string name="add_loan_error">Could not add loan</string>
+    <string name="add_subscription_error">Could not add subscription</string>
+    <string name="add_subcategory_error">Could not add subcategory</string>
+    <string name="add_transaction_error">Could not add transaction</string>
+    <string name="store_image_error">Could not store image</string>
+    <string name="load_image_error">Could not load image</string>
+
+
+    <!-- Actions -->
+    <string name="add">Add</string>
+    <string name="view">View</string>
+    <string name="edit">Edit</string>
+    <string name="change">Change</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="update">Update</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="retry">Retry</string>
+    <string name="check">Check</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">Sort by</string>
+    <string name="date_added_oldest">Date added (oldest)</string>
+    <string name="date_added_newest">Date added (newest)</string>
+    <string name="due_date_oldest">Due date (oldest)</string>
+    <string name="due_date_newest">Due date (newest)</string>
+    <string name="amount_highest">Amount (highest)</string>
+    <string name="amount_lowest">Amount (lowest)</string>
+    <string name="select">Select</string>
+    <string name="select_date">Select date</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_dates">Select dates (range)</string>
+    <string name="delete">Delete</string>
+    <string name="adding">Adding…</string>
+    <string name="saving">Saving…</string>
+    <string name="deleting">Deleting…</string>
+    <string name="loading_image">Loading image…</string>
+
 
     <string name="goalColor_hint"><b>Goal Color</b></string>
     <string name="icon_hint"><b>Icon</b></string>
@@ -18,6 +131,7 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+
 
     <string name="hello">Hello!</string>
     <string name="log_in_to_your_account">Log in to your account</string>
@@ -49,6 +163,7 @@
     <string name="confirm_new_password">Confirm New Password</string>
     <string name="reset_password">Reset Password</string>
     <string name="reset_npassword">Reset\nPassword</string>
+    <string name="password_updated">Successfully updated password</string>
     <string name="go_back">go back</string>
     <string name="email_password_request">Enter your email to request for a password reset</string>
     <string name="mobile_password_request">Enter your mobile number to request for a password reset</string>
@@ -57,7 +172,10 @@
     <string name="_63">+63</string>
     <string name="php">PHP</string>
     <string name="php_currency">₱</string>
-    <string name="bullet">••••••••••</string>
+    <string name="php_currency_0">₱0.00</string>
+    <string name="bullet">\u2022</string>
+
+
     <string name="user_profile">User Profile</string>
     <string name="user_profile_picture">User Profile Picture</string>
     <string name="user_join_date">Join Date</string>
@@ -75,21 +193,21 @@
     <string name="resend_email_verification">Resend Email Verification</string>
     <string name="confirm_nyour_email">Confirm\nyour Email</string>
     <string name="check_inbox">Please check your inbox for the\nemail verification. Click the link in the\nemail to confirm your email address.</string>
-    <string name="cancel">Cancel</string>
-    <string name="important_documents">Important Documents</string>
 
+
+    <string name="important_documents">Important Documents</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_header_1">What information do you collect?</string>
     <string name="privacy_policy_header_1_description">We collect information that you voluntarily provide to us when you register in our app, when you use our app, or otherwise when you contact us.</string>
     <string name="privacy_policy_subheader_1">Personal Information Provided by You</string>
     <string name="privacy_policy_subheader_1_description">The personal information that we collect depends on the context of your interaction with the application, the choices you make, and the features you use. All personal information that you provide to us must be true, complete, and accurate. This may include the following:</string>
-    <string name="privacy_policy_subheader_1_list">• Names\n• Phone numbers\n• Email addresses\n• Usernames\n• Passwords</string>
+    <string name="privacy_policy_subheader_1_list">\u2022 Names\n\u2022 Phone numbers\n\u2022 Email addresses\n\u2022 Usernames\n\u2022 Passwords</string>
     <string name="privacy_policy_subheader_2">Application Data</string>
     <string name="privacy_policy_subheader_2_description">When you use our application, we may also collect the following information if you choose to provide us with access or permission:</string>
-    <string name="privacy_policy_subheader_2_list_1">• Camera Access</string>
+    <string name="privacy_policy_subheader_2_list_1">\u2022 Camera Access</string>
     <string name="privacy_policy_subheader_2_list_1_description">We may request access or permission to use your mobile device\'s camera for certain features of the application.</string>
-    <string name="privacy_policy_subheader_2_list_2">• Push Notifications</string>
-    <string name="privacy_policy_subheader_2_list_2_description">We may request to send you push notifications regarding your account or certain features of the application. If you wish to opt out from receiving notifications, you may turn them off in your device\'s settings.</string>
+    <string name="privacy_policy_subheader_2_list_2">\u2022 Notifications</string>
+    <string name="privacy_policy_subheader_2_list_2_description">We may request to send you notifications regarding your account or certain features of the application. If you wish to opt out from receiving notifications, you may turn them off in your device\'s settings.</string>
     <string name="privacy_policy_header_2">How do you use the information that you collect?</string>
     <string name="privacy_policy_header_2_description">We process your information to provide, improve, and administer our application, communicate with you for security and fraud prevention, and to comply with the law.</string>
     <string name="privacy_policy_header_3">What information do you share?</string>
@@ -111,7 +229,7 @@
     <string name="toc_3_description_1">We collect several different types of information such as <b>Username, Email, Mobile Number (optional), Profile Image (optional)</b> for authentication purposes to provide and improve our Service to you.</string>
     <string name="toc_4_header">4. Types of Data Collected</string>
     <string name="toc_4_description_1">While using our Service, we may ask you to provide us with certain valid information that can be used to identify you. This identifiable information may include your:</string>
-    <string name="toc_4_list_1">• Username\n• Email\n• Password\n• Mobile Number (optional)\n• Account Profile Image (optional)</string>
+    <string name="toc_4_list_1">\u2022 Username\n\u2022 Email\n\u2022 Password\n\u2022 Mobile Number (optional)\n\u2022 Account Profile Photo (optional)</string>
     <string name="toc_4_description_2">We assure you that the information we gather will only be used for the purpose of this application, other than that, we will not use this information for different matters.</string>
     <string name="toc_5_header">5. OTP (One-Time Password)</string>
     <string name="toc_5_description_1">We may also collect your data regarding your mobile number wherein an OTP numeric code will be sent respectively for verification purposes.</string>
@@ -119,27 +237,40 @@
     <string name="toc_6_header">6. Security of Data</string>
     <string name="toc_6_description_1">The security of your data is crucial to us. However, no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</string>
     <string name="toc_7_header">7. Terms of Service</string>
-    <string name="toc_7_description_1">• Our goal is to help and assist users in relation with budgeting and financial management including but not limited to subscription management and loan monitoring.</string>
-    <string name="toc_7_description_2">• We also provide articles and videos that serve as tips for budgeting and financial management, which are validated by professionals.</string>
-    <string name="toc_7_description_3">• Daily Challenges and Savings Goal will also be provided to allow users to save a certain amount and reach an achievable amount goal.</string>
+    <string name="toc_7_description_1">Our goal is to help and assist users in relation with budgeting and financial management including but not limited to subscription management and loan monitoring.</string>
+    <string name="toc_7_description_2">We also provide articles and videos that serve as tips for budgeting and financial management, which are validated by professionals.</string>
+    <string name="toc_7_description_3">Daily Challenges and Savings Goal will be provided as well to allow users to save a certain amount and reach an achievable amount goal.</string>
     <string name="toc_8_header">8. Conditions</string>
-    <string name="toc_8_description_1">• Users must create an account first in order to use the application.</string>
-    <string name="toc_8_description_2">• Multiple creation of accounts is allowed.</string>
-    <string name="toc_8_description_3">• The expenses reports can be downloaded in PDF format only.</string>
+    <string name="toc_8_description_1">An account must be created first in order to use the application.</string>
+    <string name="toc_8_description_2">Multiple creation of accounts is allowed.</string>
+    <string name="toc_8_description_3">The expenses reports can be downloaded in PDF format only.</string>
     <string name="toc_9_header">9. Contact Us</string>
     <string name="toc_9_description_1">If you have any questions about the Terms and Conditions, feel free to contact us by email at <b>teamducats@gmail.com</b>.</string>
     <string name="decline">decline</string>
     <string name="agree">I Agree</string>
 
-    <string name="deactivate_account">Deactivate Account</string>
-    <string name="deactivate_account_mark">Deactivate user account?</string>
-    <string name="deactivate_account_message">Deactivating will temporarily disable your account. After 24 hours, all of your data will be deleted alongside your user account. Do you still wish to proceed?</string>
+    <string name="reset_user_data">Reset user data</string>
+    <string name="reset_user_data_title">Resetting your data will:</string>
+    <string name="reset_user_data_lists">\u2022 Reset your settings to default\n\u2022 Delete the following:</string>
+    <string name="reset_user_data_sub_lists">\u2022 Budgets\n\u2022 Challenges\n\u2022 Goals\n\u2022 Loans\n\u2022 Subscriptions\n\u2022 Transactions</string>
+    <string name="reset_user_data_mark">Delete user data?</string>
+    <string name="reset_user_data_message">All data associated with your user account will be gone forever. Do you still wish to proceed?</string>
+    <string name="reset_user_data_reauthenticate">Before we can reset your data, enter your email and password.</string>
+    <string name="reset_data">Reset data</string>
+    <string name="reset_user_data_warning">Proceed to reset your data?</string>
+    <string name="reset_user_data_warning_message">This action is permanent. All of your data cannot be recovered once your data is deleted and reset to the default settings. Do you still wish to proceed?</string>
+    <string name="resetting_user_data_warning">Please do not exit the app while we are deleting your data and restoring default settings</string>
 
-    <string name="delete_user_data">Delete User Data</string>
-    <string name="delete_user_data_mark">Delete user data?</string>
-    <string name="delete_user_data_message">All data associated with your user account will be gone forever. Do you still wish to proceed?</string>
-    <string name="delete_user_reauthenticate">Please provide your credentials again before we can delete your user data</string>
-    <string name="deleting_user_warning">Please do not exit the app while we delete your user data</string>
+    <string name="delete_user_account">Delete user account</string>
+    <string name="delete_user_account_title">Deleting your user account will:</string>
+    <string name="delete_user_account_list_1">Delete your user account (the account you use to log in the app)</string>
+    <string name="delete_user_account_list_2">Delete all your data within the app</string>
+    <string name="delete_user_account_reauthenticate">Before we can delete your account, enter your email and password.</string>
+    <string name="delete_my_account">Delete my account</string>
+    <string name="warning">warning</string>
+    <string name="delete_user_account_warning">Proceed to delete your account?</string>
+    <string name="delete_user_account_warning_message">This action is permanent. All of your data cannot be recovered once your account is deleted. Do you still wish to proceed?</string>
+    <string name="deleting_user_warning">Please do not exit the app while we are deleting your user data</string>
 
     <string name="post_delete_message">Thank you for using Ducatus!</string>
     <string name="post_delete_message_2">We\'re sad to see you go, but we hope to see you again!</string>
@@ -152,6 +283,7 @@
     <string name="categories_description">Manage categories and subcategories, change icons and color</string>
     <string name="other_settings">Other Settings</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_settings">Notification Settings</string>
     <string name="notifications_description">Configure notifications for the app</string>
     <string name="privacy">Privacy</string>
     <string name="privacy_description">Review and manage your personal data and privacy settings</string>
@@ -161,89 +293,47 @@
     <string name="logout_description">Logout the app</string>
     <string name="connection_available">Your connection was restored</string>
     <string name="connection_unavailable">No connection available</string>
-    <string name="save_changes">Save Changes</string>
-    <string name="save">Save</string>
-    <string name="confirm">Confirm</string>
-    <string name="retry">Retry</string>
 
-    <!--  Errors  -->
-    <string name="session_expired">Session expired, please log-in again</string>
-    <string name="email_empty">Enter your email</string>
-    <string name="email_invalid">Enter a valid email</string>
-    <string name="email_exists">Email is already taken</string>
-    <string name="new_email_empty">Enter your new email</string>
-    <string name="new_email_same">New email must not be the same as current email</string>
-    <string name="username_empty">Enter your username</string>
-    <string name="username_exists">Username is already taken</string>
-    <string name="email_username_empty">Enter your email or username</string>
-    <string name="user_does_not_exist">User does not exist</string>
-    <string name="password_empty">Enter your password</string>
-    <string name="password_invalid">Incorrect password</string>
-    <string name="password_complexity">Password must be at least 8 characters</string>
-    <string name="current_password_empty">Enter your current password</string>
-    <string name="new_password_empty">Enter your new password</string>
-    <string name="new_password_same">New password must not be the same as current password</string>
-    <string name="confirm_password_empty">Confirm your new password</string>
-    <string name="password_match_error">Passwords do not match</string>
-    <string name="verification_code_empty">Enter verification code</string>
-    <string name="verification_code_error">Invalid code, please try again</string>
-    <string name="mobile_number_empty">Enter your mobile number</string>
-    <string name="mobile_number_invalid">Enter a valid mobile number</string>
-    <string name="mobile_number_exists">Mobile number is already being used by another user</string>
-    <string name="mobile_auth_request_error">Too many requests, please try again</string>
-    <string name="unknown_error">Unknown error occurred, please try again</string>
-    <string name="account_name_empty">Enter account name</string>
-    <string name="account_name_exists">Account already exists</string>
-    <string name="category_name_empty">Enter category name</string>
-    <string name="category_name_exists">Category already exists</string>
-    <string name="category_nature_empty">Select category nature</string>
-    <string name="subcategory_name_empty">Enter category name</string>
-    <string name="subcategory_name_exists">Subcategory already exists</string>
-    <string name="budget_name_empty">Enter budget name</string>
-    <string name="budget_name_exists">Budget name already exists</string>
-    <string name="amount_empty">Enter amount</string>
-    <string name="amount_starts_0">Amount must be greater than 0</string>
-    <string name="amount_overflow">Amount must not be greater than the remaining budget</string>
-    <string name="amount_overflow_2">Monthly budget is too low for your current expenses</string>
-    <string name="categories_remaining_budget_empty">No categories found with remaining budget</string>
-    <string name="category_empty">Select a category</string>
-    <string name="subcategory_empty">Select a subcategory</string>
-    <string name="payment_type_empty">Enter a payment type</string>
-    <string name="date_empty">Select a date</string>
-    <string name="time_empty">Select a time</string>
-    <string name="loan_name_empty">Enter loan name</string>
 
     <!-- Notifications -->
+    <string name="title">Title</string>
+    <string name="message">Message</string>
     <string name="expenses_reminder">Expenses Reminder</string>
-    <string name="expenses_reminder_description">Reminder to record your expenses for the day depending on the time you had set</string>
+    <string name="expenses_reminder_description">Reminder to record your expenses for the day</string>
     <string name="budget_reminder">Budget Reminder</string>
     <string name="budget_reminder_description">Notify when you are near or over your budget allocations</string>
     <string name="bills_and_subscription_payment_reminder">Bills and Subscription Payment Reminder</string>
     <string name="bills_and_subscription_payment_reminder_description">Reminder about upcoming bills and subscription payments</string>
     <string name="debts_and_loans_reminder">Debts and Loans Reminder</string>
     <string name="debts_and_loans_reminder_description">Reminder about upcoming debts and loans due dates</string>
+    <string name="challenges_reminder">Challenges Reminder</string>
+    <string name="challenges_reminder_description">Reminder to complete any ongoing challenge</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="add">Add</string>
-    <string name="edit">Edit</string>
-    <string name="change">Change</string>
-    <string name="ok">OK</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="update">Update</string>
+
     <string name="home">Home</string>
+    <string name="recent_activity">Recent activity</string>
+    <string name="budgets_and_goals">Budgets and Goals</string>
     <string name="my_wallet">My Wallet</string>
     <string name="settings">Settings</string>
     <string name="no_connection">No connection</string>
 
-    <string name="reports">Reports</string>
-    <string name="goals">Goals</string>
-    <string name="challenges">Challenges</string>
-    <string name="tips">Tips</string>
-    <string name="help">Help</string>
-    <string name="color">Color</string>
+    <string name="notifications_empty">No notifications found</string>
+    <string name="delete_notifications_title">Delete all notifications?</string>
 
+    <string name="reports">Reports</string>
+    <string name="reports_permission_denied_title">Permission denied</string>
+    <string name="reports_permission_denied_message">To download your transactions report, go to your device\'s settings and enable Ducatus to access your Files and Media.</string>
+    <string name="top_5_expenses">Top 5 Expenses</string>
+    <string name="expenses_empty">No expenses found</string>
+    <string name="last_week">Last 7 days</string>
+    <string name="last_month">Last 31 days</string>
+    <string name="last_year">Last 12 months</string>
+    <string name="download_as_pdf">download as pdf</string>
+
+    <string name="name">Name</string>
+    <string name="color">Color</string>
     <string name="add_another_account">Add another account</string>
+    <string name="accounts_empty">No accounts</string>
     <string name="account_name">Account Name</string>
     <string name="account_color">Account Color</string>
     <string name="account_icon">Account Icon</string>
@@ -254,6 +344,10 @@
     <string name="delete_account_mark">Delete account?</string>
     <string name="delete_account_confirm">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
     <string name="deleting_account_warning">Please do not exit the app while we delete the account</string>
+    <string name="budget_renewed_title">Monthly budget has been renewed</string>
+    <string name="budget_renewed_message">Your monthly budget will be renewed again next month.</string>
+    <string name="got_it">Got it</string>
+
 
     <string name="budget">Budget</string>
     <string name="budgets">Budgets</string>
@@ -264,13 +358,17 @@
     <string name="add_budget">Add Budget</string>
     <string name="edit_budget">Edit budget</string>
     <string name="budgets_empty">No budgets allocated yet</string>
+    <string name="budgets_empty_2">No budgets found</string>
     <string name="budget_detail">Budget Detail</string>
-    <string name="transaction_history">Transaction History</string>
+    <string name="expense_history">Expense History</string>
     <string name="budget_name">Budget Name</string>
     <string name="view_budget">View Budget</string>
     <string name="spent">Spent</string>
     <string name="amount_left">Amount Left</string>
     <string name="limit">Limit</string>
+    <string name="progress">Progress</string>
+    <string name="budget_date_no_activity">No activity yet</string>
+    <string name="budget_date_last_activity">Last activity:</string>
     <string name="budget_status">Budget status</string>
     <string name="budget_status_1">Your budget is on track</string>
     <string name="budget_status_2">You have almost reached your budget limit</string>
@@ -301,6 +399,7 @@
 
     <string name="subcategories_empty">No subcategories</string>
     <string name="subcategory">Subcategory</string>
+    <string name="subcategory_optional">Subcategory (optional)</string>
     <string name="subcategories">Subcategories</string>
     <string name="subcategory_name">Subcategory Name</string>
     <string name="subcategory_icon">Subcategory Icon</string>
@@ -317,10 +416,6 @@
     <string name="delete_subcategory_confirm">All data associated with this subcategory will be gone forever. Do you still wish to proceed?</string>
     <string name="select_a_color">Select a color</string>
     <string name="select_an_icon">Select an icon</string>
-    <string name="select">Select</string>
-    <string name="delete">Delete</string>
-    <string name="check">Check</string>
-    <string name="done">Done</string>
     <string name="remaining_balance">Remaining Balance</string>
     <string name="expenses_report">Expenses Report</string>
     <string name="see_all">See all</string>
@@ -351,6 +446,12 @@
     <string name="expense">Expense</string>
     <string name="income">Income</string>
     <string name="top_up_value">Top up value (₱)</string>
+    <string name="export_expenses_report">Export expenses report</string>
+    <string name="attached_image">Attached image</string>
+    <string name="image_attached">Image attached</string>
+    <string name="preview_attached_image">Preview attached image</string>
+    <string name="choose_image_option">Select or take a picture</string>
+    <string name="complete_action">Complete action using</string>
 
     <!-- Top up values -->
     <string name="_100">100</string>
@@ -363,6 +464,7 @@
     <string name="_4_000">4,000</string>
     <string name="_5_000">5,000</string>
     <string name="_0">0</string>
+    <string name="transaction_name">Transaction Name</string>
     <string name="notes">Notes (optional)</string>
     <string name="add_notes">Add notes</string>
     <string name="image">Image (optional)</string>
@@ -374,16 +476,38 @@
     <string name="add_categories_message">You have no categories to add a transaction record. Add categories now?</string>
     <string name="delete_transaction">Delete transaction?</string>
     <string name="delete_transaction_message">All data associated with this transaction will be gone forever. Do you still wish to proceed?</string>
+    <string name="most_transactions">Most transactions:</string>
+    <string name="total_number_of_transactions">Total number of transactions:</string>
+    <string name="expenses">Expenses:</string>
+    <string name="income_2">Income:</string>
 
-    <string name="planned_payments">Planned Payments</string>
-    <string name="planned_payments_empty">No planned payments found</string>
-    <string name="planned_payment">Planned Payment</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_empty">No subscriptions found</string>
+    <string name="subscriptions_one_time_empty">No one-time subscriptions found</string>
+    <string name="subscriptions_recurring_empty">No recurring subscriptions found</string>
+    <string name="subscription">Subscription</string>
     <string name="one_time">One-time</string>
     <string name="recurring">Recurring</string>
-    <string name="add_planned_payment">Add Planned Payment</string>
-    <string name="planned_payment_name">Planned Payment Name</string>
+    <string name="add_subscription">Add Subscription</string>
+    <string name="subscription_name">Subscription Name</string>
     <string name="frequency">Frequency</string>
+    <string name="start_date">Start Date</string>
     <string name="recurrence">Recurrence</string>
+    <string name="select_recurrence">Select recurrence</string>
+    <string name="repeat_monthly">Repeat Monthly</string>
+    <string name="repeat_yearly">Repeat Yearly</string>
+    <string name="none">None</string>
+    <string name="on_due_date">On due date</string>
+    <string name="_1_day_before">1 day before</string>
+    <string name="_3_day_before">3 days before</string>
+    <string name="_1_week_before">1 week before</string>
+    <string name="every">Every</string>
+    <string name="edit_subscription">Edit subscription</string>
+    <string name="remaining_category_budget">Remaining category budget: ₱0.00</string>
+    <string name="confirm_payment_title">Confirm payment?</string>
+    <string name="delete_subscription_title">Delete subscription?</string>
+    <string name="delete_subscription_message">All data associated with this subscription will be gone forever. Do you still wish to proceed?</string>
+    <string name="subscription_empty_title">Subscription does not exist or has been removed</string>
 
     <string name="loans">Loans</string>
     <string name="active">Active</string>
@@ -391,13 +515,40 @@
     <string name="loan_name">Loan Name</string>
     <string name="add_loan">Add Loan</string>
     <string name="lend_money">Lend Money</string>
+    <string name="lend_money_small">Lend money</string>
     <string name="borrow_money">Borrow Money</string>
+    <string name="borrow_money_small">Borrow money</string>
+    <string name="pay_loan">Pay Loan</string>
+    <string name="receive_payment">Receive Payment</string>
+    <string name="give_money">Give Money</string>
+    <string name="receive_money">Receive Money</string>
     <string name="active_loans_empty">No active loans found</string>
-    <string name="search">Search</string>
-    <string name="name">Name</string>
-    <string name="repeat_monthly">Repeat Monthly</string>
-    <string name="repeat_yearly">Repeat Yearly</string>
-    <string name="every">Every</string>
-    <string name="select_recurrence">Select recurrence</string>
+    <string name="fully_paid_loans_empty">No fully paid loans found</string>
+    <string name="payment_overview">Payment Overview</string>
+    <string name="all">All</string>
+    <string name="borrowed">Borrowed</string>
+    <string name="lent">Lent</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="paid">Paid</string>
+    <string name="overdue">Overdue</string>
+    <string name="loan_detail">Loan Detail</string>
+    <string name="loan_history">Loan History</string>
+    <string name="next_payment">Next payment</string>
+    <string name="remaining_loan">Remaining Loan</string>
+    <string name="remaining_loan_2">Remaining Loan:</string>
+    <string name="notes_empty">No notes</string>
+    <string name="delete_loan_title">Delete loan?</string>
+    <string name="delete_loan_message">All data associated with this loan will be gone forever. Do you still wish to proceed?</string>
+    <string name="edit_loan">Edit loan</string>
+    <string name="loan_empty_title">Loan does not exist or has been removed</string>
+
+    <string name="goals">Goals</string>
+
+    <string name="challenges">Challenges</string>
+
+    <string name="tips">Tips</string>
+
+    <string name="help">Help</string>
+    <string name="goals_empty">No goals found</string>
 
 </resources>

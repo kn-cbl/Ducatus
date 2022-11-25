@@ -6,28 +6,6 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.ducatus.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_budgetsFragment"
-            app:destination="@id/budgetsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_transactionsFragment"
-            app:destination="@id/transactionsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_loansFragment"
-            app:destination="@id/loansFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_plannedPaymentsFragment"
-            app:destination="@id/plannedPaymentsFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/settingsFragment"
         android:name="com.ducatus.SettingsFragment"
         android:label="fragment_settings"
@@ -48,9 +26,38 @@
         android:label="fragment_loans"
         tools:layout="@layout/fragment_loans" />
     <fragment
-        android:id="@+id/plannedPaymentsFragment"
-        android:name="com.ducatus.PlannedPaymentsFragment"
-        android:label="fragment_planned_payments"
-        tools:layout="@layout/fragment_planned_payments" />
+        android:id="@+id/subscriptionsViewPagerFragment"
+        android:name="com.ducatus.SubscriptionsViewPagerFragment"
+        android:label="fragment_subscriptions_view_pager"
+        tools:layout="@layout/fragment_subscriptions_view_pager" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ducatus.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_transactionsFragment"
+            app:destination="@id/transactionsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_loansFragment"
+            app:destination="@id/loansFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_subscriptionsViewPagerFragment"
+            app:destination="@id/subscriptionsViewPagerFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_budgetsFragment"
+            app:destination="@id/budgetsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_reportsFragment"
+            app:destination="@id/reportsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.ducatus.ReportsFragment"
+        android:label="fragment_reports"
+        tools:layout="@layout/fragment_reports" />
 
 </navigation>

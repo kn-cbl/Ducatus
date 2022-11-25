@@ -15,6 +15,7 @@
             android:id="@+id/flItemSubcategoryIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:background="@drawable/bg_circle"
             android:backgroundTint="@color/lighter_gray">
@@ -32,13 +33,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_toStartOf="@id/ibItemSubcategoryEdit"
             android:layout_toEndOf="@+id/flItemSubcategoryIcon"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
             android:fontFamily="@font/inter_medium"
+            android:gravity="center_vertical"
+            android:maxLines="3"
             android:text="@string/subcategory_name"
-            android:textColor="@color/off_black"
-            android:textSize="14sp" />
+            android:textColor="@color/off_black" />
 
         <ImageButton
             android:id="@+id/ibItemSubcategoryEdit"

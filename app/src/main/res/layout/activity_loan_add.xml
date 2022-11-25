@@ -21,19 +21,6 @@
         app:title="@string/add_loan"
         app:titleTextColor="@color/off_white" />
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/pbAddLoan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="10dp"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/bright_blue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tbAddLoan" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -50,22 +37,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_calendar_shape"
+                android:background="@drawable/bg_radio_group"
                 android:orientation="horizontal">
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbLoanLend"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_radio_selector"
-                    android:button="@color/transparent"
-                    android:checked="true"
-                    android:fontFamily="@font/inter_medium"
-                    android:gravity="center"
-                    android:text="@string/lend_money"
-                    android:textAllCaps="false"
-                    android:textColor="@color/darker_gray" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/rbLoanBorrow"
@@ -74,9 +47,23 @@
                     android:layout_weight="1"
                     android:background="@drawable/btn_radio_selector"
                     android:button="@color/transparent"
+                    android:checked="true"
                     android:fontFamily="@font/inter_medium"
                     android:gravity="center"
                     android:text="@string/borrow_money"
+                    android:textAllCaps="false"
+                    android:textColor="@color/darker_gray" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbLoanLend"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_radio_selector"
+                    android:button="@color/transparent"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center"
+                    android:text="@string/lend_money"
                     android:textAllCaps="false"
                     android:textColor="@color/darker_gray" />
             </RadioGroup>
@@ -155,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
                     android:inputType="text"
-                    android:maxLength="50"
+                    android:maxLength="30"
                     android:textColor="@color/off_black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp"
@@ -178,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:hint="@string/date"
+                    android:hint="@string/due_date"
                     app:boxCornerRadiusBottomEnd="8dp"
                     app:boxCornerRadiusBottomStart="8dp"
                     app:boxCornerRadiusTopEnd="8dp"

@@ -9,23 +9,35 @@
         android:id="@+id/privacyFragment"
         android:name="com.ducatus.PrivacyFragment"
         android:label="fragment_privacy"
-        tools:layout="@layout/fragment_privacy" >
-        <action
-            android:id="@+id/action_privacyFragment_to_deleteUserDataDialogFragment"
-            app:destination="@id/deleteUserDataDialogFragment" />
+        tools:layout="@layout/fragment_privacy">
         <action
             android:id="@+id/action_privacyFragment_to_privacyPolicyFragment"
             app:destination="@id/privacyPolicyFragment" />
         <action
             android:id="@+id/action_privacyFragment_to_termsOfServiceFragment"
             app:destination="@id/termsOfServiceFragment" />
+        <action
+            android:id="@+id/action_privacyFragment_to_deleteUserAccountFragment"
+            app:destination="@id/deleteUserAccountFragment"
+            app:enterAnim="@anim/slide_in_right_short"
+            app:exitAnim="@anim/slide_out_left_short"
+            app:popEnterAnim="@anim/slide_in_left_short"
+            app:popExitAnim="@anim/slide_out_right_short" />
+        <action
+            android:id="@+id/action_privacyFragment_to_resetUserDataFragment"
+            app:destination="@id/resetUserDataFragment"
+            app:enterAnim="@anim/slide_in_right_short"
+            app:exitAnim="@anim/slide_out_left_short"
+            app:popEnterAnim="@anim/slide_in_left_short"
+            app:popExitAnim="@anim/slide_out_right_short" />
     </fragment>
     <dialog
         android:id="@+id/deleteUserDataDialogFragment"
         android:name="com.ducatus.DeleteUserDataDialogFragment"
         android:label="fragment_delete_user_data_dialog"
-        tools:layout="@layout/fragment_delete_user_data_dialog" >
-        <argument android:name="id"
+        tools:layout="@layout/fragment_delete_user_data_dialog">
+        <argument
+            android:name="id"
             app:argType="string" />
     </dialog>
     <fragment
@@ -38,4 +50,57 @@
         android:name="com.ducatus.TermsOfServiceFragment"
         android:label="fragment_terms_of_service"
         tools:layout="@layout/fragment_terms_of_service" />
+    <fragment
+        android:id="@+id/deleteUserAccountFragment"
+        android:name="com.ducatus.DeleteUserAccountFragment"
+        android:label="fragment_delete_user_account"
+        tools:layout="@layout/fragment_delete_user_account">
+        <action
+            android:id="@+id/action_deleteUserAccountFragment_to_deleteUserAccountConfirmFragment"
+            app:destination="@id/deleteUserAccountConfirmFragment"
+            app:enterAnim="@anim/slide_in_right_short"
+            app:exitAnim="@anim/slide_out_left_short"
+            app:popEnterAnim="@anim/slide_in_left_short"
+            app:popExitAnim="@anim/slide_out_right_short" />
+    </fragment>
+    <fragment
+        android:id="@+id/deleteUserAccountConfirmFragment"
+        android:name="com.ducatus.DeleteUserAccountConfirmFragment"
+        android:label="fragment_delete_user_account_confirm"
+        tools:layout="@layout/fragment_delete_user_account_confirm">
+        <action
+            android:id="@+id/action_deleteUserAccountConfirmFragment_to_deleteUserDataDialogFragment"
+            app:destination="@id/deleteUserDataDialogFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetUserDataFragment"
+        android:name="com.ducatus.ResetUserDataFragment"
+        android:label="fragment_reset_user_data"
+        tools:layout="@layout/fragment_reset_user_data">
+        <action
+            android:id="@+id/action_resetUserDataFragment_to_resetUserDataConfirmFragment"
+            app:destination="@id/resetUserDataConfirmFragment"
+            app:enterAnim="@anim/slide_in_right_short"
+            app:exitAnim="@anim/slide_out_left_short"
+            app:popEnterAnim="@anim/slide_in_left_short"
+            app:popExitAnim="@anim/slide_out_right_short" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetUserDataConfirmFragment"
+        android:name="com.ducatus.ResetUserDataConfirmFragment"
+        android:label="fragment_reset_user_data_confirm"
+        tools:layout="@layout/fragment_reset_user_data_confirm" >
+        <action
+            android:id="@+id/action_resetUserDataConfirmFragment_to_resetUserDataDialogFragment"
+            app:destination="@id/resetUserDataDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/resetUserDataDialogFragment"
+        android:name="com.ducatus.ResetUserDataDialogFragment"
+        android:label="fragment_reset_user_data_dialog"
+        tools:layout="@layout/fragment_reset_user_data_dialog" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </dialog>
 </navigation>

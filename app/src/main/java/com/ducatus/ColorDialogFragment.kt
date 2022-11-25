@@ -47,11 +47,11 @@ class ColorDialogFragment : DialogFragment() {
                 )
 
                 gradientDrawable.setColor(activity.getColor(iconColor))
-                gradientDrawable.cornerRadius = 20f
+                gradientDrawable.cornerRadius = 100f
                 color.background = gradientDrawable
 
                 color.setOnClickListener {
-                    viewModel.selectColor(colors[position])
+                    viewModel.setColor(colors[position])
                     dismiss()
                 }
 

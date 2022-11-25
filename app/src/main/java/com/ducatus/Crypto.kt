@@ -14,10 +14,8 @@ internal class Crypto {
     private val salt = BuildConfig.SALT
     private val iv = BuildConfig.IV
 
-    fun encrypt(strToEncrypt: String) :  String?
-    {
-        try
-        {
+    fun encrypt(strToEncrypt: String) :  String? {
+        try {
             val ivParameterSpec = IvParameterSpec(Base64.decode(iv, Base64.DEFAULT))
 
             val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
@@ -29,16 +27,14 @@ internal class Crypto {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
             return Base64.encodeToString(cipher.doFinal(strToEncrypt.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
         }
-        catch (e: Exception)
-        {
+        catch (e: Exception) {
             println("Error while encrypting: $e")
         }
         return null
     }
 
     fun decrypt(strToDecrypt : String) : String? {
-        try
-        {
+        try {
             val ivParameterSpec =  IvParameterSpec(Base64.decode(iv, Base64.DEFAULT))
 
             val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")

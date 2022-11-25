@@ -11,13 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import com.ducatus.databinding.FragmentSearchItemDialogBinding
-import com.ducatus.viewmodel.AccountViewModel
 import com.ducatus.viewmodel.SearchViewModel
 
 class SearchItemDialogFragment : DialogFragment() {
     private lateinit var activity: Activity
     private lateinit var binding: FragmentSearchItemDialogBinding
-    private val viewModel: SearchViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +42,7 @@ class SearchItemDialogFragment : DialogFragment() {
         binding.btnSearch.setOnClickListener {
             val name = binding.tfSearchName.editText?.text.toString().trim { it <= ' ' }
             if (!TextUtils.isEmpty(name)) {
-                viewModel.searchName(name)
+                searchViewModel.searchName(name)
             }
             dismiss()
         }
@@ -51,11 +50,11 @@ class SearchItemDialogFragment : DialogFragment() {
 
     private fun enableButton() {
         binding.btnSearch.isEnabled = true
-        binding.btnSearch.setBackgroundColor(ContextCompat.getColor(activity, R.color.green_primary))
+        binding.btnSearch.setTextColor(ContextCompat.getColor(activity, R.color.green_primary))
     }
 
     private fun disableButton() {
         binding.btnSearch.isEnabled = false
-        binding.btnSearch.setBackgroundColor(ContextCompat.getColor(activity, R.color.gray))
+        binding.btnSearch.setTextColor(ContextCompat.getColor(activity, R.color.gray))
     }
 }

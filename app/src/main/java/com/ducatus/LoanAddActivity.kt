@@ -1,40 +1,53 @@
 package com.ducatus
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import android.view.View
-import android.view.WindowManager
 import android.widget.GridLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.Loan
 import com.ducatus.databinding.ActivityLoanAddBinding
 import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.text.DateFormat
-import java.util.*
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class LoanAddActivity : AppCompatActivity() {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityLoanAddBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var datePicker: MaterialDatePicker<Long>
-    private lateinit var timePicker: MaterialTimePicker
-    private lateinit var dateTimeMap: MutableMap<String, Long>
-    private val milliseconds: Long = 60 * 1000
-    private var loanType: Int = 0
+    private lateinit var sharedPreferences: SharedPreferences
+    private var firebaseUser: FirebaseUser? = null
+    private var loanType: String = "B"
+    private var dateTimeMap: MutableMap<String, Long> =
+        mutableMapOf("date" to 0, "hour" to 0, "minute" to 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,14 +75,14 @@ class LoanAddActivity : AppCompatActivity() {
             }
         }
 
-        // determine if transaction is expense or income
+        // determine if l loan is lend or borrow
         binding.rgAddLoan.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbLoanLend -> {
-                    loanType = 0
+                    loanType = "L"
                 }
                 R.id.rbLoanBorrow -> {
-                    loanType = 1
+                    loanType = "B"
                 }
             }
         }
@@ -82,10 +95,8 @@ class LoanAddActivity : AppCompatActivity() {
 
     private fun loadData() {
         auth = Firebase.auth
-        if (auth.currentUser != null) {
-            database = Firebase.database
-        }
-        else {
+        firebaseUser = auth.currentUser
+        if (firebaseUser == null) {
             sessionExpired()
         }
     }
@@ -101,40 +112,43 @@ class LoanAddActivity : AppCompatActivity() {
     }
 
     private fun setDateTimePicker() {
-        dateTimeMap = mutableMapOf(
-            "date" to 0,
-            "hour" to 0,
-            "minute" to 0,
+        val zdtToday = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
         )
 
-        val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        val janThisYear = ZonedDateTime.of(zdtToday.year, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
+        val lastTwentyYears = janThisYear.minusYears(20)
 
-        calendar.timeInMillis = today
-        calendar[Calendar.MONTH] = Calendar.JANUARY
-        val janThisYear = calendar.timeInMillis
+        val startDate = lastTwentyYears.toInstant().toEpochMilli()
+        val endDate = zdtToday.toInstant().toEpochMilli()
 
         val constraintsBuilder =
             CalendarConstraints.Builder()
-                .setStart(janThisYear)
-                .setEnd(today)
+                .setValidator(DateValidatorPointForward.now())
+                .setStart(startDate)
+                .setEnd(endDate)
 
-        datePicker = MaterialDatePicker.Builder.datePicker()
+        val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .setCalendarConstraints(constraintsBuilder.build())
             .build()
 
         datePicker.addOnPositiveButtonClickListener { date ->
-            val formattedDate =
-                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                    .format(Date(date))
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(date),
+                ZoneId.systemDefault()
+            )
+            val startOfDay = zdt.with(LocalTime.MIN)
+            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
+            val formattedDate = dtf.format(zdt)
 
             binding.tfAddLoanDate.editText?.setText(formattedDate)
-            dateTimeMap["date"] = date
+            dateTimeMap["date"] = startOfDay.toInstant().toEpochMilli()
         }
 
-        timePicker = MaterialTimePicker.Builder()
+        val timePicker = MaterialTimePicker.Builder()
             .setTitleText("Select time")
             .setHour(12)
             .setMinute(0)
@@ -169,39 +183,36 @@ class LoanAddActivity : AppCompatActivity() {
             val time = "$hour:$minute $meridian"
             binding.tfAddLoanTime.editText?.setText(time)
 
-            val msHour: Long = timePicker.hour * milliseconds
-            val msMinute: Long = timePicker.minute * milliseconds
+            val milliseconds: Long = 1000
+            val msHour: Long = timePicker.hour * milliseconds * 60 * 60
+            val msMinute: Long = timePicker.minute * milliseconds * 60
 
             dateTimeMap["hour"] = msHour
             dateTimeMap["minute"] = msMinute
         }
 
         binding.tfAddLoanDate.editText?.setOnClickListener {
-            try {
+            if (!datePicker.isAdded) {
                 datePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddLoanDate.setEndIconOnClickListener {
-            try {
+            if (!datePicker.isAdded) {
                 datePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddLoanTime.editText?.setOnClickListener {
-            try {
+            if (!timePicker.isAdded) {
                 timePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddLoanTime.setEndIconOnClickListener {
-            try {
+            if (!timePicker.isAdded) {
                 timePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
     }
 
@@ -231,18 +242,13 @@ class LoanAddActivity : AppCompatActivity() {
         binding.tfAddLoanDate.editText?.doOnTextChanged { text, _, _, _ ->
             if (text != null) binding.tfAddLoanDate.error = null
         }
-
-        binding.tfAddLoanTime.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text != null) binding.tfAddLoanTime.error = null
-        }
     }
 
     private fun validateData() {
         val amount = binding.tfAddLoanAmount.editText?.text.toString().trim { it <= ' ' }
         val name = binding.tfAddLoanName.editText?.text.toString().trim { it <= ' ' }
         val date = binding.tfAddLoanDate.editText?.text.toString().trim { it <= ' ' }
-        val time = binding.tfAddLoanTime.editText?.text.toString().trim { it <= ' ' }
-        val notes = binding.tfAddLoanNotes.editText?.text.toString().trim { it <= ' ' }
+        var notes: String? = binding.tfAddLoanNotes.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
 
         if (TextUtils.isEmpty(name)) {
@@ -255,9 +261,8 @@ class LoanAddActivity : AppCompatActivity() {
             errors++
         }
 
-        if (TextUtils.isEmpty(time)) {
-            binding.tfAddLoanTime.error = getString(R.string.time_empty)
-            errors++
+        if (TextUtils.isEmpty(notes)) {
+            notes = null
         }
 
         if (TextUtils.isEmpty(amount)) {
@@ -272,81 +277,234 @@ class LoanAddActivity : AppCompatActivity() {
         }
 
         if (errors == 0) {
-            showProgressDialog()
-            val sharedPreferences = SharedPreferences(this)
-            val currentAccountId = sharedPreferences.accountId.toString()
-            val loanData = mapOf(
-                "name" to name,
-                "amount" to amount,
-                "type" to loanType.toString(),
-                "date" to dateTimeMap["date"].toString(),
-                "hour" to dateTimeMap["hour"].toString(),
-                "minute" to dateTimeMap["minute"].toString(),
-                "notes" to notes,
-            )
+            firebaseUser?.let {
+                showProgressDialog()
+                sharedPreferences = SharedPreferences(this)
+                val currentAccountId = sharedPreferences.accountId.toString()
+                val totalDate = dateTimeMap["date"]!! + dateTimeMap["hour"]!! + dateTimeMap["minute"]!!
 
-            addLoan(auth.currentUser!!.uid, currentAccountId, loanData)
+                val loan = Loan(
+                    null,
+                    name,
+                    name.lowercase(),
+                    amount.toDouble(),
+                    loanType,
+                    totalDate,
+                    null,
+                    notes,
+                    notes?.lowercase(),
+                    System.currentTimeMillis().toInt()
+                )
+
+                loanExists(it.uid, currentAccountId, loan)
+            }
         }
     }
 
-    private fun addLoan(uid: String, accountId: String, loanData: Map<String, String>) {
+    private fun loanExists(uid: String, accountId: String, loan: Loan) {
+        database = Firebase.database
         databaseReference = database.getReference("loans").child(uid).child(accountId)
-        val key = databaseReference.push().key
-        val loan = Loan(
-            key,
-            loanData["name"],
-            loanData["amount"]!!.toDouble(),
-            loanData["type"]!!.toInt(),
-            loanData["date"]!!.toLong(),
-            loanData["hour"]!!.toLong(),
-            loanData["minute"]!!.toLong(),
-            loanData["notes"]
-        )
+        val query = databaseReference.orderByChild("nameLower").equalTo(loan.nameLower)
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    addLoan(accountId, loan)
+                }
+                else {
+                    hideProgressDialog()
+                    binding.tfAddLoanName.error = getString(R.string.loan_name_exists)
+                }
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Snackbar
+                    .make(binding.llAddLoan, getString(R.string.add_loan_error), 5000)
+                    .show()
+            }
+    }
 
-        databaseReference.child(key!!).setValue(loan)
+    private fun addLoan(accountId: String, loan: Loan) {
+        val key = databaseReference.push().key!!
+        loan.id = key
+
+        databaseReference.child(key).setValue(loan)
             .addOnSuccessListener {
+                scheduleNotification(this, loan, accountId)
                 hideProgressDialog()
                 onBackPressed()
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(binding.llAddLoan, it.localizedMessage!!, 5000)
+                    .make(binding.llAddLoan, getString(R.string.add_loan_error), 5000)
                     .show()
             }
     }
 
-    private fun sessionExpired() {
-        Snackbar
-            .make(binding.llAddLoan, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+    private fun createNotificationChannel() {
+        val name = "Loans"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(sharedPreferences.loansChannelId, name, importance)
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                finish()
-            }
-        }.start()
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
-    private fun showProgressDialog() {
-        binding.pbAddLoan.visibility = View.VISIBLE
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+    private fun enableReceiver(context: Context) {
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        context.packageManager.setComponentEnabledSetting(
+            receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
         )
     }
 
+    private fun scheduleNotification(context: Context, loan: Loan, accountId: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.loansChannelId)
+        if (notificationChannel == null) {
+            createNotificationChannel()
+            notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.loansChannelId)
+        }
+
+        // create notification if channel is enabled
+        // else do not create
+        if (notificationChannel.importance != NotificationManager.IMPORTANCE_NONE) {
+            enableReceiver(context)
+
+            // pass to broadcast receiver
+            val notificationIntent = Intent(context, NotificationReceiver::class.java)
+
+            val dtf = DateTimeFormatter.ofPattern("MMM dd, h:mm a")
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(loan.dueDate!!),
+                ZoneId.systemDefault()
+            )
+
+            val formattedDate = dtf.format(zdt)
+            val formattedAmount = "₱" + String.format("%,.2f", loan.amount)
+            val elapsedTime = getElapsedTime(loan.dueDate!!)
+
+            val title = "Loan payment for ${loan.name} due $elapsedTime"
+            val message = "Settle your payment of $formattedAmount on or before $formattedDate."
+            val notificationId = loan.notificationId!!
+
+            notificationIntent.action = "com.ducatus.LOAN"
+            notificationIntent.putExtra(titleExtra, title)
+            notificationIntent.putExtra(messageExtra, message)
+            notificationIntent.putExtra(notificationIdExtra, notificationId)
+            notificationIntent.putExtra(itemIdExtra, loan.id)
+            notificationIntent.putExtra(accountIdExtra, accountId)
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val notificationDate = zdt.minusDays(3).toInstant().toEpochMilli()
+
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(AlarmManager.RTC_WAKEUP, notificationDate, pendingIntent)
+        }
+    }
+
+    private fun getElapsedTime(date: Long): String {
+        val zdtToday = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
+        )
+        val zdt = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(date),
+            ZoneId.systemDefault()
+        )
+
+        val startDate = zdtToday.toInstant()
+        val endDate = zdt.toInstant()
+
+        val elapsedDays = ChronoUnit.DAYS.between(startDate, endDate)
+        var elapsedHours = ChronoUnit.HOURS.between(startDate, endDate)
+        var elapsedMinutes = ChronoUnit.MINUTES.between(startDate, endDate)
+        var elapsedSeconds = ChronoUnit.SECONDS.between(startDate, endDate)
+
+        val dateText =
+            if (elapsedDays > 0) {
+                if (elapsedDays.toInt() == 1) {
+                    "in $elapsedDays day"
+                }
+                else {
+                    "in $elapsedDays days"
+                }
+            }
+            else if (elapsedHours > 0) {
+                if (elapsedHours.toInt() == 1) {
+                    "in $elapsedHours hour"
+                }
+                else {
+                    "in $elapsedHours hours"
+                }
+            }
+            else if (elapsedMinutes > 0) {
+                if (elapsedMinutes.toInt() == 1) {
+                    "in $elapsedMinutes minute"
+                }
+                else {
+                    "in $elapsedMinutes minutes"
+                }
+            }
+            else if (elapsedSeconds > 0) {
+                if (elapsedSeconds.toInt() == 1) {
+                    "in $elapsedSeconds second"
+                }
+                else {
+                    "in $elapsedSeconds seconds"
+                }
+            }
+            else {
+                elapsedHours *= -1
+                elapsedMinutes *= -1
+                elapsedSeconds *= -1
+
+                if (elapsedHours > 0) {
+                    "${elapsedHours}h ago"
+                }
+                else if (elapsedMinutes > 0) {
+                    "${elapsedMinutes}m ago"
+                }
+                else {
+                    "${elapsedSeconds}s ago"
+                }
+            }
+
+        return dateText
+    }
+
+    private fun sessionExpired() {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
+
+        dialog.setOnDismissListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
+    }
+
+    private fun showProgressDialog() {
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.adding))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(supportFragmentManager, "dialog")
+    }
+
     private fun hideProgressDialog() {
-        binding.pbAddLoan.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        actionDialog.dismiss()
     }
 }

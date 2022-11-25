@@ -8,14 +8,6 @@
     android:orientation="vertical"
     tools:context=".AccountAddFragment">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/pbAddAccount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/bright_blue" />
-
     <include
         layout="@layout/grid_amount_presets"
         android:layout_width="match_parent"
@@ -109,10 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
-            android:hint="@string/select_a_color"
             android:inputType="none"
-            android:textColorHint="@color/gray"
-            android:textSize="14sp"
             tools:ignore="LabelFor,TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 

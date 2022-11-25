@@ -2,6 +2,7 @@ package com.ducatus
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout.END_ICON_NONE
 import com.google.firebase.auth.FirebaseAuth
@@ -26,9 +28,13 @@ import com.yalantis.ucrop.UCrop
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import java.io.File
 import java.text.DateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
-class UserProfileFragment : Fragment() {
+class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentUserProfileBinding
@@ -88,6 +94,10 @@ class UserProfileFragment : Fragment() {
         }
     }
 
+    override fun onDismiss(p0: DialogInterface?) {
+        loadData()
+    }
+
     private fun loadData() {
         showProgressDialog()
         auth = Firebase.auth
@@ -101,8 +111,13 @@ class UserProfileFragment : Fragment() {
                     .into(binding.ivUserProfilePicture)
             }
 
-            binding.tvJoinDate.text = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                .format(Date(firebaseUser.metadata!!.creationTimestamp))
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(firebaseUser.metadata!!.creationTimestamp),
+                ZoneId.systemDefault()
+            )
+            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
+            val formattedDate = dtf.format(zdt)
+            binding.tvJoinDate.text = formattedDate
 
             binding.tvUserProfileUsername.text = firebaseUser.displayName
             binding.tfUserProfileEmail.editText?.setText(firebaseUser.email)
@@ -137,7 +152,6 @@ class UserProfileFragment : Fragment() {
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
         startActivityForResult(photoPickerIntent, requestPickImage)
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -196,21 +210,18 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun sessionExpired() {
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
+
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {

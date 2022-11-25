@@ -21,19 +21,6 @@
         app:title="@string/add_transaction"
         app:titleTextColor="@color/off_white" />
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/pbAddTransactionAction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="10dp"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/bright_blue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tbAddTransaction" />
-
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbAddTransactionMain"
         android:layout_width="wrap_content"
@@ -51,6 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -69,7 +58,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_calendar_shape"
+                android:background="@drawable/bg_radio_group"
                 android:orientation="horizontal">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
@@ -163,6 +152,33 @@
                     tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tfAddTransactionName"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/transaction_name"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:endIconMode="clear_text"
+                app:errorEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:inputType="text"
+                    android:maxLength="30"
+                    android:textColor="@color/off_black"
+                    android:textSize="14sp"
+                    tools:ignore="TextContrastCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -193,6 +209,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:fontFamily="@font/inter_regular"
+                        android:maxLines="1"
                         android:textColor="@color/off_black"
                         android:textSize="14sp"
                         tools:ignore="TextContrastCheck" />
@@ -219,6 +236,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:fontFamily="@font/inter_regular"
+                        android:maxLines="1"
                         android:textColor="@color/off_black"
                         android:textSize="14sp"
                         tools:ignore="TextContrastCheck" />
@@ -260,7 +278,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/subcategory"
+                android:hint="@string/subcategory_optional"
                 app:boxCornerRadiusBottomEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
@@ -288,7 +306,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/inter_regular"
                 android:text="@string/more_details"
-                android:textColor="@color/darker_gray" />
+                android:textColor="@color/off_black" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tfAddTransactionPaymentType"
@@ -311,7 +329,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_regular"
                     android:inputType="text"
-                    android:maxLength="50"
+                    android:maxLength="30"
                     android:textColor="@color/off_black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp"
@@ -351,14 +369,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tfAddTransactionAttachment"
+                android:id="@+id/tfAddTransactionImage"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="72dp"
                 android:hint="@string/image"
                 app:boxCornerRadiusBottomEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
@@ -367,7 +384,7 @@
                 app:endIconDrawable="@drawable/ic_baseline_image_24"
                 app:endIconMode="custom"
                 app:errorEnabled="true"
-                app:helperText="Attach image (.jpg, .png)"
+                app:helperText="Attach image"
                 app:helperTextEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -375,18 +392,26 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:fontFamily="@font/inter_regular"
-                    android:inputType="none"
                     android:textColor="@color/off_black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp"
                     tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <ImageView
+                android:id="@+id/ivAddtransactionImage"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/attached_image" />
+
         </LinearLayout>
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ibScanImage"
+        android:id="@+id/fabScanImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class ColorViewModel : ViewModel() {
-    private val mutableSelectedColor = MutableLiveData<String>()
-    val selectedColor: LiveData<String> get() = mutableSelectedColor
+    private val mutableColor = MutableLiveData<String>()
+    val color: LiveData<String> get() = mutableColor
 
-    fun selectColor(color: String) {
-        mutableSelectedColor.value = color
+    fun setColor(color: String) {
+        mutableColor.value = color
     }
 }

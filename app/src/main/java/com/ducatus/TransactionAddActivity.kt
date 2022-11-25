@@ -1,23 +1,27 @@
 package com.ducatus
 
+import android.app.AlarmManager
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.os.CountDownTimer
+import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import com.ducatus.data.Budget
-import com.ducatus.data.Category
-import com.ducatus.data.Subcategory
-import com.ducatus.data.Transaction
+import com.ducatus.data.*
 import com.ducatus.databinding.ActivityTransactionAddBinding
 import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -30,23 +34,36 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import java.text.DateFormat
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
+import com.yalantis.ucrop.UCrop
+import java.io.File
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TransactionAddActivity : AppCompatActivity() {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityTransactionAddBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var datePicker: MaterialDatePicker<Long>
-    private lateinit var timePicker: MaterialTimePicker
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var storage: FirebaseStorage
+    private lateinit var storageReference: StorageReference
     private lateinit var currentAccountId: String
     private lateinit var selectedCategory: Category
+    private val requestPickImage = 1
     private var firebaseUser: FirebaseUser? = null
-    private val milliseconds: Long = 60 * 1000
     private var selectedSubcategory: Subcategory? = null
+    private var selectedCategoryWithTag: CategoryWithTag? = null
     private var remainingBudget: Double = 0.0
     private var transactionType = 0
+    private var imageUri: Uri? = null
     private var dateTimeMap: MutableMap<String, Long> =
         mutableMapOf("date" to 0, "hour" to 0, "minute" to 0)
 
@@ -80,9 +97,13 @@ class TransactionAddActivity : AppCompatActivity() {
         binding.rgAddTransaction.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbTransactionExpense -> {
+                    binding.rbTransactionExpense.setTextColor(ContextCompat.getColor(this, R.color.off_white))
+                    binding.rbTransactionIncome.setTextColor(ContextCompat.getColor(this, R.color.bright_blue))
                     transactionType = 0
                 }
                 R.id.rbTransactionIncome -> {
+                    binding.rbTransactionIncome.setTextColor(ContextCompat.getColor(this, R.color.off_white))
+                    binding.rbTransactionExpense.setTextColor(ContextCompat.getColor(this, R.color.bright_blue))
                     transactionType = 1
                 }
             }
@@ -95,6 +116,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
                 // store data of selected category
                 selectedCategory = category.category
+                selectedCategoryWithTag = category
 
                 val categoryId = category.category.id!!
                 firebaseUser?.let {
@@ -111,6 +133,18 @@ class TransactionAddActivity : AppCompatActivity() {
                 // store data of selected subcategory
                 selectedSubcategory = subcategory.subcategory
             }
+
+        binding.tfAddTransactionImage.editText?.setOnClickListener {
+            selectImage()
+        }
+
+        binding.tfAddTransactionImage.setEndIconOnClickListener {
+            selectImage()
+        }
+
+        binding.fabScanImage.setOnClickListener {
+            selectImage()
+        }
     }
 
     override fun onBackPressed() {
@@ -132,9 +166,9 @@ class TransactionAddActivity : AppCompatActivity() {
         auth = Firebase.auth
         firebaseUser = auth.currentUser
         if (firebaseUser != null) {
-            val sharedPreferences = SharedPreferences(this)
-            currentAccountId = sharedPreferences.accountId.toString()
             database = Firebase.database
+            sharedPreferences = SharedPreferences(this)
+            currentAccountId = sharedPreferences.accountId.toString()
         }
         else {
             sessionExpired()
@@ -228,7 +262,7 @@ class TransactionAddActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .make(binding.clAddTransaction, getString(R.string.load_categories_error), 5000)
                     .show()
             }
     }
@@ -283,7 +317,14 @@ class TransactionAddActivity : AppCompatActivity() {
                     val adapter = ArrayAdapter(applicationContext, R.layout.list_item, categories)
                     val spinner = (binding.tfAddTransactionCategory.editText as? AutoCompleteTextView)
                     spinner?.setAdapter(adapter)
-                    spinner?.setText(categories.first().toString(), false)
+
+                    if (selectedCategoryWithTag != null) {
+                        selectedCategory = selectedCategoryWithTag!!.category
+                        spinner?.setText(selectedCategoryWithTag.toString(), false)
+                    }
+                    else {
+                        spinner?.setText(categories.first().toString(), false)
+                    }
                 }
                 else {
                     binding.tfAddTransactionCategory.error = getString(R.string.categories_remaining_budget_empty)
@@ -319,6 +360,7 @@ class TransactionAddActivity : AppCompatActivity() {
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
+                    selectedSubcategory = null // make sure no subcategory
                     binding.tfAddTransactionSubcategory.visibility = View.GONE
                 }
                 else {
@@ -339,20 +381,16 @@ class TransactionAddActivity : AppCompatActivity() {
                     // sort categories by name
                     subcategories.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
 
-                    // store category data
-                    selectedSubcategory = subcategories.first().subcategory
-
                     val adapter = ArrayAdapter(applicationContext, R.layout.list_item, subcategories)
                     val spinner = (binding.tfAddTransactionSubcategory.editText as? AutoCompleteTextView)
                     spinner?.setAdapter(adapter)
-                    spinner?.setText(subcategories.first().toString(), false)
                 }
 
                 hideProgressDialog()
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .make(binding.clAddTransaction, getString(R.string.load_subcategories_error), 5000)
                     .show()
             }
     }
@@ -368,34 +406,43 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun setDateTimePicker() {
-        val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        val zdtToday = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
+        )
 
-        calendar.timeInMillis = today
-        calendar[Calendar.MONTH] = Calendar.JANUARY
-        val janThisYear = calendar.timeInMillis
+        val janThisYear = ZonedDateTime.of(zdtToday.year, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
+        val lastTwentyYears = janThisYear.minusYears(20)
+
+        val startDate = lastTwentyYears.toInstant().toEpochMilli()
+        val endDate = zdtToday.toInstant().toEpochMilli()
 
         val constraintsBuilder =
             CalendarConstraints.Builder()
-                .setStart(janThisYear)
-                .setEnd(today)
+                .setValidator(DateValidatorPointBackward.now())
+                .setStart(startDate)
+                .setEnd(endDate)
 
-        datePicker = MaterialDatePicker.Builder.datePicker()
+        val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .setCalendarConstraints(constraintsBuilder.build())
             .build()
 
         datePicker.addOnPositiveButtonClickListener { date ->
-            val formattedDate =
-                DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
-                    .format(Date(date))
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(date),
+                ZoneId.systemDefault()
+            )
+            val startOfDay = zdt.with(LocalTime.MIN)
+            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
+            val formattedDate = dtf.format(startOfDay)
 
             binding.tfAddTransactionDate.editText?.setText(formattedDate)
-            dateTimeMap["date"] = date
+            dateTimeMap["date"] = startOfDay.toInstant().toEpochMilli()
         }
 
-        timePicker = MaterialTimePicker.Builder()
+        val timePicker = MaterialTimePicker.Builder()
             .setTitleText("Select time")
             .setHour(12)
             .setMinute(0)
@@ -430,39 +477,99 @@ class TransactionAddActivity : AppCompatActivity() {
             val time = "$hour:$minute $meridian"
             binding.tfAddTransactionTime.editText?.setText(time)
 
-            val msHour: Long = timePicker.hour * milliseconds
-            val msMinute: Long = timePicker.minute * milliseconds
+            val milliseconds: Long = 1000
+            val msHour: Long = timePicker.hour * milliseconds * 60 * 60
+            val msMinute: Long = timePicker.minute * milliseconds * 60
 
             dateTimeMap["hour"] = msHour
             dateTimeMap["minute"] = msMinute
         }
 
         binding.tfAddTransactionDate.editText?.setOnClickListener {
-            try {
+            if (!datePicker.isAdded) {
                 datePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddTransactionDate.setEndIconOnClickListener {
-            try {
+            if (!datePicker.isAdded) {
                 datePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddTransactionTime.editText?.setOnClickListener {
-            try {
+            if (!timePicker.isAdded) {
                 timePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
         }
 
         binding.tfAddTransactionTime.setEndIconOnClickListener {
-            try {
+            if (!timePicker.isAdded) {
                 timePicker.show(supportFragmentManager, "tag")
             }
-            catch (e: Exception) {}
+        }
+    }
+
+    private fun selectImage() {
+        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(photoPickerIntent, requestPickImage)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == requestPickImage && resultCode == RESULT_OK) {
+            data?.data?.let { uri ->
+                var imageName = "transaction_receipt.jpg"
+                contentResolver.query(uri, null, null, null, null)
+                    ?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        imageName = cursor.getString(nameIndex)
+                    }
+
+                val options = UCrop.Options()
+                options.setHideBottomControls(false)
+                options.setFreeStyleCropEnabled(true)
+
+                UCrop.of(uri, Uri.fromFile(File(cacheDir, imageName)))
+                    .withMaxResultSize(480, 480)
+                    .withOptions(options)
+                    .start(this)
+            }
+        }
+        else if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
+            data?.let { returnIntent ->
+                val resultUri = UCrop.getOutput(returnIntent)
+                resultUri?.let { uri ->
+                    val imageName = uri.path?.let { File(it).name }
+                    binding.tfAddTransactionImage.editText?.setText(imageName)
+
+                    imageUri = uri
+                    Picasso.get()
+                        .load(uri)
+                        .into(binding.ivAddtransactionImage)
+
+//                    contentResolver.query(uri, null, null, null, null)
+//                        ?.use { cursor ->
+//
+//
+//                            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+//                            cursor.moveToFirst()
+//                            binding.tfAddTransactionAttachment.editText?.setText(cursor.getString(nameIndex))
+//                        }
+                }
+            }
+        }
+        else if (resultCode == UCrop.RESULT_ERROR) {
+            if (data != null) {
+                val error = UCrop.getError(data)
+                Snackbar
+                    .make(binding.clAddTransaction, error.toString(), 5000)
+                    .show()
+            }
         }
     }
 
@@ -481,6 +588,15 @@ class TransactionAddActivity : AppCompatActivity() {
 
         binding.tfAddTransactionAmount.editText?.doAfterTextChanged { text ->
             if (text.toString().startsWith("0")) text?.clear()
+        }
+
+        binding.tfAddTransactionName.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text == null || text.isEmpty()) {
+                binding.tfAddTransactionName.error = getString(R.string.transaction_name_empty)
+            }
+            else {
+                binding.tfAddTransactionName.error = null
+            }
         }
 
         binding.tfAddTransactionDate.editText?.doOnTextChanged { text, _, _, _ ->
@@ -517,14 +633,19 @@ class TransactionAddActivity : AppCompatActivity() {
         }
         catch (e: Exception){}
 
+        val name = binding.tfAddTransactionName.editText?.text.toString().trim { it <= ' ' }
         val amount = binding.tfAddTransactionAmount.editText?.text.toString().trim { it <= ' ' }
         val date = binding.tfAddTransactionDate.editText?.text.toString().trim { it <= ' ' }
         val time = binding.tfAddTransactionTime.editText?.text.toString().trim { it <= ' ' }
         val category = binding.tfAddTransactionCategory.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfAddTransactionPaymentType.editText?.text.toString().trim { it <= ' ' }
         var notes: String? = binding.tfAddTransactionNotes.editText?.text.toString().trim { it <= ' ' }
-        val image: Long
         var errors = 0
+
+        if (TextUtils.isEmpty(name)) {
+            binding.tfAddTransactionName.error = getString(R.string.transaction_name_empty)
+            errors++
+        }
 
         if (TextUtils.isEmpty(date)) {
             binding.tfAddTransactionDate.error = getString(R.string.date_empty)
@@ -567,47 +688,103 @@ class TransactionAddActivity : AppCompatActivity() {
         }
 
         if (errors == 0) {
-            val transactionData = mapOf(
-                "amount" to amount,
-                "paymentType" to paymentType,
-                "notes" to notes,
-//                "imageUri" to null,
-                "date" to dateTimeMap["date"].toString(),
-                "hour" to dateTimeMap["hour"].toString(),
-                "minute" to dateTimeMap["minute"].toString(),
-            )
+            firebaseUser?.let {
+                showProgressDialogAdd()
 
-            firebaseUser?.let { decreaseBudget(it.uid, currentAccountId, transactionData) }
+                val totalDate = dateTimeMap["date"]!! + dateTimeMap["hour"]!! + dateTimeMap["minute"]!!
+                val transaction = Transaction(
+                    null,
+                    name,
+                    name.lowercase(),
+                    amount.toDouble(),
+                    transactionType,
+                    paymentType,
+                    notes,
+                    null,
+                    totalDate,
+                    totalDate.toString(),
+                    selectedCategory.id!!,
+                    selectedCategory.name,
+                    selectedCategory.nameLower,
+                    selectedCategory.color,
+                    selectedCategory.icon,
+                    selectedSubcategory?.id,
+                    selectedSubcategory?.name,
+                    selectedSubcategory?.nameLower,
+                    selectedSubcategory?.color,
+                    selectedSubcategory?.icon,
+                )
+
+                if (imageUri != null) {
+                    storeImage(it.uid, currentAccountId, imageUri!!, transaction)
+                }
+                else {
+                    decreaseBudget(it.uid, currentAccountId, transaction)
+                }
+            }
         }
     }
 
-    private fun storeImage() {
+    private fun storeImage(uid: String, accountId: String, uri: Uri, transaction: Transaction) {
+//            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri.toString()))
+//            val outputStream = ByteArrayOutputStream()
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+//            val data = outputStream.toByteArray()
 
+        // generate unique id
+        val imageId = UUID.randomUUID().toString()
+        transaction.imagePath = imageId
+
+        storage = FirebaseStorage.getInstance()
+        storageReference = storage.getReference("transactions").child(uid)
+        storageReference.child(imageId).putFile(uri)
+            .addOnSuccessListener {
+                decreaseBudget(uid, accountId, transaction)
+            }
+            .addOnFailureListener {
+                hideProgressDialogAdd()
+                Snackbar
+                    .make(binding.clAddTransaction, getString(R.string.store_image_error), 5000)
+                    .show()
+            }
     }
 
-    private fun decreaseBudget(uid: String, accountId: String, transactionData: Map<String, String?>) {
-        showProgressDialogAdd()
-        databaseReference = database.getReference("budgets")
-            .child(uid).child(accountId).child(selectedCategory.id!!).child("amountSpent")
+    private fun decreaseBudget(uid: String, accountId: String, transaction: Transaction) {
+        databaseReference =
+            database.getReference("budgets")
+                .child(uid)
+                .child(accountId)
+                .child(transaction.categoryId!!)
 
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                val amountSpent = snapshot.value.toString().toDouble()
-                val newAmountSpent = when (transactionType) {
-                    0 -> amountSpent + transactionData["amount"]!!.toDouble()
-                    else -> amountSpent - transactionData["amount"]!!.toDouble()
-                }
+                val budget = snapshot.getValue<Budget>()
+                if (budget != null) {
+                    val newAmountSpent = when (transaction.type) {
+                        0 -> budget.amountSpent + transaction.amount
+                        else -> budget.amountSpent - transaction.amount
+                    }
 
-                databaseReference.setValue(newAmountSpent)
-                    .addOnSuccessListener {
-                        decreaseAccountBalance(uid, accountId, transactionData)
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialogAdd()
-                        Snackbar
-                            .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
-                            .show()
-                    }
+                    budget.amountSpent = newAmountSpent
+
+                    val zdt = ZonedDateTime.ofInstant(
+                        Instant.now(),
+                        ZoneId.systemDefault()
+                    )
+
+                    budget.updatedAt = zdt.toInstant().toEpochMilli()
+
+                    databaseReference.setValue(budget)
+                        .addOnSuccessListener {
+                            decreaseAccountBalance(uid, accountId, transaction)
+                        }
+                        .addOnFailureListener {
+                            hideProgressDialogAdd()
+                            Snackbar
+                                .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                                .show()
+                        }
+                }
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
@@ -617,21 +794,24 @@ class TransactionAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun decreaseAccountBalance(uid: String, accountId: String, transactionData: Map<String, String?>) {
-        databaseReference = database.getReference("accounts")
-            .child(uid).child(accountId).child("remainingBalance")
+    private fun decreaseAccountBalance(uid: String, accountId: String, transaction: Transaction) {
+        databaseReference =
+            database.getReference("accounts")
+                .child(uid)
+                .child(accountId)
+                .child("remainingBalance")
 
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 val remainingBalance = snapshot.value.toString().toDouble()
-                val newRemainingBalance = when (transactionType) {
-                    0 -> remainingBalance - transactionData["amount"]!!.toDouble()
-                    else -> remainingBalance + transactionData["amount"]!!.toDouble()
+                val newRemainingBalance = when (transaction.type) {
+                    0 -> remainingBalance - transaction.amount
+                    else -> remainingBalance + transaction.amount
                 }
 
                 databaseReference.setValue(newRemainingBalance)
                     .addOnSuccessListener {
-                        addTransaction(uid, accountId, transactionData, selectedCategory, selectedSubcategory)
+                        addTransaction(uid, accountId, transaction)
                     }
                     .addOnFailureListener {
                         hideProgressDialogAdd()
@@ -648,97 +828,140 @@ class TransactionAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun addTransaction(
-        uid: String,
-        accountId: String,
-        transactionData: Map<String, String?>,
-        category: Category,
-        subcategory: Subcategory?
-    ) {
+    private fun addTransaction(uid: String, accountId: String, transaction: Transaction) {
         databaseReference = database.getReference("transactions").child(uid).child(accountId)
+
         val key = databaseReference.push().key
-        val transaction = Transaction(
-            key!!,
-            transactionData["amount"]!!.toDouble(),
-            transactionType,
-            transactionData["paymentType"],
-            transactionData["notes"],
-            null,
-            transactionData["date"]!!.toLong(),
-            transactionData["hour"]!!.toLong(),
-            transactionData["minute"]!!.toLong(),
-            category.id!!,
-            category.name,
-            category.name!!.lowercase(),
-            category.color,
-            category.icon,
-            subcategory?.id,
-            subcategory?.name,
-            subcategory?.name?.lowercase(),
-            subcategory?.color,
-            subcategory?.icon,
-        )
+        transaction.id = key!!
 
         databaseReference.child(key).setValue(transaction)
             .addOnSuccessListener {
+                cancelNotification(this, accountId)
                 hideProgressDialogAdd()
                 onBackPressed()
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
                 Snackbar
-                    .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
+                    .make(binding.clAddTransaction, getString(R.string.add_transaction_error), 5000)
                     .show()
             }
     }
 
-    private fun sessionExpired() {
-        Snackbar
-            .make(
-                binding.clAddTransaction,
-                getString(R.string.session_expired),
-                Snackbar.LENGTH_LONG
+    private fun cancelNotification(context: Context, accountId: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.expensesChannelId)
+        if (notificationChannel != null) {
+            val notificationIntent = Intent(context, NotificationReceiver::class.java)
+            notificationIntent.action = "com.ducatus.EXPENSE"
+
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.now(),
+                ZoneId.systemDefault()
             )
-            .show()
+            val notificationId = zdt.dayOfYear
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                finish()
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.cancel(pendingIntent)
+
+            // schedule future notifications
+            if (notificationChannel.importance != NotificationManager.IMPORTANCE_NONE) {
+                scheduleNotifications(context, accountId)
             }
-        }.start()
+        }
+    }
+
+    private fun enableReceiver(context: Context) {
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        context.packageManager.setComponentEnabledSetting(
+            receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+
+    private fun scheduleNotifications(context: Context, accountId: String) {
+        enableReceiver(context)
+
+        // pass to broadcast receiver
+        val notificationIntent = Intent(context, NotificationReceiver::class.java)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val zdt = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
+        )
+        val eightPm = zdt.with(LocalTime.MIN).plusHours(20)
+
+        val title = "Record your expenses for today"
+        val message = "Tap here to open Ducatus."
+
+        for (i in 0 until 14) {
+            val notificationId = zdt.dayOfYear.plus(i)
+
+            notificationIntent.action = "com.ducatus.EXPENSE"
+            notificationIntent.putExtra(titleExtra, title)
+            notificationIntent.putExtra(messageExtra, message)
+            notificationIntent.putExtra(notificationIdExtra, notificationId)
+            notificationIntent.putExtra(accountIdExtra, accountId)
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // set notifications for 2 weeks
+            val day = eightPm.plusDays(i.toLong()).toInstant().toEpochMilli()
+            alarmManager.set(AlarmManager.RTC_WAKEUP, day, pendingIntent)
+        }
+    }
+
+    private fun sessionExpired() {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
+
+        dialog.setOnDismissListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbAddTransactionMain.visibility = View.VISIBLE
         binding.svTransactionAdd.visibility = View.GONE
-        binding.ibScanImage.visibility = View.GONE
+        binding.fabScanImage.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbAddTransactionMain.visibility = View.INVISIBLE
         binding.svTransactionAdd.visibility = View.VISIBLE
-        binding.ibScanImage.visibility = View.VISIBLE
+        binding.fabScanImage.visibility = View.VISIBLE
     }
 
     private fun showProgressDialogAdd() {
-        binding.pbAddTransactionAction.visibility = View.VISIBLE
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        )
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.adding))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(supportFragmentManager, "dialog")
     }
 
     private fun hideProgressDialogAdd() {
-        binding.pbAddTransactionAction.visibility = View.INVISIBLE
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        actionDialog.dismiss()
     }
 }

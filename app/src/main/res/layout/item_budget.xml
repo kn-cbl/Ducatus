@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="-8dp"
         android:fontFamily="@font/inter_regular"
@@ -25,8 +25,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         app:cardBackgroundColor="@color/off_white"
-        app:cardCornerRadius="16dp">
+        app:cardCornerRadius="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,6 +43,7 @@
                     android:id="@+id/flItemBudgetCategoryIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:background="@drawable/bg_circle"
                     android:backgroundTint="@color/lighter_gray">
 
@@ -53,33 +55,24 @@
                         android:contentDescription="@string/category_icon" />
                 </FrameLayout>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvItemBudgetCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_toStartOf="@+id/ibViewItemBudget"
                     android:layout_toEndOf="@id/flItemBudgetCategoryIcon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvItemBudgetName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/inter_medium"
-                        android:text="@string/budget_name"
-                        android:textColor="@color/off_black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvItemBudgetCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/inter_regular"
-                        android:text="@string/category_name"
-                        android:textColor="@color/darker_gray"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                    android:autoSizeMaxTextSize="14sp"
+                    android:autoSizeMinTextSize="10sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center_vertical"
+                    android:maxLines="3"
+                    android:text="@string/category_name"
+                    android:textColor="@color/off_black" />
 
                 <ImageButton
                     android:id="@+id/ibViewItemBudget"
@@ -107,6 +100,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:gravity="start"
                     android:orientation="vertical">
@@ -123,15 +117,21 @@
                         android:id="@+id/tvItemBudgetSpent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
                         android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
                         android:text="@string/spent"
-                        android:textColor="@color/darker_gray"
-                        android:textSize="14sp" />
+                        android:textColor="@color/darker_gray" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
@@ -148,10 +148,15 @@
                         android:id="@+id/tvItemBudgetLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
                         android:fontFamily="@font/inter_medium"
+                        android:gravity="center"
+                        android:maxLines="1"
                         android:text="@string/amount_left"
-                        android:textColor="@color/darker_gray"
-                        android:textSize="14sp" />
+                        android:textColor="@color/darker_gray" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -173,10 +178,15 @@
                         android:id="@+id/tvItemBudgetLimit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
                         android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical|end"
+                        android:maxLines="1"
                         android:text="@string/limit"
-                        android:textColor="@color/darker_gray"
-                        android:textSize="14sp" />
+                        android:textColor="@color/darker_gray" />
                 </LinearLayout>
 
             </LinearLayout>

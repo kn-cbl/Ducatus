@@ -1,5 +1,7 @@
 package com.ducatus
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +39,7 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
+    private lateinit var sharedPreferences: SharedPreferences
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +51,7 @@ class SignupActivity : AppCompatActivity() {
         inputObserver()
         auth = Firebase.auth
         database = Firebase.database
+        sharedPreferences = SharedPreferences(this)
 
         binding.tvLoginLink.setOnClickListener {
             clearErrors()
@@ -85,6 +89,11 @@ class SignupActivity : AppCompatActivity() {
             else if (text.length < 8)  binding.tfSignupPassword.error = getString(R.string.password_complexity)
             else binding.tfSignupPassword.error = null
         }
+        binding.tfSignupConfirmPassword.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text == null || text.isEmpty()) binding.tfSignupConfirmPassword.error = getString(R.string.confirm_password_empty)
+            else if (text.toString() != binding.tfSignupPassword.editText?.text.toString().trim { it <= ' ' }) binding.tfSignupConfirmPassword.error = getString(R.string.password_match_error)
+            else binding.tfSignupConfirmPassword.error = null
+        }
     }
 
     // User Manual Sign In
@@ -98,20 +107,23 @@ class SignupActivity : AppCompatActivity() {
         }
         catch (e: Exception){}
 
-        val username = binding.tfSignupUsername.editText?.text.toString().trim {it <= ' '}
-        val email = binding.tfSignupEmail.editText?.text.toString().trim {it <= ' '}
-        val password = binding.tfSignupPassword.editText?.text.toString().trim {it <= ' '}
+        val username = binding.tfSignupUsername.editText?.text.toString().trim { it <= ' '}
+        val email = binding.tfSignupEmail.editText?.text.toString().trim { it <= ' '}
+        val password = binding.tfSignupPassword.editText?.text.toString().trim { it <= ' '}
+        val confirmPassword = binding.tfSignupConfirmPassword.editText?.text.toString().trim { it <= ' ' }
 
-        if (emailRegex.toRegex().matches(email) && password.length >= 8) {
+        if (emailRegex.toRegex().matches(email) && password.length >= 8 && password == confirmPassword) {
             showProgressDialog()
             usernameExists(username, email, password)
         }
         else {
             if (!emailRegex.toRegex().matches(email)) binding.tfSignupEmail.error = getString(R.string.email_invalid)
             if (password.length < 8) binding.tfSignupPassword.error = getString(R.string.password_complexity)
+            if (confirmPassword != password) binding.tfSignupConfirmPassword.error = getString(R.string.password_match_error)
             if (TextUtils.isEmpty(username)) binding.tfSignupUsername.error = getString(R.string.username_empty)
             if (TextUtils.isEmpty(email)) binding.tfSignupEmail.error = getString(R.string.email_empty)
             if (TextUtils.isEmpty(password)) binding.tfSignupPassword.error = getString(R.string.password_empty)
+            if (TextUtils.isEmpty(confirmPassword)) binding.tfSignupConfirmPassword.error = getString(R.string.confirm_password_empty)
         }
     }
 
@@ -160,7 +172,6 @@ class SignupActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 for(child in it.children) {
                     if (child.child("selected").value.toString() == "true") {
-                        val sharedPreferences = SharedPreferences(applicationContext)
                         sharedPreferences.accountId = child.child("id").value.toString()
                         sharedPreferences.accountName = child.child("name").value.toString()
                         sharedPreferences.accountColor = child.child("color").value.toString()
@@ -168,12 +179,38 @@ class SignupActivity : AppCompatActivity() {
                     }
                 }
 
+                createNotificationChannels()
                 verifyEmail(firebaseUser.isEmailVerified)
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 binding.tvSignupErrorAuth.text = it.localizedMessage
             }
+    }
+
+    private fun createNotificationChannels() {
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val channelMap = mapOf(
+            sharedPreferences.challengesChannelId to "Challenges",
+            sharedPreferences.expensesChannelId to "Expenses",
+            sharedPreferences.loansChannelId to "Loans",
+            sharedPreferences.subscriptionsChannelId to "Subscriptions"
+        )
+
+        val channels = mutableListOf<NotificationChannel>()
+        for (channel in channelMap) {
+            if (notificationManager.getNotificationChannel(channel.key) == null) {
+                val notificationChannel = NotificationChannel(
+                    channel.key,
+                    channel.value,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+
+                channels.add(notificationChannel)
+            }
+        }
+
+        if (channels.isNotEmpty()) notificationManager.createNotificationChannels(channels)
     }
 
     private fun storeData(firebaseUser: FirebaseUser, password: String?, username: String) {
@@ -224,6 +261,7 @@ class SignupActivity : AppCompatActivity() {
                         0.0,
                         0.0,
                         0.0,
+                        null,
                         true
                     )
 

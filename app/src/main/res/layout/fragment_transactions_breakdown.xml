@@ -66,7 +66,7 @@
                 android:id="@+id/rgTransactionsBreakdown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_calendar_shape"
+                android:background="@drawable/bg_radio_group"
                 android:orientation="horizontal">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
@@ -125,12 +125,45 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTransactionsBreakdown"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="80dp" />
+            android:paddingBottom="80dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTransactionsBreakdownSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:drawablePadding="4dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/sort_by"
+                    android:textColor="@color/off_black"
+                    app:drawableStartCompat="@drawable/ic_baseline_sort_24"
+                    app:drawableTint="@color/off_black" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvTransactionsBreakdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
 

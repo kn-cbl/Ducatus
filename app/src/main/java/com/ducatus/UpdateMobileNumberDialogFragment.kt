@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.FragmentUpdateMobileNumberDialogBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -41,6 +42,7 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var storedVerificationId: String
     private lateinit var timer: CountDownTimer
+    private var firebaseUser: FirebaseUser? = null
     private var mobileNumberRegex = "^[89][0-9]{9}$"
     private var updated: Boolean = false
 
@@ -168,24 +170,25 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
             verificationCode.length < 6 -> binding.tfVerifyMobileNumber.error = getString(R.string.verification_code_error)
 
             else -> {
-                val firebaseUser: FirebaseUser? = auth.currentUser
+                firebaseUser = auth.currentUser
                 if (firebaseUser != null) {
-                    updateDB(firebaseUser.uid, mobileNumber, verificationCode)
+                    updateDB(firebaseUser!!, mobileNumber, verificationCode)
                 }
                 else {
+                    hideProgressDialog()
                     sessionExpired()
                 }
             }
         }
     }
 
-    private fun updateDB(uid: String, mobileNumber: String, verificationCode: String) {
+    private fun updateDB(firebaseUser: FirebaseUser, mobileNumber: String, verificationCode: String) {
         showProgressDialog()
-        databaseReference = database.getReference("users").child(uid).child("mobileNumber")
+        databaseReference = database.getReference("users").child(firebaseUser.uid).child("mobileNumber")
         databaseReference.setValue(mobileNumber)
             .addOnSuccessListener {
                 val phoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId, verificationCode)
-                updateMobileNumber(phoneAuthCredential)
+                updateMobileNumber(firebaseUser, phoneAuthCredential)
             }
             .addOnFailureListener {
                 hideProgressDialog()
@@ -195,27 +198,21 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
             }
     }
 
-    private fun updateMobileNumber(phoneAuthCredential: PhoneAuthCredential) {
+    private fun updateMobileNumber(firebaseUser: FirebaseUser, phoneAuthCredential: PhoneAuthCredential) {
         showProgressDialog()
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            firebaseUser.updatePhoneNumber(phoneAuthCredential)
-                .addOnSuccessListener {
-                    hideProgressDialog()
-                    updated = true
-                    timer.cancel()
-                    dismiss()
-                }
-                .addOnFailureListener {
-                    hideProgressDialog()
-                    Toast
-                        .makeText(activity, it.localizedMessage, Toast.LENGTH_LONG)
-                        .show()
-                }
-        }
-        else {
-            sessionExpired()
-        }
+        firebaseUser.updatePhoneNumber(phoneAuthCredential)
+            .addOnSuccessListener {
+                hideProgressDialog()
+                updated = true
+                timer.cancel()
+                dismiss()
+            }
+            .addOnFailureListener {
+                hideProgressDialog()
+                Toast
+                    .makeText(activity, it.localizedMessage, Toast.LENGTH_LONG)
+                    .show()
+            }
     }
 
     private fun sendVerificationCode(mobileNumber: String) {
@@ -329,35 +326,34 @@ class UpdateMobileNumberDialogFragment : DialogFragment() {
     }
 
     private fun sessionExpired() {
-        hideProgressDialog()
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbUpdateMobileNumber.visibility = View.VISIBLE
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 
     private fun hideProgressDialog() {
         binding.pbUpdateMobileNumber.visibility = View.INVISIBLE
+        dialog?.setCancelable(true)
+        dialog?.setCanceledOnTouchOutside(true)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 

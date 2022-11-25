@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/iconNotifications"
-        android:icon="@drawable/ic_notifications"
-        android:title="Notifications"
-        app:showAsAction="ifRoom|collapseActionView" />
+        android:id="@+id/notifications"
+        android:contentDescription="@string/notifications"
+        android:icon="@drawable/ic_baseline_notifications_24"
+        android:title="@string/notifications"
+        app:iconTint="@color/white"
+        app:showAsAction="ifRoom" />
+
 </menu>

@@ -50,7 +50,7 @@ class ResetPasswordActivity : AppCompatActivity() {
         }
 
         binding.tfResetPasswordConfirm.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty()) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
+            if (text == null || text.isEmpty()) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_new_password_empty)
             else  binding.tfResetPasswordConfirm.error = null
         }
     }
@@ -72,7 +72,7 @@ class ResetPasswordActivity : AppCompatActivity() {
 
         if (TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
             if (TextUtils.isEmpty(newPassword)) binding.tfResetPasswordNew.error = getString(R.string.new_password_empty)
-            if (TextUtils.isEmpty(confirmPassword)) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_password_empty)
+            if (TextUtils.isEmpty(confirmPassword)) binding.tfResetPasswordConfirm.error = getString(R.string.confirm_new_password_empty)
         }
         else {
             if (newPassword != confirmPassword) {

@@ -49,13 +49,13 @@ class IconDialogFragment : DialogFragment() {
                 image?.setColorFilter(
                     ResourcesCompat.getColor(
                         resources,
-                        R.color.darker_gray,
+                        R.color.very_dark_blue,
                         null
                     )
                 )
 
                 image?.setOnClickListener {
-                    viewModel.selectIcon(icons[position])
+                    viewModel.setIcon(icons[position])
                     dismiss()
                 }
 

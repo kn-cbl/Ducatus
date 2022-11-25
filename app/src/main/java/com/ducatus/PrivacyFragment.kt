@@ -14,13 +14,6 @@ import com.ducatus.databinding.FragmentPrivacyBinding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 class PrivacyFragment : Fragment() {
     private lateinit var activity: Activity
@@ -44,73 +37,28 @@ class PrivacyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rlPrivacyPolicy.setOnClickListener {
+        binding.llPrivacyPolicy.setOnClickListener {
             toolbar.title = getString(R.string.privacy_policy)
             val action = PrivacyFragmentDirections.actionPrivacyFragmentToPrivacyPolicyFragment()
             findNavController().navigate(action)
         }
 
-        binding.rlTOS.setOnClickListener {
-            toolbar.title = getString(R.string.terms_and_conditions)
+        binding.llTOS.setOnClickListener {
+            toolbar.title = getString(R.string.terms_of_service)
             val action = PrivacyFragmentDirections.actionPrivacyFragmentToTermsOfServiceFragment()
             findNavController().navigate(action)
         }
 
-        binding.rlDeactivateAccount.setOnClickListener {
-            confirmDeactivate()
+        binding.llResetUserData.setOnClickListener {
+            toolbar.title = getString(R.string.reset_data)
+            val action = PrivacyFragmentDirections.actionPrivacyFragmentToResetUserDataFragment()
+            findNavController().navigate(action)
         }
 
-        binding.rlDeleteUserData.setOnClickListener {
-            confirmDelete()
+        binding.llDeleteUserData.setOnClickListener {
+            toolbar.title = getString(R.string.delete_user_account)
+            val action = PrivacyFragmentDirections.actionPrivacyFragmentToDeleteUserAccountFragment()
+            findNavController().navigate(action)
         }
-    }
-
-    private fun confirmDeactivate() {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.deactivate_account_mark))
-            .setMessage(resources.getString(R.string.deactivate_account_message))
-            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deactivateAccount() }
-            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-            .show()
-    }
-
-    private fun confirmDelete() {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.delete_user_data_mark))
-            .setMessage(resources.getString(R.string.delete_user_data_message))
-            .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteUserData() }
-            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
-            .show()
-    }
-
-    private fun deactivateAccount() {
-
-    }
-
-    private fun deleteUserData() {
-        val action = PrivacyFragmentDirections.actionPrivacyFragmentToDeleteUserDataDialogFragment("delete app user")
-        findNavController().navigate(action)
-    }
-
-    private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
-
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
     }
 }

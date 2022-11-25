@@ -12,8 +12,10 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.adapter.CategoryAdapter
 import com.ducatus.data.Category
 import com.ducatus.databinding.FragmentCategoriesBinding
+import com.ducatus.interfaces.CategoryInterface
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -26,6 +28,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class CategoriesFragment : Fragment(), CategoryInterface {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentCategoriesBinding
@@ -127,9 +130,8 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                     categoryAdapter.addCategory(item)
                 }
 
-                if (categoryAdapter.itemCount <= 0) {
-                    binding.tvCategoriesEmpty.visibility = View.VISIBLE
-                }
+                val text = "${categoryAdapter.itemCount} / 30 categories"
+                binding.tvCategoriesCount.text = text
 
                 if (categoryAdapter.itemCount >= 30) {
                     binding.fabAddCategory.visibility = View.GONE
@@ -139,7 +141,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.load_categories_error),5000)
                     .show()
             }
     }
@@ -154,6 +156,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     }
 
     private fun deleteCategory(categoryId: String, position: Int) {
+        showProgressDialogDelete()
         val currentAccountId = sharedPreferences.accountId.toString()
         databaseReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId)
         databaseReference.child(categoryId).removeValue()
@@ -162,6 +165,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 deleteSubcategories(categoryId)
             }
             .addOnFailureListener {
+                hideProgressDialogDelete()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -176,6 +180,7 @@ class CategoriesFragment : Fragment(), CategoryInterface {
                 deleteBudget(categoryId)
             }
             .addOnFailureListener {
+                hideProgressDialogDelete()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -187,9 +192,10 @@ class CategoriesFragment : Fragment(), CategoryInterface {
         databaseReference = database.getReference("budgets").child(firebaseUser.uid).child(currentAccountId)
         databaseReference.child(categoryId).removeValue()
             .addOnSuccessListener {
-                hideProgressDialog()
+                hideProgressDialogDelete()
             }
             .addOnFailureListener {
+                hideProgressDialogDelete()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -197,36 +203,44 @@ class CategoriesFragment : Fragment(), CategoryInterface {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbCategories.visibility = View.VISIBLE
+        binding.tvCategoriesCount.visibility = View.GONE
         binding.rvCategories.visibility = View.GONE
         binding.fabAddCategory.visibility = View.GONE
     }
 
     private fun hideProgressDialog() {
         binding.pbCategories.visibility = View.INVISIBLE
+        binding.tvCategoriesCount.visibility = View.VISIBLE
         binding.rvCategories.visibility = View.VISIBLE
         binding.fabAddCategory.visibility = View.VISIBLE
+    }
+
+    private fun showProgressDialogDelete() {
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.deleting))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(childFragmentManager, "dialog")
+    }
+
+    private fun hideProgressDialogDelete() {
+        actionDialog.dismiss()
     }
 }

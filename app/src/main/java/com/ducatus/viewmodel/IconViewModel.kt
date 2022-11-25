@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class IconViewModel : ViewModel() {
-    private val mutableSelectedIcon = MutableLiveData<String>()
-    val selectedIcon: LiveData<String> get() = mutableSelectedIcon
+    private val mutableIcon = MutableLiveData<String>()
+    val icon: LiveData<String> get() = mutableIcon
 
-    fun selectIcon(icon: String) {
-        mutableSelectedIcon.value = icon
+    fun setIcon(icon: String) {
+        mutableIcon.value = icon
     }
 }

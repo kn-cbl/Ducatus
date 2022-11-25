@@ -4,18 +4,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_margin="5dp">
+    android:layout_margin="4dp">
 
     <View
         android:id="@+id/viewItemColor"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_margin="8dp"
         android:background="@color/lighter_gray"
-        android:scaleX="0.6"
-        android:scaleY="0.6"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

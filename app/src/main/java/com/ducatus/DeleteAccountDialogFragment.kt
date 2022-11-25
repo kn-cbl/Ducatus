@@ -13,7 +13,8 @@ import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentDeleteAccountDialogBinding
-import com.ducatus.viewmodel.AccountViewModel
+import com.ducatus.viewmodel.UpdateViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -29,8 +30,8 @@ class DeleteAccountDialogFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private val args: DeleteAccountDialogFragmentArgs by navArgs()
-    private val viewModel: AccountViewModel by activityViewModels()
-    private val functions = 100 / 10
+    private val updateViewModel: UpdateViewModel by activityViewModels()
+    private val functions = 100 / 13
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,32 +58,15 @@ class DeleteAccountDialogFragment : DialogFragment() {
     }
 
     private fun deleteAccount(uid: String, accountId: String) {
-        disableWindow()
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
         binding.pbDeleteAccount.setProgress(functions, true)
         databaseReference = database.getReference("accounts").child(uid).child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                deleteBudgets(uid, accountId)
-            }
-            .addOnFailureListener {
-                enableWindow()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-
-                dismiss()
-            }
-    }
-
-    private fun deleteBudgets(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 2, true)
-        databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteCategories(uid, accountId)
             }
             .addOnFailureListener {
-                enableWindow()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -92,14 +76,13 @@ class DeleteAccountDialogFragment : DialogFragment() {
     }
 
     private fun deleteCategories(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 3, true)
+        binding.pbDeleteAccount.setProgress(functions * 2, true)
         databaseReference = database.getReference("categories").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteSubcategories(uid, accountId)
             }
             .addOnFailureListener {
-                enableWindow()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -109,14 +92,13 @@ class DeleteAccountDialogFragment : DialogFragment() {
     }
 
     private fun deleteSubcategories(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 4, true)
+        binding.pbDeleteAccount.setProgress(functions * 3, true)
         databaseReference = database.getReference("subcategories").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                deleteChallenges(uid, accountId)
+                deleteBudgets(uid, accountId)
             }
             .addOnFailureListener {
-                enableWindow()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -125,83 +107,14 @@ class DeleteAccountDialogFragment : DialogFragment() {
             }
     }
 
-    private fun deleteChallenges(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 5, true)
-        databaseReference = database.getReference("challenges").child(uid).child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                deleteGoals(uid, accountId)
-            }
-            .addOnFailureListener {
-                enableWindow()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-
-                dismiss()
-            }
-    }
-
-    private fun deleteGoals(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 6, true)
-        databaseReference = database.getReference("goals").child(uid).child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                deleteLoans(uid, accountId)
-            }
-            .addOnFailureListener {
-                enableWindow()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-
-                dismiss()
-            }
-    }
-
-    private fun deleteLoans(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 7, true)
-        databaseReference = database.getReference("loans").child(uid).child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                deletePlannedPayments(uid, accountId)
-            }
-            .addOnFailureListener {
-                enableWindow()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-
-                dismiss()
-            }
-    }
-
-    private fun deletePlannedPayments(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 8, true)
-        databaseReference = database.getReference("planned_payments").child(uid).child(accountId)
-        databaseReference.removeValue()
-            .addOnSuccessListener {
-                deleteReports(uid, accountId)
-            }
-            .addOnFailureListener {
-                enableWindow()
-                Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
-                    .show()
-
-                dismiss()
-            }
-    }
-
-    private fun deleteReports(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 9, true)
-        databaseReference = database.getReference("reports").child(uid).child(accountId)
+    private fun deleteBudgets(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 4, true)
+        databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteTransactions(uid, accountId)
             }
             .addOnFailureListener {
-                enableWindow()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -211,16 +124,13 @@ class DeleteAccountDialogFragment : DialogFragment() {
     }
 
     private fun deleteTransactions(uid: String, accountId: String) {
-        binding.pbDeleteAccount.setProgress(functions * 10, true)
+        binding.pbDeleteAccount.setProgress(functions * 5, true)
         databaseReference = database.getReference("transactions").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                enableWindow()
-                viewModel.update(true)
-                dismiss()
+                deleteSubscriptions(uid, accountId)
             }
             .addOnFailureListener {
-                enableWindow()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!,5000)
                     .show()
@@ -229,33 +139,147 @@ class DeleteAccountDialogFragment : DialogFragment() {
             }
     }
 
+    private fun deleteSubscriptions(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 6, true)
+        databaseReference = database.getReference("subscriptions").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteSubscriptionHistory(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteSubscriptionHistory(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 7, true)
+        databaseReference = database.getReference("subscriptionHistory").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteLoans(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteLoans(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 8, true)
+        databaseReference = database.getReference("loans").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteLoanHistory(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteLoanHistory(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 9, true)
+        databaseReference = database.getReference("loanHistory").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteGoals(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteGoals(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 10, true)
+        databaseReference = database.getReference("goals").child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteGoalHistory(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteGoalHistory(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 11, true)
+        databaseReference = database.getReference("goalHistory").child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteChallenges(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteChallenges(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 12, true)
+        databaseReference = database.getReference("challenges").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                deleteNotifications(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
+    private fun deleteNotifications(uid: String, accountId: String) {
+        binding.pbDeleteAccount.setProgress(functions * 13, true)
+        databaseReference = database.getReference("notifications").child(uid).child(accountId)
+        databaseReference.removeValue()
+            .addOnSuccessListener {
+                updateViewModel.update(true)
+                dismiss()
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .show()
+
+                dismiss()
+            }
+    }
+
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
-    }
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
 
-    private fun enableWindow() {
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun disableWindow() {
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        dialog.show()
     }
 }

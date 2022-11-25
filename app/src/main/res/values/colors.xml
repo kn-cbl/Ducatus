@@ -11,6 +11,7 @@
     <color name="almost_black">#FF202020</color>
     <color name="darker_gray">#545454</color>
     <color name="dark_gray">#5C5C5C</color>
+    <color name="slightly_darker_gray">#757575</color>
     <color name="gray">#7A7A7A</color>
     <color name="gray_alpha">#669e9e9e</color>
     <color name="light_gray">#838383</color>
@@ -23,10 +24,12 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_brown">#704f4f</color>
 
+    <color name="lightest_pink">#FFE8E7</color>
     <color name="pink">#FF869E</color>
     <color name="dark_pink">#f65a83</color>
     <color name="darker_pink">#C65D7B</color>
     <color name="bright_pink">#FF6767</color>
+    <color name="pastel_red">#FC6861</color>
     <color name="lighter_red">#FE7E6D</color>
     <color name="light_red">#F76C6E</color>
     <color name="brighter_red">#FF4949</color>
@@ -57,6 +60,7 @@
     <color name="green_secondary">#389583</color>
     <color name="green_tertiary">#FF018786</color>
 
+    <color name="blue_alpha">#AED4FA</color>
     <color name="blue_white">#A3BCF2</color>
     <color name="blue">#114BC7</color>
     <color name="bright_blue">#007FFF</color>

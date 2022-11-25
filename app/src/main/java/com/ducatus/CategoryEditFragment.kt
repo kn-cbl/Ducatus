@@ -1,6 +1,7 @@
 package com.ducatus
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -15,9 +16,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.adapter.SubcategoryAdapter
 import com.ducatus.data.Category
 import com.ducatus.data.Subcategory
 import com.ducatus.databinding.FragmentCategoryEditBinding
+import com.ducatus.interfaces.SubcategoryInterface
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -29,23 +32,24 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class CategoryEditFragment : Fragment(), SubcategoryInterface {
+class CategoryEditFragment : Fragment(), SubcategoryInterface, DialogInterface.OnDismissListener {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentCategoryEditBinding
     private lateinit var database: FirebaseDatabase
-    private lateinit var categoryReference: DatabaseReference
-    private lateinit var subcategoryReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private lateinit var toolbar: MaterialToolbar
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var selectedCategoryListener: ValueEventListener
+    private lateinit var categoryReference: DatabaseReference
+    private lateinit var subcategoryReference: DatabaseReference
     private lateinit var subcategoriesListener: ChildEventListener
     private lateinit var subcategoryAdapter: SubcategoryAdapter
     private lateinit var currentCategoryColor: String
     private lateinit var currentCategoryIcon: String
     private lateinit var currentCategoryName: String
     private lateinit var currentCategoryNature: String
+    private var firebaseUser: FirebaseUser? = null
     private val args: CategoryEditFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -64,59 +68,45 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
 
     override fun onStart() {
         super.onStart()
-        showProgressDialog()
-
-        auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
-        if (firebaseUser != null) {
-            sharedPreferences = SharedPreferences(activity)
-            val currentAccountId = sharedPreferences.accountId.toString()
-
-            setSelectedCategoryListener()
-            setSubcategoriesListener()
-
-            database = Firebase.database
-            categoryReference = database.getReference("categories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
-            categoryReference.addValueEventListener(selectedCategoryListener)
-
-            subcategoryReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId).child(args.categoryId)
-            subcategoryReference.addChildEventListener(subcategoriesListener)
-        }
-        else {
-            sessionExpired()
-        }
+        loadData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.ibEditCategoryIcon.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditIconDialogFragment(args.categoryId, currentCategoryColor, currentCategoryIcon)
-            findNavController().navigate(action)
+            firebaseUser?.let {
+                val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditIconDialogFragment(args.categoryId, currentCategoryColor, currentCategoryIcon)
+                findNavController().navigate(action)
+            }
         }
 
         binding.ibEditCategoryName.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNameDialogFragment(args.categoryId, currentCategoryName)
-            findNavController().navigate(action)
+            firebaseUser?.let {
+                val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNameDialogFragment(args.categoryId, currentCategoryName)
+                findNavController().navigate(action)
+            }
         }
 
         binding.ibEditCategoryNature.setOnClickListener {
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNatureDialogFragment(args.categoryId, currentCategoryNature)
-            findNavController().navigate(action)
+            firebaseUser?.let {
+                val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToCategoryEditNatureDialogFragment(args.categoryId, currentCategoryNature)
+                findNavController().navigate(action)
+            }
         }
 
         binding.fabAddSubcategory.setOnClickListener {
-            toolbar.title = getString(R.string.add_subcategory)
-            val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToSubcategoryAddFragment(args.categoryId)
-            findNavController().navigate(action)
+            firebaseUser?.let {
+                toolbar.title = getString(R.string.add_subcategory)
+                val action = CategoryEditFragmentDirections.actionCategoryEditFragmentToSubcategoryAddFragment(args.categoryId)
+                findNavController().navigate(action)
+            }
         }
     }
 
     override fun onStop() {
         super.onStop()
-
-        categoryReference.removeEventListener(selectedCategoryListener)
-        subcategoryReference.removeEventListener(subcategoriesListener)
+        firebaseUser?.let { subcategoryReference.removeEventListener(subcategoriesListener) }
     }
 
     // get activity to be used in adapter
@@ -124,9 +114,45 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
         return activity
     }
 
-    private fun setSelectedCategoryListener() {
-        selectedCategoryListener = object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+    override fun onDismiss(p0: DialogInterface?) {
+        loadCategory()
+    }
+
+    private fun loadData() {
+        auth = Firebase.auth
+        firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            sharedPreferences = SharedPreferences(activity)
+            val currentAccountId = sharedPreferences.accountId.toString()
+
+            database = Firebase.database
+            categoryReference =
+                database
+                    .getReference("categories")
+                    .child(firebaseUser!!.uid)
+                    .child(currentAccountId)
+                    .child(args.categoryId)
+
+            setSubcategoriesListener()
+            subcategoryReference =
+                database
+                    .getReference("subcategories")
+                    .child(firebaseUser!!.uid)
+                    .child(currentAccountId)
+                    .child(args.categoryId)
+
+            loadCategory()
+            subcategoryReference.addChildEventListener(subcategoriesListener)
+        }
+        else {
+            sessionExpired()
+        }
+    }
+
+    private fun loadCategory() {
+        showProgressDialog()
+        categoryReference.get()
+            .addOnSuccessListener { snapshot ->
                 val category = snapshot.getValue<Category>()
                 if (category != null) {
                     currentCategoryColor = category.color.toString()
@@ -172,18 +198,12 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
 
                     hideProgressDialog()
                 }
-
-                if (subcategoryAdapter.itemCount >= 30) {
-                    binding.fabAddSubcategory.visibility = View.GONE
-                }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, error.message, 5000)
+                    .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
             }
-        }
     }
 
     private fun setSubcategoriesListener() {
@@ -198,8 +218,11 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
                     subcategoryAdapter.addSubcategory(subcategory)
                 }
 
-                if (subcategoryAdapter.itemCount <= 0) {
-                    binding.tvSubcategoriesEmpty.visibility = View.VISIBLE
+                val text = "${subcategoryAdapter.itemCount} / 30 subcategories"
+                binding.tvSubcategoriesCount.text = text
+
+                if (subcategoryAdapter.itemCount >= 30) {
+                    binding.fabAddSubcategory.visibility = View.GONE
                 }
             }
 
@@ -208,8 +231,11 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                if (subcategoryAdapter.itemCount <= 0) {
-                    binding.tvSubcategoriesEmpty.visibility = View.VISIBLE
+                val text = "${subcategoryAdapter.itemCount} / 30 subcategories"
+                binding.tvSubcategoriesCount.text = text
+
+                if (subcategoryAdapter.itemCount >= 30) {
+                    binding.fabAddSubcategory.visibility = View.GONE
                 }
             }
 
@@ -256,11 +282,14 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     }
 
     private fun deleteSubcategory(subcategoryId: String, position: Int) {
+        showProgressDialogDelete()
         subcategoryReference.child(subcategoryId).removeValue()
             .addOnSuccessListener {
+                hideProgressDialogDelete()
                 subcategoryAdapter.removeSubcategory(position)
             }
             .addOnFailureListener {
+                hideProgressDialogDelete()
                 Snackbar
                     .make(rootLayout, it.localizedMessage!!, 5000)
                     .show()
@@ -268,30 +297,24 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
         binding.pbCategoryEdit.visibility = View.VISIBLE
         binding.llCategoryEdit.visibility = View.GONE
+        binding.tvSubcategoriesCount.visibility = View.GONE
         binding.rvSubcategories.visibility = View.GONE
         binding.fabAddSubcategory.visibility = View.GONE
     }
@@ -299,7 +322,21 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface {
     private fun hideProgressDialog() {
         binding.pbCategoryEdit.visibility = View.INVISIBLE
         binding.llCategoryEdit.visibility = View.VISIBLE
+        binding.tvSubcategoriesCount.visibility = View.VISIBLE
         binding.rvSubcategories.visibility = View.VISIBLE
         binding.fabAddSubcategory.visibility = View.VISIBLE
+    }
+
+    private fun showProgressDialogDelete() {
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.deleting))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(childFragmentManager, "dialog")
+    }
+
+    private fun hideProgressDialogDelete() {
+        actionDialog.dismiss()
     }
 }

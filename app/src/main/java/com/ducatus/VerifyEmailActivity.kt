@@ -7,6 +7,7 @@ import android.os.CountDownTimer
 import android.view.View
 import android.view.WindowManager
 import com.ducatus.databinding.ActivityVerifyEmailBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -59,6 +60,7 @@ class VerifyEmailActivity : AppCompatActivity() {
             }
         }
         else {
+            hideProgressDialogResend()
             sessionExpired()
         }
         hideProgressDialogResend()
@@ -79,6 +81,7 @@ class VerifyEmailActivity : AppCompatActivity() {
                 }
         }
         else {
+            hideProgressDialogVerify()
             sessionExpired()
         }
         hideProgressDialogVerify()
@@ -99,12 +102,13 @@ class VerifyEmailActivity : AppCompatActivity() {
                 }
         }
         else {
+            hideProgressDialogResend()
             sessionExpired()
         }
     }
 
     private fun startTimer() {
-        binding.btnResendEmail.isEnabled = false
+        binding.btnResendEmail.isClickable = false
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val message = "Resend in " + millisUntilFinished / 1000
@@ -112,7 +116,7 @@ class VerifyEmailActivity : AppCompatActivity() {
             }
             override fun onFinish() {
                 binding.btnResendEmail.text = getString(R.string.resend_email_verification)
-                binding.btnResendEmail.isEnabled = true
+                binding.btnResendEmail.isClickable = true
             }
         }.start()
     }
@@ -127,23 +131,18 @@ class VerifyEmailActivity : AppCompatActivity() {
     }
 
     private fun sessionExpired() {
-        hideProgressDialogVerify()
-        Snackbar
-            .make(binding.clVerifyEmail, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(applicationContext, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialogVerify() {

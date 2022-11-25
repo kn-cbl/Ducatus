@@ -4,29 +4,40 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.Navigation
+import com.ducatus.data.Account
+import com.ducatus.data.Budget
 import com.ducatus.databinding.ActivityHomeBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var database: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private var firebaseUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        loadData()
 
 //        networkObserver()
 
@@ -43,9 +54,11 @@ class HomeActivity : AppCompatActivity() {
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigate(R.id.homeFragment)
                 }
-//                R.id.nav_reports -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ReportsFragment()).commit()
-//                }
+                R.id.nav_reports -> {
+                    title = R.string.reports
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.reportsFragment)
+                }
                 R.id.nav_budgets -> {
                     title = R.string.budgets
                     val action = Navigation.findNavController(this, R.id.fcHome)
@@ -56,11 +69,10 @@ class HomeActivity : AppCompatActivity() {
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigate(R.id.transactionsFragment)
                 }
-                R.id.nav_planned_payments -> {
-                    binding.tbHome.inflateMenu(R.menu.search_menu)
-                    title = R.string.planned_payments
+                R.id.nav_subscriptions -> {
+                    title = R.string.subscriptions
                     val action = Navigation.findNavController(this, R.id.fcHome)
-                    action.navigate(R.id.plannedPaymentsFragment)
+                    action.navigate(R.id.subscriptionsViewPagerFragment)
                 }
                 R.id.nav_loans -> {
                     title = R.string.loans
@@ -104,23 +116,85 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadData()
+
+        firebaseUser?.let { loadAccount(it.uid) }
+        hasNotification()
+    }
+
+    private fun hasNotification() {
+        val notificationIntent = intent.getStringExtra("notification")
+        if (notificationIntent != null) {
+            val accountId = intent.getStringExtra("accountId")
+            val itemId = intent.getStringExtra("itemId")
+
+            when (notificationIntent) {
+                "expense" -> {
+                    intent.removeExtra("notification")
+                    intent.removeExtra("accountId")
+                    intent.removeExtra("itemId")
+
+                    binding.tbHome.menu.clear()
+                    binding.tbHome.setTitle(R.string.transactions)
+                    binding.nvHome.menu.findItem(R.id.nav_transactions).isChecked = true
+
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.transactionsFragment)
+                }
+
+                "subscription" -> {
+                    intent.removeExtra("notification")
+                    intent.removeExtra("accountId")
+                    intent.removeExtra("itemId")
+
+                    binding.tbHome.menu.clear()
+                    binding.tbHome.setTitle(R.string.subscriptions)
+                    binding.nvHome.menu.findItem(R.id.nav_subscriptions).isChecked = true
+
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.subscriptionsViewPagerFragment)
+
+                    val subscriptionIntent = Intent(this, SubscriptionDetailActivity::class.java)
+                    subscriptionIntent.putExtra("accountId", accountId)
+                    subscriptionIntent.putExtra("subscriptionId", itemId)
+                    startActivity(subscriptionIntent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_in_left)
+                }
+                "loan" -> {
+                    intent.removeExtra("notification")
+                    intent.removeExtra("accountId")
+                    intent.removeExtra("itemId")
+
+                    binding.tbHome.menu.clear()
+                    binding.tbHome.setTitle(R.string.loans)
+                    binding.nvHome.menu.findItem(R.id.nav_loans).isChecked = true
+
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.loansFragment)
+
+                    val loanIntent = Intent(this, LoanDetailActivity::class.java)
+                    loanIntent.putExtra("accountId", accountId)
+                    loanIntent.putExtra("loanId", itemId)
+                    startActivity(loanIntent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_in_left)
+                }
+            }
+        }
     }
 
     private fun loadData() {
         auth = Firebase.auth
-        val firebaseUser: FirebaseUser? = auth.currentUser
+        firebaseUser = auth.currentUser
         if (firebaseUser != null) {
-            loadAccount()
+            loadAccount(firebaseUser!!.uid)
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadAccount() {
-        showProgressDialog()
+    private fun loadAccount(uid: String) {
         val sharedPreferences = SharedPreferences(this)
+        val currentAccountId = sharedPreferences.accountId.toString()
         val currentAccountName = sharedPreferences.accountName
         val currentAccountColor = sharedPreferences.accountColor
 
@@ -136,10 +210,109 @@ class HomeActivity : AppCompatActivity() {
             ContextCompat.getColor(this, iconColor)
         )
 
-        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(ContextCompat.getColor(this, iconColor))
-        headerView.findViewById<TextView>(R.id.tvHeaderName).text = currentAccountName
+        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(
+            ContextCompat.getColor(this, iconColor)
+        )
 
-        hideProgressDialog()
+        val name =
+            currentAccountName?.let {
+                if (it.contains(" "))  it.split(" ")[0]
+                else it
+            }
+
+        headerView.findViewById<TextView>(R.id.tvHeaderName).text = name
+        val headerBalance = headerView.findViewById<TextView>(R.id.tvHeaderBalance)
+
+        database = Firebase.database
+        loadAccountRemainingBalance(uid, currentAccountId, headerBalance)
+    }
+
+    private fun loadAccountRemainingBalance(uid: String, accountId: String, headerBalance: TextView) {
+        databaseReference = database.getReference("accounts").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val account = snapshot.getValue<Account>()
+                if (account != null) {
+                    val budget = "₱" + String.format("%,.2f", account.remainingBalance)
+                    headerBalance.text = budget
+
+                    account.budgetRenewsAt?.let {
+                        if (isRenewalDate(it)) {
+                            setAccountRenewalDate(uid, accountId, it)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(binding.dlHome, getString(R.string.load_account_error), 5000)
+                    .show()
+            }
+    }
+
+    private fun isRenewalDate(date: Long): Boolean {
+        val zdtToday = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
+        )
+        val today = zdtToday.toInstant().toEpochMilli()
+        if (today > date) {
+            return true
+        }
+
+        return false
+    }
+
+    private fun setAccountRenewalDate(uid: String, accountId: String, date: Long) {
+        // set renewal date of account to next month
+        val zdtRenewal = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(date),
+            ZoneId.systemDefault()
+        )
+        val nextMonth = zdtRenewal.plusMonths(1).toInstant().toEpochMilli()
+        databaseReference.child("budgetRenewsAt").setValue(nextMonth)
+            .addOnSuccessListener {
+                renewMonthlyBudget(uid, accountId)
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(binding.dlHome, getString(R.string.renew_budget_error), 5000)
+                    .show()
+            }
+    }
+
+    private fun renewMonthlyBudget(uid: String, accountId: String) {
+        databaseReference = database.getReference("budgets").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val newBudgets = mutableMapOf<String, Budget>()
+                for (child in snapshot.children) {
+                    val budget = child.getValue<Budget>()
+                    if (budget != null) {
+                        budget.amountSpent = 0.0
+                        newBudgets[budget.id!!] = budget
+                    }
+                }
+
+                databaseReference.setValue(newBudgets)
+                    .addOnSuccessListener {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(resources.getString(R.string.budget_renewed_title))
+                            .setMessage(resources.getString(R.string.budget_renewed_message))
+                            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ -> }
+                            .show()
+                    }
+                    .addOnFailureListener {
+                        Snackbar
+                            .make(binding.dlHome, getString(R.string.renew_budget_error), 5000)
+                            .show()
+                    }
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(binding.dlHome, getString(R.string.renew_budget_error), 5000)
+                    .show()
+            }
     }
 
     private fun networkObserver() {
@@ -172,32 +345,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun sessionExpired() {
-        showProgressDialog()
-        Snackbar
-            .make(binding.dlHome, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                finish()
-            }
-        }.start()
-    }
+        dialog.setOnDismissListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
 
-    private fun showProgressDialog() {
-        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun hideProgressDialog() {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        dialog.show()
     }
 
 //    private fun replaceFragmentAnimation(fragment: Fragment) {

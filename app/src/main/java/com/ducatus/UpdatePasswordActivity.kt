@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
@@ -71,8 +70,8 @@ class UpdatePasswordActivity : AppCompatActivity() {
             else  newPassword.error = null
         }
         confirmPassword.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text == null || text.isEmpty()) confirmPassword.error = getString(R.string.confirm_password_empty)
-            else if (text.toString() != newPassword.editText?.text.toString()) confirmPassword.error = getString(R.string.password_match_error)
+            if (text == null || text.isEmpty()) confirmPassword.error = getString(R.string.confirm_new_password_empty)
+            else if (text.toString() != newPassword.editText?.text.toString().trim { it <= ' ' }) confirmPassword.error = getString(R.string.password_match_error)
             else  confirmPassword.error = null
         }
     }
@@ -101,7 +100,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
             if (newPassword != confirmPassword) binding.tfUpdatePasswordConfirm.error = getString(R.string.password_match_error)
             if (TextUtils.isEmpty(currentPassword)) binding.tfUpdatePasswordCurrent.error = getString(R.string.current_password_empty)
             if (TextUtils.isEmpty(newPassword)) binding.tfUpdatePasswordNew.error = getString(R.string.new_password_empty)
-            if (TextUtils.isEmpty(confirmPassword)) binding.tfUpdatePasswordConfirm.error = getString(R.string.confirm_password_empty)
+            if (TextUtils.isEmpty(confirmPassword)) binding.tfUpdatePasswordConfirm.error = getString(R.string.confirm_new_password_empty)
         }
     }
 
@@ -161,20 +160,13 @@ class UpdatePasswordActivity : AppCompatActivity() {
         databaseReference.setValue(crypto.encrypt(newPassword).toString())
             .addOnSuccessListener {
                 hideProgressDialog()
-                Snackbar
-                    .make(binding.llUpdatePassword, "Password updated", Snackbar.LENGTH_SHORT)
-                    .show()
 
-                // add 1.5 second delay
-                object : CountDownTimer(1500, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        // do nothing
-                    }
+                val dialog = MaterialAlertDialogBuilder(this)
+                    .setTitle(resources.getString(R.string.password_updated))
+                    .setPositiveButton(resources.getString(R.string.ok)) { _, _ -> }
 
-                    override fun onFinish() {
-                        onBackPressed()
-                    }
-                }.start()
+                dialog.setOnDismissListener { onBackPressed() }
+                dialog.show()
             }
             .addOnFailureListener {
                 Snackbar
@@ -184,24 +176,18 @@ class UpdatePasswordActivity : AppCompatActivity() {
     }
 
     private fun sessionExpired() {
-        hideProgressDialog()
-        Snackbar
-            .make(binding.llUpdatePassword, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                finish()
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {

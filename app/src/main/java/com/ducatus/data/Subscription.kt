@@ -1,0 +1,28 @@
+package com.ducatus.data
+
+data class Subscription(
+    var id: String? = null,
+    var name: String? = null,
+    var nameLower: String? = null,
+    var amount: Double = 0.0,
+    var paymentType: String? = null,
+    val frequency: Int = 0,
+    val createdAtString: String? = null,
+    val createdAt: Long? = null,
+    var dueDate: Long? = null,
+    var notification: Int = 0,
+    var recurrence: Int? = null,
+    var renewsAt: Long? = null,
+    var paidAt: Long? = null,
+    var notes: String? = null,
+    val categoryId: String? = null,
+    val categoryName: String? = null,
+    val categoryNameLower: String? = null,
+    val categoryColor: String? = null,
+    val categoryIcon: String? = null,
+    val subcategoryId: String? = null,
+    val subcategoryName: String? = null,
+    val subcategoryNameLower: String? = null,
+    val subcategoryColor: String? = null,
+    val subcategoryIcon: String? = null,
+)

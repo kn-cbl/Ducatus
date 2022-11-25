@@ -1,5 +1,7 @@
 package com.ducatus
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
+    private lateinit var sharedPreferences: SharedPreferences
     private var emailRegex = "^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(view)
 
         inputObserver()
+        sharedPreferences = SharedPreferences(this)
 
         binding.tvForgotPassword.setOnClickListener {
             clearErrors()
@@ -250,12 +254,12 @@ class LoginActivity : AppCompatActivity() {
                         0.0,
                         0.0,
                         0.0,
+                        null,
                         true
                     )
 
                     databaseReference.child(key!!).setValue(account)
                         .addOnSuccessListener {
-                            val sharedPreferences = SharedPreferences(applicationContext)
                             sharedPreferences.accountName = account.name
                             sharedPreferences.accountColor = account.color
 
@@ -293,6 +297,7 @@ class LoginActivity : AppCompatActivity() {
                     val categories = AppResources().getCategories(keys)
                     databaseReference.child(accountId).setValue(categories)
                         .addOnSuccessListener {
+                            createNotificationChannels()
                             checkSelectedAccount(firebaseUser)
                         }
                         .addOnFailureListener {
@@ -308,6 +313,31 @@ class LoginActivity : AppCompatActivity() {
                 hideProgressDialog()
                 binding.tvLoginErrorAuth.text = it.localizedMessage
             }
+    }
+
+    private fun createNotificationChannels() {
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val channelMap = mapOf(
+            sharedPreferences.challengesChannelId to "Challenges",
+            sharedPreferences.expensesChannelId to "Expenses",
+            sharedPreferences.loansChannelId to "Loans",
+            sharedPreferences.subscriptionsChannelId to "Subscriptions"
+        )
+
+        val channels = mutableListOf<NotificationChannel>()
+        for (channel in channelMap) {
+            if (notificationManager.getNotificationChannel(channel.key) == null) {
+                val notificationChannel = NotificationChannel(
+                    channel.key,
+                    channel.value,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+
+                channels.add(notificationChannel)
+            }
+        }
+
+        if (channels.isNotEmpty()) notificationManager.createNotificationChannels(channels)
     }
 
     private fun verifyEmail(verified: Boolean) {

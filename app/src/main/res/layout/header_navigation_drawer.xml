@@ -28,27 +28,34 @@
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_toEndOf="@+id/flHeaderIcon"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvHeaderName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:maxLines="2"
+            android:gravity="center_vertical"
             android:text="@string/username"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="@color/off_white" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvHeaderBalance"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
-            android:text="@string/my_wallet"
+            android:text="@string/php_currency_0"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="@color/off_white" />
     </LinearLayout>

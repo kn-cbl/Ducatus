@@ -10,7 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="80dp">
 
         <!-- header 1 -->
         <TextView
@@ -52,8 +55,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/inter_semi_bold"
+            android:lineSpacingExtra="4dp"
             android:text="@string/privacy_policy_subheader_1_list"
             android:textColor="@color/off_black" />
 
@@ -83,9 +89,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:fontFamily="@font/inter_regular"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:text="@string/privacy_policy_subheader_2_list_1_description"
             android:textColor="@color/off_black" />
 
@@ -100,9 +106,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:fontFamily="@font/inter_regular"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:text="@string/privacy_policy_subheader_2_list_2_description"
             android:textColor="@color/off_black" />
 

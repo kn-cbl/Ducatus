@@ -30,6 +30,7 @@ class VerifyOTPEmailActivity : AppCompatActivity() {
         setContentView(view)
 
         setTimer()
+        timer.start()
 
         binding.tvVerifyOTPUserEmail.text = intent.getStringExtra("email").toString()
         generatedOTP = intent.getStringExtra("code").toString()

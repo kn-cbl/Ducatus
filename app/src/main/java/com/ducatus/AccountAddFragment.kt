@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.GridLayout
 import android.widget.LinearLayout
@@ -24,6 +23,7 @@ import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountAddBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,8 +31,12 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class AccountAddFragment : Fragment() {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentAccountAddBinding
@@ -61,7 +65,7 @@ class AccountAddFragment : Fragment() {
         inputObserver()
         setAmountPresetClickListener()
 
-        colorViewModel.selectedColor.observe(viewLifecycleOwner) { selectedColor ->
+        colorViewModel.color.observe(viewLifecycleOwner) { selectedColor ->
             setColor(selectedColor)
         }
 
@@ -188,6 +192,13 @@ class AccountAddFragment : Fragment() {
         query.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
+                    // get next month epoch time
+                    val zdtToday = ZonedDateTime.ofInstant(
+                        Instant.now(),
+                        ZoneId.systemDefault()
+                    )
+                    val nextMonth = zdtToday.plusMonths(1).toInstant().toEpochMilli()
+
                     val key = databaseReference.push().key
                     val account = Account(
                         key,
@@ -196,7 +207,9 @@ class AccountAddFragment : Fragment() {
                         accountColor,
                         accountMonthlyBudget,
                         accountMonthlyBudget,
-                        accountMonthlyBudget
+                        accountMonthlyBudget,
+                        nextMonth,
+                        false
                     )
 
                     addAccount(key!!, uid, account)
@@ -210,13 +223,12 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .make(rootLayout, getString(R.string.add_account_error),5000)
                     .show()
             }
     }
 
     private fun addAccount(id: String, uid: String, account: Account) {
-        showProgressDialog()
         databaseReference.child(id).setValue(account)
             .addOnSuccessListener {
                 createCategories(uid, id)
@@ -224,13 +236,12 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .make(rootLayout, getString(R.string.add_account_error),5000)
                     .show()
             }
     }
 
     private fun createCategories(uid: String, accountId: String) {
-        showProgressDialog()
         val keys = mutableListOf<String>()
 
         val size = AppResources().getCategoryItemCount()
@@ -250,40 +261,36 @@ class AccountAddFragment : Fragment() {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!, 5000)
+                    .make(rootLayout, getString(R.string.add_categories_error),5000)
                     .show()
             }
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
-        binding.pbAddAccount.visibility = View.VISIBLE
-        activity.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        val bundle = Bundle()
+        bundle.putString("title", getString(R.string.adding))
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(childFragmentManager, "dialog")
     }
 
     private fun hideProgressDialog() {
-        binding.pbAddAccount.visibility = View.INVISIBLE
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        actionDialog.dismiss()
     }
 }

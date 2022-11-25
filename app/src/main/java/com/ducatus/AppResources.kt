@@ -86,7 +86,6 @@ class AppResources {
         "light_gray",
         "dark_gray",
         "almost_black",
-        "black"
     )
 
     private val icons = listOf(

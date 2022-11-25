@@ -14,9 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ducatus.adapter.AccountAdapter
 import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountsBinding
-import com.ducatus.viewmodel.AccountViewModel
+import com.ducatus.interfaces.AccountInterface
+import com.ducatus.viewmodel.UpdateViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -38,8 +40,7 @@ class AccountsFragment : Fragment(), AccountInterface {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
     private var firebaseUser: FirebaseUser? = null
-    private val accountViewModel: AccountViewModel by activityViewModels()
-    private var updated: Boolean = false
+    private val accountViewModel: UpdateViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,8 +61,9 @@ class AccountsFragment : Fragment(), AccountInterface {
         loadData()
 
         accountViewModel.isUpdated.observe(viewLifecycleOwner) { isUpdated ->
-            updated = isUpdated
-            if (updated) loadData()
+            isUpdated.getContentIfNotHandled()?.let { content ->
+                if (content) loadData()
+            }
         }
 
         binding.rlAddAccount.setOnClickListener {
@@ -74,7 +76,7 @@ class AccountsFragment : Fragment(), AccountInterface {
         super.onResume()
         val intent = activity.intent
         val fragment = intent.extras?.getString("setBudget")
-        if (fragment == "set" && !updated) {
+        if (fragment == "set") {
             val accountId = intent.extras?.getString("accountId").toString()
             val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditDialogFragment(accountId)
             findNavController().navigate(action)
@@ -154,12 +156,15 @@ class AccountsFragment : Fragment(), AccountInterface {
                     }
                 }
 
-                // limit accounts to 5 per user
-                if (accountAdapter.itemCount == 4) binding.rlAddAccount.visibility = View.GONE
+                val text = "${accountAdapter.itemCount + 1} / 5 accounts"
+                binding.tvAccountsCount.text = text
+
+                // limit to 5 accounts per user
+                if (accountAdapter.itemCount >= 4) binding.rlAddAccount.visibility = View.GONE
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.load_accounts_error),5000)
                     .show()
             }
     }
@@ -193,7 +198,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.load_account_error),5000)
                     .show()
             }
     }
@@ -207,7 +212,7 @@ class AccountsFragment : Fragment(), AccountInterface {
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.select_account_error),5000)
                     .show()
             }
     }
@@ -216,9 +221,10 @@ class AccountsFragment : Fragment(), AccountInterface {
         showProgressDialog()
         databaseReference.child(accountId).get()
             .addOnSuccessListener { snapshot ->
+                val account = snapshot.getValue<Account>()
+
                 databaseReference.child(accountId).child("selected").setValue(true)
                     .addOnSuccessListener {
-                        val account = snapshot.getValue<Account>()
                         sharedPreferences.accountId = accountId
                         sharedPreferences.accountName = account?.name
                         sharedPreferences.accountColor = account?.color
@@ -227,14 +233,14 @@ class AccountsFragment : Fragment(), AccountInterface {
                     .addOnFailureListener {
                         hideProgressDialog()
                         Snackbar
-                            .make(rootLayout, it.localizedMessage!!,5000)
+                            .make(rootLayout, getString(R.string.select_account_error),5000)
                             .show()
                     }
             }
             .addOnFailureListener {
                 hideProgressDialog()
                 Snackbar
-                    .make(rootLayout, it.localizedMessage!!,5000)
+                    .make(rootLayout, getString(R.string.select_account_error),5000)
                     .show()
             }
     }
@@ -254,25 +260,18 @@ class AccountsFragment : Fragment(), AccountInterface {
     }
 
     private fun sessionExpired() {
-        Snackbar
-            .make(rootLayout, getString(R.string.session_expired), Snackbar.LENGTH_LONG)
-            .show()
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(resources.getString(R.string.session_expired))
+            .setPositiveButton(resources.getString(R.string.log_in)) { _, _ -> }
 
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                try {
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    activity.finish()
-                }
-                catch (e: Exception) {}
-            }
-        }.start()
+        dialog.setOnDismissListener {
+            val intent = Intent(activity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            activity.finish()
+        }
+
+        dialog.show()
     }
 
     private fun showProgressDialog() {
