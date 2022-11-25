@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".GoalPausedFragment"
-    android:background="@color/frame_bg">
+    android:layout_height="wrap_content"
+    android:background="@color/frame_bg"
+    tools:context=".GoalPausedFragment">
 
     <GridLayout
         android:id="@+id/gridLayout_goalPaused"
@@ -17,10 +17,10 @@
             android:id="@+id/cardview_goalPaused1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_column="0"
             android:layout_margin="10dp"
             android:background="@color/dark_white"
             app:cardCornerRadius="15dp"
-            android:layout_column="0"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="10dp">
 
@@ -62,7 +62,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_toRightOf="@id/sample_img_goalPaused1"
                     android:text="Target date on Jul 28, 2020"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/gray"
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/percentProgress_goalPaused1"
@@ -84,7 +85,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginEnd="16dp"
                     android:text="Mar 15"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/gray"
+                    android:textSize="10sp" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout_goalPaused1"
@@ -178,21 +180,4 @@
 
 
     </GridLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_goalPaused"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
-        android:backgroundTint="#007FFF"
-        android:clickable="true"
-        app:srcCompat="@drawable/ic_add"
-        android:tint="@color/white"
-        android:visibility="visible"
-        app:fabCustomSize="60dp"
-        app:layout_anchorGravity="bottom|end"
-        app:layout_constraintBottom_toBottomOf="@+id/gridLayout"
-        app:layout_constraintEnd_toEndOf="parent" />
-
 </FrameLayout>

@@ -211,6 +211,11 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name=".ContinueChallenge"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ChallengesDetail2"
             android:exported="true"
             android:screenOrientation="portrait"

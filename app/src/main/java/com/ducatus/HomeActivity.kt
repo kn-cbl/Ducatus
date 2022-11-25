@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.KeyEvent
+import android.view.View
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -11,6 +14,9 @@ import androidx.navigation.Navigation
 import com.ducatus.data.Account
 import com.ducatus.data.Budget
 import com.ducatus.databinding.ActivityHomeBinding
+import com.ducatus.interfaces.ChallengesIntf
+import com.ducatus.interfaces.GoalIntf
+import com.ducatus.interfaces.TipsIntf
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +34,31 @@ import java.time.ZonedDateTime
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityHomeBinding
+    private var fIndex: Int = 0
+    private var mListener: GoalIntf = object : GoalIntf {
+        override fun OnToolbarClickListener(mView: View) {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
+        }
+
+        override fun PressBack() {
+            TODO("Not yet implemented")
+        }
+    }
+
+    private var tipsListener: TipsIntf = object : TipsIntf {
+        override fun onToolBarClickListener() {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
+        }
+    }
+
+    private var challengesListener: ChallengesIntf = object : ChallengesIntf {
+        override fun OnToolBarListener() {
+            binding.nvHome.setCheckedItem(R.id.nav_home)
+            binding.dlHome.open()
+        }
+    }
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private var firebaseUser: FirebaseUser? = null
@@ -79,15 +110,17 @@ class HomeActivity : AppCompatActivity() {
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigate(R.id.loansFragment)
                 }
-//                R.id.nav_goals -> {
-//                    startActivity(Intent(this, EditGoal::class.java))
-//                }
-//                R.id.nav_challenges -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ChallengesFragment()).commit()
-//                }
-//                R.id.nav_tips -> {
+                R.id.nav_goals -> {
+                    GoalMainActivity.start(this, mListener)
+                }
+                R.id.nav_challenges -> {
+                    ChallengesMainActivity.start(this, challengesListener)
+                }
+                R.id.nav_tips -> {
+                    fIndex = 6
+                    TipsMainActivity.start(this, tipsListener)
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, TipsFragment()).commit()
-//                }
+                }
 //                R.id.nav_help -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }
@@ -205,7 +238,9 @@ class HomeActivity : AppCompatActivity() {
             this.packageName
         )
 
-        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text = currentAccountName?.get(0)?.uppercase()
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text =
+            currentAccountName?.get(0)?.uppercase()
+
         headerView.findViewById<TextView>(R.id.tvHeaderIcon).setTextColor(
             ContextCompat.getColor(this, iconColor)
         )
@@ -329,8 +364,16 @@ class HomeActivity : AppCompatActivity() {
         }.start()
 
         if (activityStarted) {
-            val snackbarAvailable = Snackbar.make(binding.dlHome, getString(R.string.connection_available), Snackbar.LENGTH_LONG)
-            val snackbarUnavailable = Snackbar.make(binding.dlHome, getString(R.string.connection_unavailable), Snackbar.LENGTH_INDEFINITE)
+            val snackbarAvailable = Snackbar.make(
+                binding.dlHome,
+                getString(R.string.connection_available),
+                Snackbar.LENGTH_LONG
+            )
+            val snackbarUnavailable = Snackbar.make(
+                binding.dlHome,
+                getString(R.string.connection_unavailable),
+                Snackbar.LENGTH_INDEFINITE
+            )
 
             NetworkConnectivityObserver(this).observe(this) {
                 if (it == NetworkStatus.Available) {
