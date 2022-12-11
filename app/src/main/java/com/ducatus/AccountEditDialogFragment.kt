@@ -43,6 +43,7 @@ class AccountEditDialogFragment : DialogFragment() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var rootLayout: LinearLayout
     private lateinit var currentAccount: Account
+    private lateinit var sharedPreferences: SharedPreferences
     private val args: AccountEditDialogFragmentArgs by navArgs()
     private val amountViewModel: AmountViewModel by activityViewModels()
     private val colorViewModel: ColorViewModel by activityViewModels()
@@ -230,8 +231,7 @@ class AccountEditDialogFragment : DialogFragment() {
                     accountMonthlyBudget.toDouble(),
                     0.0,
                     0.0,
-                    null,
-                    currentAccount.selected
+                    null
                 )
 
                 accountNameExists(account)
@@ -296,6 +296,12 @@ class AccountEditDialogFragment : DialogFragment() {
 
         databaseReference.child(account.id!!).setValue(account)
             .addOnSuccessListener {
+                sharedPreferences = SharedPreferences(activity)
+                if (sharedPreferences.accountId!! == account.id) {
+                    sharedPreferences.accountName = account.name
+                    sharedPreferences.accountColor = account.color
+                }
+
                 updateViewModel.update(true)
                 hideProgressDialog()
                 dismiss()

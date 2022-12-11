@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -63,6 +62,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
         binding = ActivitySubscriptionAddBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
         loadData()
         setAmountPresetClickListener()
         setDatePicker()
@@ -145,15 +145,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
         recurrenceViewModel.recurrence.observe(this) { recurrence ->
             selectedRecurrence = recurrence
 
-            val recurrenceText =
-                if (recurrence in 1..11) {
-                    "month/s"
-                }
-                else {
-                    "year/s"
-                }
-
-            val text = "Every $recurrence $recurrenceText"
+            val text = "$recurrence month/s"
             binding.tfAddSubscriptionRecurrence.editText?.setText(text)
         }
     }
@@ -177,8 +169,8 @@ class SubscriptionAddActivity : AppCompatActivity() {
         auth = Firebase.auth
         firebaseUser = auth.currentUser
         if (firebaseUser != null) {
-            sharedPreferences = SharedPreferences(this)
             database = Firebase.database
+            sharedPreferences = SharedPreferences(this)
         }
         else {
             sessionExpired()
@@ -225,7 +217,10 @@ class SubscriptionAddActivity : AppCompatActivity() {
                     MaterialAlertDialogBuilder(this)
                         .setTitle(resources.getString(R.string.allocate_budgets))
                         .setMessage(resources.getString(R.string.allocate_budgets_message))
-                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> allocateBudget() }
+                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                            startActivity(Intent(this, BudgetAddActivity::class.java))
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                        }
                         .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
                         .show()
                 }
@@ -235,11 +230,6 @@ class SubscriptionAddActivity : AppCompatActivity() {
                     .make(binding.clAddSubscription, it.localizedMessage!!, 5000)
                     .show()
             }
-    }
-
-    private fun allocateBudget() {
-        startActivity(Intent(this, BudgetAddActivity::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun loadCategories(uid: String, accountId: String) {
@@ -327,6 +317,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
                 }
                 else {
                     binding.tfAddSubscriptionCategory.error = getString(R.string.categories_remaining_budget_empty)
+                    hideProgressDialog()
                 }
             }
             .addOnFailureListener {
@@ -337,7 +328,12 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun getCategoryRemainingBudget(uid: String, accountId: String, categoryId: String) {
-        databaseReference = database.getReference("budgets").child(uid).child(accountId).child(categoryId)
+        databaseReference =
+            database.getReference("budgets")
+                .child(uid)
+                .child(accountId)
+                .child(categoryId)
+
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 val budget = snapshot.getValue<Budget>()
@@ -356,8 +352,11 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun loadSubcategories(uid: String, accountId: String, categoryId: String) {
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(categoryId)
-        databaseReference.get()
+        database.getReference("subcategories")
+            .child(uid)
+            .child(accountId)
+            .child(categoryId)
+            .get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
                     selectedSubcategory = null // make sure no subcategory
@@ -411,11 +410,8 @@ class SubscriptionAddActivity : AppCompatActivity() {
             ZoneId.systemDefault()
         )
 
-        val janThisYear = ZonedDateTime.of(zdtToday.year, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
-        val lastTwentyYears = janThisYear.minusYears(20)
-        val nextFiveYears = janThisYear.plusYears(5)
-
-        val startDate = lastTwentyYears.toInstant().toEpochMilli()
+        val nextFiveYears = zdtToday.plusYears(5)
+        val startDate = zdtToday.toInstant().toEpochMilli()
         val endDate = nextFiveYears.toInstant().toEpochMilli()
 
         val constraintsBuilder =
@@ -662,13 +658,13 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun decreaseBudget(uid: String, accountId: String, subscription: Subscription) {
-        databaseReference =
+        val budgetsReference =
             database.getReference("budgets")
                 .child(uid)
                 .child(accountId)
                 .child(subscription.categoryId!!)
 
-        databaseReference.get()
+        budgetsReference.get()
             .addOnSuccessListener { snapshot ->
                 val budget = snapshot.getValue<Budget>()
                 if (budget != null) {
@@ -680,7 +676,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
                     budget.amountSpent += subscription.amount
                     budget.updatedAt = zdt.toInstant().toEpochMilli()
 
-                    databaseReference.setValue(budget)
+                    budgetsReference.setValue(budget)
                         .addOnSuccessListener {
                             decreaseAccountBalance(uid, accountId, subscription)
                         }
@@ -701,18 +697,18 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun decreaseAccountBalance(uid: String, accountId: String, subscription: Subscription) {
-        databaseReference =
+        val accountsReference =
             database.getReference("accounts")
                 .child(uid)
                 .child(accountId)
                 .child("remainingBalance")
 
-        databaseReference.get()
+        accountsReference.get()
             .addOnSuccessListener { snapshot ->
                 val remainingBalance = snapshot.value.toString().toDouble()
                 val newRemainingBalance = remainingBalance - subscription.amount
 
-                databaseReference.setValue(newRemainingBalance)
+                accountsReference.setValue(newRemainingBalance)
                     .addOnSuccessListener {
                         addSubscription(uid, accountId, subscription)
                     }
@@ -732,11 +728,11 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun addSubscription(uid: String, accountId: String, subscription: Subscription) {
-        databaseReference = database.getReference("subscriptions").child(uid).child(accountId)
-        val key = databaseReference.push().key
+        val subscriptionsReference = database.getReference("subscriptions").child(uid).child(accountId)
+        val key = subscriptionsReference.push().key
         subscription.id = key!!
 
-        databaseReference.child(key).setValue(subscription)
+        subscriptionsReference.child(key).setValue(subscription)
             .addOnSuccessListener {
                 addSubscriptionHistory(uid, accountId, subscription)
             }
@@ -749,13 +745,13 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun addSubscriptionHistory(uid: String, accountId: String, subscription: Subscription) {
-        databaseReference =
+        val subscriptionHistoryReference =
             database.getReference("subscriptionHistory")
                 .child(uid)
                 .child(accountId)
                 .child(subscription.id!!)
 
-        val key = databaseReference.push().key!!
+        val key = subscriptionHistoryReference.push().key!!
         val subscriptionHistory = SubscriptionHistory(
             key,
             subscription.amount,
@@ -771,7 +767,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
             1 -> subscriptionHistory.dueAt = subscription.renewsAt
         }
 
-        databaseReference.child(key).setValue(subscriptionHistory)
+        subscriptionHistoryReference.child(key).setValue(subscriptionHistory)
             .addOnSuccessListener {
                 if (subscription.notification != 0) {
                     when (subscription.notification) {

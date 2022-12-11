@@ -34,14 +34,13 @@ class LoanActiveAdapter(
     }
 
     override fun onBindViewHolder(holder: LoanActiveViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentLoanActive = loans[position]
 
         holder.itemView.apply {
             findViewById<TextView>(R.id.tvItemLoanIcon).text = currentLoanActive.name?.get(0)?.uppercase()
             findViewById<TextView>(R.id.tvItemLoanName).text = currentLoanActive.name
 
-            val notesText = currentLoanActive.notes ?: activity.getString(R.string.notes_empty)
+            val notesText = currentLoanActive.notes ?: resources.getString(R.string.notes_empty)
             findViewById<TextView>(R.id.tvItemLoanNotes).text = notesText
 
             // lend or borrow
@@ -49,25 +48,25 @@ class LoanActiveAdapter(
             val amountColorRes = resources.getIdentifier(
                 loanType,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val amountText = "₱" + String.format("%,.2f", currentLoanActive.amount)
             findViewById<TextView>(R.id.tvItemLoanAmount).text = amountText
             findViewById<TextView>(R.id.tvItemLoanAmount).setTextColor(
-                ContextCompat.getColor(activity, amountColorRes)
+                ContextCompat.getColor(context, amountColorRes)
             )
 
             val loanState = isOverdue(currentLoanActive)
             val dateColorRes = resources.getIdentifier(
                 loanState["color"],
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<TextView>(R.id.tvItemLoanDate).text = loanState["date"]
             findViewById<TextView>(R.id.tvItemLoanDate).setTextColor(
-                ContextCompat.getColor(activity, dateColorRes)
+                ContextCompat.getColor(context, dateColorRes)
             )
 
             if (loanState["time"] != "") {
@@ -135,43 +134,31 @@ class LoanActiveAdapter(
         else {
             color = "bright_red"
 
+            val elapsedYears = ChronoUnit.YEARS.between(startDate, endDate)
+            val elapsedMonths = ChronoUnit.MONTHS.between(startDate, endDate)
             val elapsedDays = ChronoUnit.DAYS.between(startDate, endDate)
             val elapsedHours = ChronoUnit.HOURS.between(startDate, endDate)
             val elapsedMinutes = ChronoUnit.MINUTES.between(startDate, endDate)
             val elapsedSeconds = ChronoUnit.SECONDS.between(startDate, endDate)
 
             dateText =
-                if (elapsedDays > 0) {
-                    if (elapsedDays.toInt() == 1) {
-                        "${elapsedDays}d overdue"
-                    }
-                    else {
-                        "${elapsedDays}d overdue"
-                    }
+                if (elapsedYears > 0) {
+                    "${elapsedYears}y overdue"
+                }
+                else if (elapsedMonths > 0) {
+                    "${elapsedMonths}m overdue"
+                }
+                else if (elapsedDays > 0) {
+                    "${elapsedDays}d overdue"
                 }
                 else if (elapsedHours > 0) {
-                    if (elapsedHours.toInt() == 1) {
-                        "${elapsedHours}h overdue"
-                    }
-                    else {
-                        "${elapsedHours}h overdue"
-                    }
+                    "${elapsedHours}h overdue"
                 }
                 else if (elapsedMinutes > 0) {
-                    if (elapsedMinutes.toInt() == 1) {
-                        "${elapsedMinutes}m overdue"
-                    }
-                    else {
-                        "${elapsedMinutes}m overdue"
-                    }
+                    "${elapsedMinutes}min. overdue"
                 }
                 else {
-                    if (elapsedSeconds.toInt() == 1) {
-                        "${elapsedSeconds}s overdue"
-                    }
-                    else {
-                        "${elapsedSeconds}s overdue"
-                    }
+                    "${elapsedSeconds}s overdue"
                 }
         }
 

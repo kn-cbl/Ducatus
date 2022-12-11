@@ -6,20 +6,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.ducatus.interfaces.LoanInterface
 import com.ducatus.R
 import com.ducatus.data.LoanHistory
-import com.ducatus.interfaces.LoanHistoryInterface
-import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class LoanHistoryAdapter(
     private val loansHistory: MutableList<LoanHistory>,
-    private val listener: LoanHistoryInterface
 
 ) : RecyclerView.Adapter<LoanHistoryAdapter.LoanHistoryViewHolder>() {
 
@@ -36,7 +31,6 @@ class LoanHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: LoanHistoryViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentLoanHistory = loansHistory[position]
 
         holder.itemView.apply {
@@ -57,16 +51,16 @@ class LoanHistoryAdapter(
             val amountColorRes = resources.getIdentifier(
                 loanState,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val amountText = "₱" + String.format("%,.2f", currentLoanHistory.amount)
             findViewById<TextView>(R.id.tvItemLoanHistoryAmount).text = amountText
             findViewById<TextView>(R.id.tvItemLoanHistoryAmount).setTextColor(
-                ContextCompat.getColor(activity, amountColorRes)
+                ContextCompat.getColor(context, amountColorRes)
             )
 
-            val notesText = currentLoanHistory.notes ?: activity.getString(R.string.notes_empty)
+            val notesText = currentLoanHistory.notes ?: resources.getString(R.string.notes_empty)
             findViewById<TextView>(R.id.tvItemLoanHistoryNotes).text = notesText
         }
     }

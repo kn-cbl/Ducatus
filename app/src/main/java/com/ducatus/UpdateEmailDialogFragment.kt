@@ -2,10 +2,8 @@ package com.ducatus
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
@@ -18,7 +16,7 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.FragmentUpdateEmailDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -124,10 +122,22 @@ class UpdateEmailDialogFragment : DialogFragment() {
                 }
                 else {
                     hideProgressDialog()
-                    val exception = task.exception as FirebaseAuthException
-                    when (exception.errorCode) {
-                        "ERROR_WRONG_PASSWORD" -> binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_invalid)
-                        else -> binding.tfUpdateEmailReauthenticate.error = exception.localizedMessage
+                    task.exception?.let {
+                        try {
+                            throw it
+                        }
+                        catch (exception: FirebaseAuthException) {
+                            when (exception.errorCode) {
+                                "ERROR_WRONG_PASSWORD" -> binding.tfUpdateEmailReauthenticate.error = getString(R.string.password_invalid)
+                                else -> binding.tfUpdateEmailReauthenticate.error = exception.localizedMessage
+                            }
+                        }
+                        catch (exception: FirebaseTooManyRequestsException) {
+                            binding.tfUpdateEmailReauthenticate.error = exception.localizedMessage
+                        }
+                        catch (exception: Exception) {
+                            binding.tfUpdateEmailReauthenticate.error = exception.localizedMessage
+                        }
                     }
                 }
             }
@@ -145,10 +155,22 @@ class UpdateEmailDialogFragment : DialogFragment() {
                 }
                 else {
                     hideProgressDialog()
-                    val exception = task.exception as FirebaseAuthException
-                    when (exception.errorCode) {
-                        "ERROR_EMAIL_ALREADY_IN_USE" -> binding.tfUpdateEmail.error = getString(R.string.email_exists)
-                        else -> binding.tfUpdateEmail.error = exception.localizedMessage
+                    task.exception?.let {
+                        try {
+                            throw it
+                        }
+                        catch (exception: FirebaseAuthException) {
+                            when (exception.errorCode) {
+                                "ERROR_EMAIL_ALREADY_IN_USE" -> binding.tfUpdateEmail.error = getString(R.string.email_exists)
+                                else -> binding.tfUpdateEmail.error = exception.localizedMessage
+                            }
+                        }
+                        catch (exception: FirebaseTooManyRequestsException) {
+                            binding.tfUpdateEmail.error = exception.localizedMessage
+                        }
+                        catch (exception: Exception) {
+                            binding.tfUpdateEmail.error = exception.localizedMessage
+                        }
                     }
                 }
             }

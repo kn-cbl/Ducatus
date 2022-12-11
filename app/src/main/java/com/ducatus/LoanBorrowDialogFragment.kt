@@ -116,6 +116,21 @@ class LoanBorrowDialogFragment : DialogFragment() {
                 binding.tvLoanBorrowTitle.text = getString(R.string.receive_payment)
             }
 
+            val remainingLoanText = getString(R.string.remaining_loan_2) + " ₱" + String.format("%,.2f", selectedLoan.amount)
+            binding.tvLoanBorrowRemaining.apply { 
+                text = remainingLoanText
+                visibility = View.VISIBLE
+            }
+
+            binding.tfLoanBorrowAmount.editText?.doOnTextChanged { text, _, _, _ ->
+                if (text != null && text.toString().toDouble() > selectedLoan.amount) {
+                    binding.tvLoanBorrowRemainingNotice.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tvLoanBorrowRemainingNotice.visibility = View.GONE
+                }
+            }
+
             // set date and time to current date and time
             val zdt = ZonedDateTime.ofInstant(
                 Instant.now(),
@@ -125,6 +140,7 @@ class LoanBorrowDialogFragment : DialogFragment() {
             val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
             val formattedDate = dtf.format(startOfDay)
 
+            binding.tfLoanBorrowDate.visibility = View.GONE
             binding.tfLoanBorrowDate.isEnabled = false
             binding.tfLoanBorrowDate.editText?.setText(formattedDate)
             dateTimeMap["date"] = startOfDay.toInstant().toEpochMilli()
@@ -136,6 +152,7 @@ class LoanBorrowDialogFragment : DialogFragment() {
             val msHour: Long = zdt.hour * milliseconds * 60 * 60
             val msMinute: Long = zdt.minute * milliseconds * 60
 
+            binding.tfLoanBorrowTime.visibility = View.GONE
             binding.tfLoanBorrowTime.isEnabled = false
             binding.tfLoanBorrowTime.editText?.setText(formattedTime)
             dateTimeMap["hour"] = msHour
@@ -458,7 +475,7 @@ class LoanBorrowDialogFragment : DialogFragment() {
 
             val title = "Loan payment for ${loan.name} due in $elapsedTime"
             val message = "Settle your payment of $formattedAmount on or before $formattedDate."
-            val notificationId = System.currentTimeMillis().toInt()
+            val notificationId = loan.notificationId!!
 
             notificationIntent.action = "com.ducatus.LOAN"
             notificationIntent.putExtra(titleExtra, title)

@@ -11,13 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.interfaces.SubscriptionHistoryInterface
 import com.ducatus.R
 import com.ducatus.data.SubscriptionHistory
-import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 class SubscriptionHistoryAdapter(
     private val subscriptionsHistory: MutableList<SubscriptionHistory>,
@@ -38,7 +36,6 @@ class SubscriptionHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: SubscriptionHistoryViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentSubscriptionHistory = subscriptionsHistory[position]
 
         holder.itemView.apply {
@@ -53,7 +50,7 @@ class SubscriptionHistoryAdapter(
             when (currentSubscriptionHistory.paidAt) {
                 null -> {
                     findViewById<LinearLayout>(R.id.llItemSubscriptionHistory).setBackgroundColor(
-                        ContextCompat.getColor(activity, R.color.blue_alpha)
+                        ContextCompat.getColor(context, R.color.blue_alpha)
                     )
 
                     val status = getElapsedTime(currentSubscriptionHistory.dueAt!!)
@@ -68,7 +65,7 @@ class SubscriptionHistoryAdapter(
                     val dateText = "Due ${status["date"]}"
                     findViewById<TextView>(R.id.tvItemSubscriptionHistoryStatusDate).text = dateText
                     findViewById<TextView>(R.id.tvItemSubscriptionHistoryStatusDate).setTextColor(
-                        ContextCompat.getColor(activity, statusIconTint)
+                        ContextCompat.getColor(context, statusIconTint)
                     )
 
                     findViewById<TextView>(R.id.tvItemSubscriptionHistoryStatusDate)
@@ -81,7 +78,7 @@ class SubscriptionHistoryAdapter(
 
                     findViewById<TextView>(R.id.tvItemSubscriptionHistoryStatusDate)
                         .compoundDrawablesRelative[0]
-                        .setTint((ContextCompat.getColor(activity, statusIconTint)))
+                        .setTint((ContextCompat.getColor(context, statusIconTint)))
 
                     findViewById<Button>(R.id.btnItemSubscriptionHistory).visibility = View.VISIBLE
                     findViewById<Button>(R.id.btnItemSubscriptionHistory).setOnClickListener {

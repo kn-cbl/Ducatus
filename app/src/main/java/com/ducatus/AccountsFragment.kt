@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +30,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class AccountsFragment : Fragment(), AccountInterface {
+    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentAccountsBinding
@@ -78,14 +78,12 @@ class AccountsFragment : Fragment(), AccountInterface {
         val fragment = intent.extras?.getString("setBudget")
         if (fragment == "set") {
             val accountId = intent.extras?.getString("accountId").toString()
+            intent.removeExtra("setBudget")
+            intent.removeExtra("accountId")
+
             val action = AccountsFragmentDirections.actionAccountsFragmentToAccountEditDialogFragment(accountId)
             findNavController().navigate(action)
         }
-    }
-
-    // get activity to be used in adapter
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun showPopup(view: View, menu: Int, accountId: String) {
@@ -93,8 +91,7 @@ class AccountsFragment : Fragment(), AccountInterface {
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.optionSelect -> {
-                    val currentAccountId = sharedPreferences.accountId.toString()
-                    deselectAccount(currentAccountId, accountId)
+                    selectAccount(accountId)
                     true
                 }
                 R.id.optionEdit -> {
@@ -203,42 +200,22 @@ class AccountsFragment : Fragment(), AccountInterface {
             }
     }
 
-    private fun deselectAccount(currentAccountId: String, selectedAccountId: String) {
-        showProgressDialog()
-        databaseReference.child(currentAccountId).child("selected").setValue(false)
-            .addOnSuccessListener {
-                selectAccount(selectedAccountId)
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(rootLayout, getString(R.string.select_account_error),5000)
-                    .show()
-            }
-    }
-
     private fun selectAccount(accountId: String) {
-        showProgressDialog()
+        showProgressDialogAction(getString(R.string.selecting))
         databaseReference.child(accountId).get()
             .addOnSuccessListener { snapshot ->
                 val account = snapshot.getValue<Account>()
+                account?.let {
+                    sharedPreferences.accountId = it.id
+                    sharedPreferences.accountName = it.name
+                    sharedPreferences.accountColor = it.color
 
-                databaseReference.child(accountId).child("selected").setValue(true)
-                    .addOnSuccessListener {
-                        sharedPreferences.accountId = accountId
-                        sharedPreferences.accountName = account?.name
-                        sharedPreferences.accountColor = account?.color
-                        loadAccountsData()
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(rootLayout, getString(R.string.select_account_error),5000)
-                            .show()
-                    }
+                    hideProgressDialogAction()
+                    loadAccountsData()
+                }
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 Snackbar
                     .make(rootLayout, getString(R.string.select_account_error),5000)
                     .show()
@@ -247,8 +224,8 @@ class AccountsFragment : Fragment(), AccountInterface {
 
     private fun confirmDelete(accountId: String) {
         MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.delete_account_mark))
-            .setMessage(resources.getString(R.string.delete_account_confirm))
+            .setTitle(resources.getString(R.string.delete_account_title))
+            .setMessage(resources.getString(R.string.delete_account_message))
             .setPositiveButton(resources.getString(R.string.delete)) { _, _ -> deleteAccount(accountId) }
             .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
             .show()
@@ -282,5 +259,18 @@ class AccountsFragment : Fragment(), AccountInterface {
     private fun hideProgressDialog() {
         binding.pbAccount.visibility = View.INVISIBLE
         binding.clAccount.visibility = View.VISIBLE
+    }
+
+    private fun showProgressDialogAction(title: String) {
+        val bundle = Bundle()
+        bundle.putString("title", title)
+
+        actionDialog = ActionDialogFragment()
+        actionDialog.arguments = bundle
+        actionDialog.show(childFragmentManager, "dialog")
+    }
+
+    private fun hideProgressDialogAction() {
+        actionDialog.dismiss()
     }
 }

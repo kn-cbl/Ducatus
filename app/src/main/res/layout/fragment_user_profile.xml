@@ -53,13 +53,13 @@
                 android:id="@+id/ivUserProfilePictureUpdate"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:background="@drawable/oval_gray"
+                android:background="@drawable/bg_circle"
                 android:backgroundTint="@color/white"
-                android:contentDescription="@string/icon_hint"
+                android:contentDescription="@string/icon"
                 android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/camera" />
+                app:srcCompat="@drawable/ic_baseline_photo_camera_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/ic_edit"
+                android:background="@drawable/ic_baseline_edit_24"
                 android:contentDescription="@string/update_username"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tvUserProfileUsername"
@@ -121,7 +121,7 @@
             app:boxCornerRadiusTopStart="8dp"
             app:boxStrokeColor="@color/lighter_gray"
             app:boxStrokeWidthFocused="1dp"
-            app:endIconDrawable="@drawable/ic_edit"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
             app:endIconMode="custom"
             app:expandedHintEnabled="true">
 
@@ -151,7 +151,7 @@
             app:boxCornerRadiusBottomStart="8dp"
             app:boxCornerRadiusTopEnd="8dp"
             app:boxCornerRadiusTopStart="8dp"
-            app:endIconDrawable="@drawable/ic_edit"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
             app:endIconMode="custom"
             app:expandedHintEnabled="true">
 

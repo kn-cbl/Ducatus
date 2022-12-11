@@ -8,7 +8,6 @@ import android.view.View
 import android.view.WindowManager
 import com.ducatus.databinding.ActivityVerifyEmailBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -38,7 +37,13 @@ class VerifyEmailActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        FirebaseAuth.getInstance().signOut()
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    override fun onStop() {
+        FirebaseAuth.getInstance().signOut()
+        super.onStop()
     }
 
     private fun sendEmail() {
@@ -52,9 +57,11 @@ class VerifyEmailActivity : AppCompatActivity() {
             else {
                 firebaseUser.sendEmailVerification()
                     .addOnSuccessListener {
+                        hideProgressDialogResend()
                         startTimer()
                     }
                     .addOnFailureListener {
+                        hideProgressDialogResend()
                         binding.tvVerifyEmailError.text = it.localizedMessage
                     }
             }
@@ -63,7 +70,6 @@ class VerifyEmailActivity : AppCompatActivity() {
             hideProgressDialogResend()
             sessionExpired()
         }
-        hideProgressDialogResend()
     }
 
     // reload email verified status of user
@@ -73,10 +79,12 @@ class VerifyEmailActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             firebaseUser.reload()
                 .addOnSuccessListener {
+                    hideProgressDialogVerify()
                     firebaseUser = auth.currentUser
                     if (firebaseUser?.isEmailVerified == true) verified()
                 }
                 .addOnFailureListener {
+                    hideProgressDialogVerify()
                     binding.tvVerifyEmailError.text = it.localizedMessage
                 }
         }
@@ -84,7 +92,6 @@ class VerifyEmailActivity : AppCompatActivity() {
             hideProgressDialogVerify()
             sessionExpired()
         }
-        hideProgressDialogVerify()
     }
 
     private fun resendEmail() {

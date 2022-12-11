@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter
 
 class TransactionGroupAdapter(
     private val transactionsGroup: MutableList<TransactionGroup>,
-    private val listener: TransactionInterface
 
 ) : RecyclerView.Adapter<TransactionGroupAdapter.TransactionGroupViewHolder>() {
 
@@ -34,7 +33,6 @@ class TransactionGroupAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionGroupViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentTransactionGroup = transactionsGroup[position]
 
         holder.itemView.apply {
@@ -51,7 +49,7 @@ class TransactionGroupAdapter(
             val amountColorRes = resources.getIdentifier(
                 amountColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val dateText = determineDateText(currentTransactionGroup.date!!)
@@ -60,12 +58,12 @@ class TransactionGroupAdapter(
             val text = currency + String.format("%,.2f", amount)
             findViewById<TextView>(R.id.tvItemTransactionTotal).text = text
             findViewById<TextView>(R.id.tvItemTransactionTotal)
-                .setTextColor(ContextCompat.getColor(activity, amountColorRes))
+                .setTextColor(ContextCompat.getColor(context, amountColorRes))
 
             val transactionAdapter = currentTransactionGroup.adapter
             val childView = findViewById<RecyclerView>(R.id.rvTransactionGroup)
             childView.adapter = transactionAdapter
-            childView.layoutManager = LinearLayoutManager(activity)
+            childView.layoutManager = LinearLayoutManager(context)
 
             for (transaction in currentTransactionGroup.transactions!!) {
                 transactionAdapter.addTransaction(transaction)

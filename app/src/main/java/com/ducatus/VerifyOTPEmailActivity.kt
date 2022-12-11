@@ -11,6 +11,8 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.ducatus.databinding.ActivityVerifyOtpEmailBinding
+import com.ducatus.utils.AppExecutors
+import com.ducatus.utils.Crypto
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase

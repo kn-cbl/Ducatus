@@ -30,9 +30,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
 class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
     private lateinit var actionDialog: ActionDialogFragment
@@ -46,7 +43,6 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
     private lateinit var viewImageDialog: Dialog
     private lateinit var selectedBudget: Budget
     private var firebaseUser: FirebaseUser? = null
-    private var totalExpenseAmount = 0.0
     private val budgetViewModel: BudgetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,10 +99,6 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
     override fun onBackPressed() {
         super.onBackPressed()
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-    }
-
-    override fun getActivityInterface(): Activity {
-        return this
     }
 
     override fun viewImage(imagePath: String) {
@@ -244,10 +236,6 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                 for (child in snapshot.children) {
                     val transaction = child.getValue<Transaction>()
                     if (transaction != null) {
-                        when (transaction.type) {
-                            0 -> totalExpenseAmount += transaction.amount
-                            1 -> totalExpenseAmount -= transaction.amount
-                        }
                         expensesHistory.add(
                             ExpenseHistory(
                                 transaction.name,
@@ -266,7 +254,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clBudgetDetail, it.localizedMessage!!,5000)
+                    .make(binding.clBudgetDetail, getString(R.string.load_expense_history_error),5000)
                     .show()
             }
     }
@@ -279,7 +267,6 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                 for (child in snapshot.children) {
                     val subscription = child.getValue<Subscription>()
                     if (subscription != null) {
-                        totalExpenseAmount += subscription.amount
                         expensesHistory.add(
                             ExpenseHistory(
                                 subscription.name,
@@ -300,7 +287,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clBudgetDetail, it.localizedMessage!!,5000)
+                    .make(binding.clBudgetDetail, getString(R.string.load_expense_history_error),5000)
                     .show()
             }
     }
@@ -380,7 +367,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                 // cancel all future expense notifications if no categories are allocated after
                 // deleting current budget
                 if (allocatedCategories == 0) {
-                    cancelNotifications(this)
+                    cancelNotification(this)
                 }
 
                 deleteTransactions(uid, accountId, categoryId)
@@ -393,30 +380,23 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
             }
     }
 
-    private fun cancelNotifications(context: Context) {
+    private fun cancelNotification(context: Context) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.expensesChannelId)
         if (notificationChannel != null) {
             val notificationIntent = Intent(context, NotificationReceiver::class.java)
             notificationIntent.action = "com.ducatus.EXPENSE"
-
-            val zdt = ZonedDateTime.ofInstant(
-                Instant.now(),
-                ZoneId.systemDefault()
-            )
+            val notificationId = 28800000
 
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            for (i in 0 until 14) {
-                val notificationId = zdt.dayOfYear.plus(i)
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    notificationId,
-                    notificationIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
-                alarmManager.cancel(pendingIntent)
-            }
+            alarmManager.cancel(pendingIntent)
         }
     }
 
@@ -506,7 +486,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
             .addOnSuccessListener { snapshot ->
                 val account = snapshot.getValue<Account>()
                 if (account != null) {
-                    account.remainingBalance += totalExpenseAmount
+                    account.remainingBalance += selectedBudget.amountSpent
                     account.remainingBudget += selectedBudget.amountTotal
 
                     databaseReference.setValue(account)

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
@@ -22,7 +20,6 @@ import com.ducatus.databinding.FragmentLoanEditDialogBinding
 import com.ducatus.viewmodel.AmountViewModel
 import com.ducatus.viewmodel.LoanViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -41,7 +38,6 @@ class LoanEditDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentLoanEditDialogBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var rootLayout: ConstraintLayout
     private lateinit var currentLoanNameLower: String
     private lateinit var selectedLoan: Loan
     private var firebaseUser: FirebaseUser? = null
@@ -54,7 +50,6 @@ class LoanEditDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         activity = requireActivity()
-        rootLayout = activity.findViewById(R.id.clLoanDetail)
         binding = FragmentLoanEditDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -195,24 +190,19 @@ class LoanEditDialogFragment : DialogFragment() {
             firebaseUser?.let {
                 var changes = 0
 
-                if (loanType != selectedLoan.type) {
-                    changes++
-                }
-                if (name.lowercase() != selectedLoan.nameLower) {
-                    changes++
-                }
-                if (amount.toDouble() != selectedLoan.amount) {
-                    changes++
-                }
-                if (notes != selectedLoan.notes) {
-                    changes++
-                }
+                if (loanType != selectedLoan.type) changes++
+                if (name.lowercase() != selectedLoan.nameLower) changes++
+                if (amount.toDouble() != selectedLoan.amount) changes++
+                if (notes != selectedLoan.notes) changes++
 
                 if (changes == 0) {
                     dismiss()
                 }
                 else {
                     showProgressDialog()
+
+                    val sharedPreferences = SharedPreferences(activity)
+                    val currentAccountId = sharedPreferences.accountId.toString()
 
                     selectedLoan.name = name
                     selectedLoan.nameLower = name.lowercase()
@@ -230,18 +220,15 @@ class LoanEditDialogFragment : DialogFragment() {
                         selectedLoan.amount = 0.0
                     }
 
-                    loanExists(it.uid, selectedLoan)
+                    loanExists(it.uid, currentAccountId, selectedLoan)
                 }
             }
         }
     }
 
-    private fun loanExists(uid: String, loan: Loan) {
+    private fun loanExists(uid: String, accountId: String, loan: Loan) {
         database = Firebase.database
-        val sharedPreferences = SharedPreferences(activity)
-        val currentAccountId = sharedPreferences.accountId.toString()
-
-        databaseReference = database.getReference("loans").child(uid).child(currentAccountId)
+        databaseReference = database.getReference("loans").child(uid).child(accountId)
         val query = databaseReference.orderByChild("nameLower").equalTo(loan.nameLower)
         query.get()
             .addOnSuccessListener { snapshot ->
@@ -267,7 +254,7 @@ class LoanEditDialogFragment : DialogFragment() {
     }
 
     private fun updateLoan(loan: Loan) {
-        databaseReference.child(loan.id!!).setValue(selectedLoan)
+        databaseReference.child(loan.id!!).setValue(loan)
             .addOnSuccessListener {
                 loanViewModel.setLoan(loan)
                 hideProgressDialog()

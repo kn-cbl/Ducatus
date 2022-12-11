@@ -30,8 +30,8 @@ class TransactionsFragment : Fragment() {
         binding.vpTransactions.adapter = adapter
 
         val transactionTabs = listOf(
-            activity.getString(R.string.breakdown),
-            activity.getString(R.string.overview)
+            resources.getString(R.string.breakdown),
+            resources.getString(R.string.overview)
         )
 
         TabLayoutMediator(binding.tlTransactions, binding.vpTransactions) { tab, position ->

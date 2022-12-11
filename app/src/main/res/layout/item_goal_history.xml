@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="8dp"
+    app:cardBackgroundColor="@color/off_white"
+    app:cardCornerRadius="8dp"
+    app:strokeColor="@color/slightly_darker_gray"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvItemGoalHistoryAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/inter_medium"
+            android:maxLines="1"
+            android:text="@string/php_currency_0"
+            android:textColor="@color/off_black" />
+
+        <TextView
+            android:id="@+id/tvItemGoalHistoryDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="12sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/inter_regular"
+            android:maxLines="1"
+            android:text="@string/date"
+            android:textColor="@color/darker_gray" />
+
+        <TextView
+            android:id="@+id/tvItemGoalHistoryTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="12sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/inter_regular"
+            android:maxLines="1"
+            android:text="@string/time"
+            android:textColor="@color/darker_gray" />
+
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -33,7 +33,6 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentTransaction = transactions[position]
 
         holder.itemView.apply {
@@ -51,16 +50,18 @@ class TransactionAdapter(
             val iconColor = resources.getIdentifier(
                 itemColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val icon = resources.getIdentifier(
                 itemIcon,
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flItemTransactionIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemTransactionIcon).backgroundTintList =
+                ContextCompat.getColorStateList(context, iconColor)
+
             findViewById<ImageView>(R.id.ivItemTransactionIcon).setImageResource(icon)
             findViewById<ImageView>(R.id.ivItemTransactionIcon).setColorFilter(
                 ResourcesCompat.getColor(
@@ -79,13 +80,13 @@ class TransactionAdapter(
             val amountColorRes = resources.getIdentifier(
                 transactionState["color"],
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.amount)
             findViewById<TextView>(R.id.tvItemTransactionAmount).text = amountText
             findViewById<TextView>(R.id.tvItemTransactionAmount).setTextColor(
-                ContextCompat.getColor(activity, amountColorRes)
+                ContextCompat.getColor(context, amountColorRes)
             )
 
             findViewById<MaterialCardView>(R.id.cvItemTransaction).setOnClickListener {

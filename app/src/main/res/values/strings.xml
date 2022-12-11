@@ -8,6 +8,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--  Errors  -->
+    <string name="generic_error">Something went wrong, please try again</string>
     <string name="session_expired">Session expired, please log-in again</string>
     <string name="email_empty">Enter your email</string>
     <string name="email_invalid">Enter a valid email</string>
@@ -61,26 +62,60 @@
     <string name="notification_empty">Select a notification</string>
     <string name="loan_name_empty">Enter loan name</string>
     <string name="loan_name_exists">Loan already exists</string>
+    <string name="goal_name_empty">Enter goal name</string>
+    <string name="goal_name_exists">Goal already exists</string>
+    <string name="target_amount_error">Target amount must be more than the saved amount</string>
+    <string name="saved_amount_error">Saved amount must not be greater than the target amount</string>
+    <string name="saved_amount_error_2">Saved amount must not be greater than the remaining amount</string>
+
     <string name="load_account_error">Could not load account</string>
     <string name="load_accounts_error">Could not load accounts</string>
     <string name="load_budgets_error">Could not load budgets</string>
     <string name="load_categories_error">Could not load categories</string>
+    <string name="load_challenges_error">Could not load challenges</string>
+    <string name="load_challenge_history_error">Could not load challenge history</string>
+    <string name="load_goals_error">Could not load goals</string>
+    <string name="load_goal_history_error">Could not load goal history</string>
+    <string name="load_notifications_error">Could not load notifications</string>
+    <string name="load_loan_error">Could not load loan</string>
     <string name="load_loans_error">Could not load loans</string>
+    <string name="load_loan_history_error">Could not load loan history</string>
+    <string name="load_subscription_error">Could not load subscription</string>
     <string name="load_subscriptions_error">Could not load subscriptions</string>
+    <string name="load_subscription_history_error">Could not load subscription history</string>
     <string name="load_subcategories_error">Could not load subcategories</string>
+    <string name="load_tips_error">Could not load tips</string>
     <string name="load_transactions_error">Could not load transactions</string>
+    <string name="load_expense_history_error">Could not load expense history</string>
+    <string name="load_image_error">Could not load image</string>
+    <string name="load_video_error">Could not load video</string>
+
     <string name="select_account_error">Could not select account</string>
     <string name="renew_budget_error">Could not renew monthly budget</string>
     <string name="add_account_error">Could not add account</string>
     <string name="add_budget_error">Could not add budget</string>
     <string name="add_category_error">Could not add category</string>
     <string name="add_categories_error">Could not add categories</string>
+    <string name="add_goal_error">Could not add goal</string>
     <string name="add_loan_error">Could not add loan</string>
     <string name="add_subscription_error">Could not add subscription</string>
     <string name="add_subcategory_error">Could not add subcategory</string>
     <string name="add_transaction_error">Could not add transaction</string>
     <string name="store_image_error">Could not store image</string>
-    <string name="load_image_error">Could not load image</string>
+    <string name="save_amount_error">Could not save amount</string>
+
+    <string name="delete_account_error">Could not delete account</string>
+    <string name="delete_budget_error">Could not delete budget</string>
+    <string name="delete_category_error">Could not delete category</string>
+    <string name="delete_categories_error">Could not delete categories</string>
+    <string name="delete_goal_error">Could not delete goal</string>
+    <string name="pause_goal_error">Could not pause goal</string>
+    <string name="resume_goal_error">Could not resume goal</string>
+    <string name="delete_loan_error">Could not delete loan</string>
+    <string name="delete_subscription_error">Could not delete subscription</string>
+    <string name="delete_subcategory_error">Could not delete subcategory</string>
+    <string name="delete_transaction_error">Could not delete transaction</string>
+    <string name="restart_challenge_error">Could not restart challenge</string>
 
 
     <!-- Actions -->
@@ -91,11 +126,13 @@
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="dismiss">Dismiss</string>
     <string name="update">Update</string>
     <string name="save_changes">Save Changes</string>
     <string name="save">Save</string>
     <string name="confirm">Confirm</string>
     <string name="retry">Retry</string>
+    <string name="restart">Restart</string>
     <string name="check">Check</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
@@ -106,8 +143,16 @@
     <string name="date_added_newest">Date added (newest)</string>
     <string name="due_date_oldest">Due date (oldest)</string>
     <string name="due_date_newest">Due date (newest)</string>
+    <string name="name_up">Name (A-Z)</string>
+    <string name="name_down">Name (Z-A)</string>
     <string name="amount_highest">Amount (highest)</string>
     <string name="amount_lowest">Amount (lowest)</string>
+    <string name="target_amount_lowest">Target amount (lowest)</string>
+    <string name="target_amount_highest">Target amount (highest)</string>
+    <string name="saved_amount_lowest">Saved amount (lowest)</string>
+    <string name="saved_amount_highest">Saved amount (highest)</string>
+    <string name="target_date_oldest">Target date (oldest)</string>
+    <string name="target_date_newest">Target date (newest)</string>
     <string name="select">Select</string>
     <string name="select_date">Select date</string>
     <string name="select_start_date">Select start date</string>
@@ -115,23 +160,19 @@
     <string name="delete">Delete</string>
     <string name="adding">Adding…</string>
     <string name="saving">Saving…</string>
+    <string name="updating">Updating…</string>
+    <string name="selecting">Selecting…</string>
     <string name="deleting">Deleting…</string>
+    <string name="pausing">Pausing…</string>
+    <string name="resuming">Resuming…</string>
+    <string name="restarting_challenge">Restarting…</string>
     <string name="loading_image">Loading image…</string>
-
-
-    <string name="goalColor_hint"><b>Goal Color</b></string>
-    <string name="icon_hint"><b>Icon</b></string>
-    <string name="targetAmount_hint"><b>Target Amount</b></string>
-    <string name="savedAlready_hint"><b>Saved Already</b></string>
-    <string name="desiredDate_hint"><b>Desired Date</b></string>
-    <string name="title_activity_tips_detail_video">TipsDetailVideo</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
 
     <string name="hello">Hello!</string>
     <string name="log_in_to_your_account">Log in to your account</string>
@@ -172,9 +213,9 @@
     <string name="_63">+63</string>
     <string name="php">PHP</string>
     <string name="php_currency">₱</string>
+    <string name="php_currency_0_int">₱0</string>
     <string name="php_currency_0">₱0.00</string>
     <string name="bullet">\u2022</string>
-
 
     <string name="user_profile">User Profile</string>
     <string name="user_profile_picture">User Profile Picture</string>
@@ -193,7 +234,6 @@
     <string name="resend_email_verification">Resend Email Verification</string>
     <string name="confirm_nyour_email">Confirm\nyour Email</string>
     <string name="check_inbox">Please check your inbox for the\nemail verification. Click the link in the\nemail to confirm your email address.</string>
-
 
     <string name="important_documents">Important Documents</string>
     <string name="privacy_policy">Privacy Policy</string>
@@ -309,7 +349,7 @@
     <string name="challenges_reminder">Challenges Reminder</string>
     <string name="challenges_reminder_description">Reminder to complete any ongoing challenge</string>
 
-
+    <string name="n_large">N</string>
     <string name="home">Home</string>
     <string name="recent_activity">Recent activity</string>
     <string name="budgets_and_goals">Budgets and Goals</string>
@@ -322,13 +362,14 @@
 
     <string name="reports">Reports</string>
     <string name="reports_permission_denied_title">Permission denied</string>
-    <string name="reports_permission_denied_message">To download your transactions report, go to your device\'s settings and enable Ducatus to access your Files and Media.</string>
+    <string name="reports_permission_denied_message">To download your transactions report, allow Ducatus to access files and media on your device.</string>
     <string name="top_5_expenses">Top 5 Expenses</string>
     <string name="expenses_empty">No expenses found</string>
     <string name="last_week">Last 7 days</string>
     <string name="last_month">Last 31 days</string>
     <string name="last_year">Last 12 months</string>
     <string name="download_as_pdf">download as pdf</string>
+    <string name="saved_expense_report">Saved expenses report</string>
 
     <string name="name">Name</string>
     <string name="color">Color</string>
@@ -341,13 +382,12 @@
     <string name="add_account">Add Account</string>
     <string name="edit_account">Edit account</string>
     <string name="delete_account">Delete Account</string>
-    <string name="delete_account_mark">Delete account?</string>
-    <string name="delete_account_confirm">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_message">All data associated with this account will be gone forever. Do you still wish to proceed?</string>
     <string name="deleting_account_warning">Please do not exit the app while we delete the account</string>
     <string name="budget_renewed_title">Monthly budget has been renewed</string>
     <string name="budget_renewed_message">Your monthly budget will be renewed again next month.</string>
     <string name="got_it">Got it</string>
-
 
     <string name="budget">Budget</string>
     <string name="budgets">Budgets</string>
@@ -367,8 +407,8 @@
     <string name="amount_left">Amount Left</string>
     <string name="limit">Limit</string>
     <string name="progress">Progress</string>
-    <string name="budget_date_no_activity">No activity yet</string>
-    <string name="budget_date_last_activity">Last activity:</string>
+    <string name="no_activity">No activity yet</string>
+    <string name="last_activity">Last activity:</string>
     <string name="budget_status">Budget status</string>
     <string name="budget_status_1">Your budget is on track</string>
     <string name="budget_status_2">You have almost reached your budget limit</string>
@@ -452,6 +492,8 @@
     <string name="preview_attached_image">Preview attached image</string>
     <string name="choose_image_option">Select or take a picture</string>
     <string name="complete_action">Complete action using</string>
+    <string name="permissions_required_title">Permissions required</string>
+    <string name="permissions_required_message">Files and media access needed. Go to the app settings, tap permissions, tap allow.</string>
 
     <!-- Top up values -->
     <string name="_100">100</string>
@@ -464,6 +506,7 @@
     <string name="_4_000">4,000</string>
     <string name="_5_000">5,000</string>
     <string name="_0">0</string>
+    <string name="_0_percent">0%</string>
     <string name="transaction_name">Transaction Name</string>
     <string name="notes">Notes (optional)</string>
     <string name="add_notes">Add notes</string>
@@ -508,6 +551,7 @@
     <string name="delete_subscription_title">Delete subscription?</string>
     <string name="delete_subscription_message">All data associated with this subscription will be gone forever. Do you still wish to proceed?</string>
     <string name="subscription_empty_title">Subscription does not exist or has been removed</string>
+    <string name="challenge_empty_title">Challenge does not exist or has been removed</string>
 
     <string name="loans">Loans</string>
     <string name="active">Active</string>
@@ -536,6 +580,7 @@
     <string name="next_payment">Next payment</string>
     <string name="remaining_loan">Remaining Loan</string>
     <string name="remaining_loan_2">Remaining Loan:</string>
+    <string name="remaining_loan_notice">*Amount exceeds remaining loan</string>
     <string name="notes_empty">No notes</string>
     <string name="delete_loan_title">Delete loan?</string>
     <string name="delete_loan_message">All data associated with this loan will be gone forever. Do you still wish to proceed?</string>
@@ -543,12 +588,66 @@
     <string name="loan_empty_title">Loan does not exist or has been removed</string>
 
     <string name="goals">Goals</string>
+    <string name="goals_empty">No goals found</string>
+    <string name="paused">Paused</string>
+    <string name="reached">Reached</string>
+    <string name="add_goal">Add Goal</string>
+    <string name="goal_name">Goal Name</string>
+    <string name="target_amount">Target Amount</string>
+    <string name="target_amount_">Target Amount:</string>
+    <string name="saved_already">Saved Already (optional)</string>
+    <string name="target_date">Target Date</string>
+    <string name="goal_detail">Goal Detail</string>
+    <string name="saved_amount_history">Saved Amount History</string>
+    <string name="total_saved_amount">Total Saved Amount</string>
+    <string name="add_saved_amount">Add Saved Amount</string>
+    <string name="add_saved_amount_small">Add saved amount</string>
+    <string name="goal_reached">Goal Reached</string>
+    <string name="saved">Saved</string>
+    <string name="saved_">Saved:</string>
+    <string name="goal">Goal</string>
+    <string name="remaining">Remaining</string>
+    <string name="remaining_">Remaining:</string>
+    <string name="edit_goal">Edit goal</string>
+    <string name="pause_goal_title">Pause goal?</string>
+    <string name="resume_goal_title">Resume goal?</string>
+    <string name="delete_goal_title">Delete goal?</string>
+    <string name="delete_goal_message">All data associated with this goal will be gone forever. Do you still wish to proceed?</string>
+    <string name="more">More</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="paused_goals_empty">No paused goals found</string>
+    <string name="active_goals_empty">No active goals found</string>
+    <string name="reached_goals_empty">No reached goals found</string>
 
     <string name="challenges">Challenges</string>
+    <string name="new_">New</string>
+    <string name="missed">Missed</string>
+    <string name="current_challenges">Current challenges</string>
+    <string name="new_challenges">New challenges</string>
+    <string name="challenge_name">Challenge Name</string>
+    <string name="earned">Earned</string>
+    <string name="challenge">Challenge</string>
+    <string name="get_started">Get started</string>
+    <string name="continue_">Continue</string>
+    <string name="challenge_detail">Challenge Detail</string>
+    <string name="save_amount">Save Amount</string>
+    <string name="restart_challenge">Restart challenge</string>
+    <string name="restart_challenge_title">Restart challenge?</string>
+    <string name="active_challenges_empty">No active challenges found</string>
+    <string name="completed_today_challenge">You have completed today\'s challenge</string>
 
     <string name="tips">Tips</string>
+    <string name="author">Author</string>
+    <string name="article_image">Article image</string>
+    <string name="tips_detail">Tips Detail</string>
+    <string name="articles">Articles</string>
+    <string name="videos">Videos</string>
+    <string name="date_published_oldest">Date published (oldest)</string>
+    <string name="date_published_newest">Date published (newest)</string>
+
+    <!--    <string name="tip_1_content">There\'s a first time for everything, and it\'s never too late to get started on a budget. Creating a budget that you will stick to will help you get to know your money better and help ease financial anxiety—which is often caused by avoiding money decisions. Invest some time in getting to know your finances, whether that\'s with a financial coach, a partner, or just you and a trusty spreadsheet.Setting time aside for your money doesn\'t have to be boring or scary. Light some candles, grab a snack, take some deep breaths, and think of it as self-care; changing your approach to budgeting is important to make the whole thing more routine. Here are some expert tips that will have you budgeting like a pro in no time. <b>Keep it simple.</b>When you're creating a budget for the first time, try to keep it as simple as possible. This way, it's not overwhelming and will be easier for you to maintain."A lot of people think that you have to have these complicated budgets, these complicated spreadsheets—and you grow to that," says Tonya Rapley, millennial money expert and founder of the financial education and lifestyle blog My Fab Finance. Rapley recommends simply writing down your expenses: purchases in the last month (plus annual or quarterly charges) and subtracting your income from your expenses. This will give you a good picture of how much you're saving versus spending, and allow you to identify areas where you can possibly cut back.A simple structure like the 50–30–20 budget can help you track your spending without having to maintain a bunch of categories, recommends Colleen McCreary, chief people officer and financial advocate at Credit Karma.Split your expenses into three categories—50 percent for needs, 30 for wants, and 20 for savings or paying down debt. "You can always change the percentages based on your lifestyle. Your budget has to work for you," says McCreary. You can also download a budget app for an even easier way to keep track of your budget and spending.02 of 04Base your budget off of your income.Along with the overall structure of your budget, consider the type of budget that will be best for you. Rapley recommends basing your budget off of your income. So if you get paid every week, create a weekly budget; a monthly salary would get a monthly budget.Feel free to try out different formats and ways of organizing your budget until you find one that best fits your lifestyle and money goals.Also observe how frequently you're spending money. "If you're pulling out your credit card on a daily basis, you may want to set a weekly budget," says McCreary. "A weekly budget may help you keep a closer eye on your day-to-day spending."McCreary recommends opening a separate checking account specifically to keep track of your spending and keep it in check. Put some money on a debit card weekly or monthly based on your budget, and see how much of it you spend—or, ideally, save.03 of 04Avoid situations where you know you'll spend money.Now that you have made your budget, it's time to stick to it. Try not to put yourself in situations where you know you'll spend money, like going out for dinner or pedicures. "One of the best ways to stick to a budget is to not pay people for things you can do yourself—until you get to a point where you can afford to pay people to do those things," says Rapley.Another tip is to set aside one day a week or a few days month where you don't spend any money—cook meals at home or find free activities instead. "You may be surprised how many seemingly small purchases add up over the course of a month, and how much you end up saving if you find certain days to avoid spending," says McCreary.Check in on your spending every few weeks (or whatever deadline makes sense for you) to see how you're doing and if you need to adjust anything in your budget. Set realistic spending goals for yourself; being too rigid can have the opposite effect and can lead to impulse buying.04 of 04Set money goals and create a budget around them.Set some goals for your money, and use your budget to work towards them. Whether it's paying off student loans, buying a home, or saving for retirement, creating the right budget will help you get there. "A budget can be a north star for those who want to hold themselves accountable as they work toward a specific financial goal," says McCreary.To stay on track with your budgeting goals, Rapley recommends using a flexible payment tool like Affirm, which allows you to spread out the cost of purchases at retailers like Target and Walmart without any late fees.Budgeting will help you identify your spending habits—good and bad—so you can figure out any expenses you can do without and have a true picture of your cash flow in and out. Knowing your finances in this way will prepare you for unexpected expenses or financial setbacks.Don't be afraid to try different types of budgets until you find the right one (or a combination of methods). Your budget doesn't have to be perfect—it just has to be right for you.</string>-->
 
     <string name="help">Help</string>
-    <string name="goals_empty">No goals found</string>
 
 </resources>

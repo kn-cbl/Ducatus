@@ -34,7 +34,6 @@ class ExpenseHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: ExpenseHistoryViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentExpenseHistory = expensesHistory[position]
 
         holder.itemView.apply {
@@ -75,12 +74,12 @@ class ExpenseHistoryAdapter(
             when (currentExpenseHistory.isExpense) {
                  true -> {
                     findViewById<TextView>(R.id.tvExpenseHistoryAmount).setTextColor(
-                        ContextCompat.getColor(activity, R.color.bright_red)
+                        ContextCompat.getColor(context, R.color.bright_red)
                     )
                 }
                 else -> {
                     findViewById<TextView>(R.id.tvExpenseHistoryAmount).setTextColor(
-                        ContextCompat.getColor(activity, R.color.green_secondary)
+                        ContextCompat.getColor(context, R.color.green_secondary)
                     )
                 }
             }

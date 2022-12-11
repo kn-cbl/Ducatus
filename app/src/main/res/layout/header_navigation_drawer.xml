@@ -4,7 +4,7 @@
     android:id="@+id/rlHeader"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:background="@color/green_secondary">
+    android:background="@color/green_primary">
 
     <FrameLayout
         android:id="@+id/flHeaderIcon"
@@ -24,6 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/inter_medium"
+            android:text="@string/n_large"
+            android:textColor="@color/green_primary"
             android:textSize="32sp" />
     </FrameLayout>
 
@@ -40,13 +42,13 @@
             android:id="@+id/tvHeaderName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_bold"
             android:autoSizeMinTextSize="12sp"
             android:autoSizeStepGranularity="2sp"
             android:autoSizeTextType="uniform"
-            android:maxLines="2"
+            android:fontFamily="@font/inter_bold"
             android:gravity="center_vertical"
-            android:text="@string/username"
+            android:maxLines="2"
+            android:text="@string/name"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="@color/off_white" />
 

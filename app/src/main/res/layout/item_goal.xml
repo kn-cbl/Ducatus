@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvItemGoalDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="-8dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="@string/date"
+        android:textColor="@color/darker_gray"
+        android:textSize="12sp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvItemGoal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="@color/off_white"
+        app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:id="@+id/flItemGoalIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/lighter_gray">
+
+                    <ImageView
+                        android:id="@+id/ivItemGoalIcon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/category_icon" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_toStartOf="@id/tvItemGoalProgress"
+                    android:layout_toEndOf="@id/flItemGoalIcon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvItemGoalName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:text="@string/goal_name"
+                        android:textColor="@color/off_black" />
+
+                    <TextView
+                        android:id="@+id/tvItemGoalTargetDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="12sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        android:text="@string/target_date"
+                        android:textColor="@color/darker_gray" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvItemGoalProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="end"
+                    android:text="@string/_0_percent"
+                    android:textColor="@color/darker_gray"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/saved"
+                        android:textColor="@color/darker_gray"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvItemGoalSaved"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        android:text="@string/saved"
+                        android:textColor="@color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/remaining"
+                        android:textColor="@color/darker_gray"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvItemGoalRemaining"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="@string/remaining"
+                        android:textColor="@color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/goal"
+                        android:textColor="@color/darker_gray"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvItemGoalAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical|end"
+                        android:maxLines="1"
+                        android:text="@string/goal"
+                        android:textColor="@color/darker_gray" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/pbItemGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:indeterminate="false"
+                app:trackColor="@color/gray_alpha"
+                app:trackCornerRadius="16dp"
+                app:trackThickness="16dp" />
+
+            <TextView
+                android:id="@+id/tvItemGoalOverdue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="12dp"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="center_vertical"
+                android:text="@string/overdue"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp"
+                android:visibility="visible"
+                app:drawableStartCompat="@drawable/ic_baseline_warning_24_red" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

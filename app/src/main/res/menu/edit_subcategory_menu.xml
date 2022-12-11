@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/optionEdit"
-        android:title="@string/edit_subcategory" />
-    <item
-        android:id="@+id/deleteAccount"
-        android:title="@string/delete_subcategory" />
-</menu>

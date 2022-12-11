@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.ducatus.common.AppResources
 import com.ducatus.databinding.FragmentColorDialogBinding
 import com.ducatus.viewmodel.ColorViewModel
 

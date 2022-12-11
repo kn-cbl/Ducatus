@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -58,11 +57,6 @@ class BudgetsFragment : Fragment(), BudgetInterface {
     override fun onResume() {
         super.onResume()
         firebaseUser?.let { loadBudgets(it.uid, currentAccountId) }
-    }
-
-    // get activity to be used in adapter
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun viewItem(budget: Budget) {

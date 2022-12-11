@@ -13,13 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.interfaces.HomeOverviewInterface
 import com.ducatus.R
 import com.ducatus.data.Expense
-import com.google.android.material.datepicker.MaterialDatePicker
-import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class ReportExpenseAdapter(
     private val expenses: MutableList<Expense>,
@@ -40,7 +37,6 @@ class ReportExpenseAdapter(
     }
 
     override fun onBindViewHolder(holder: ReportExpenseViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentExpense = expenses[position]
 
         holder.itemView.apply {
@@ -65,17 +61,17 @@ class ReportExpenseAdapter(
             val iconColor = resources.getIdentifier(
                 itemColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val icon = resources.getIdentifier(
                 itemIcon,
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<FrameLayout>(R.id.flItemReportExpenseIcon).backgroundTintList =
-                ContextCompat.getColorStateList(activity, iconColor)
+                ContextCompat.getColorStateList(context, iconColor)
 
             findViewById<ImageView>(R.id.ivItemReportExpenseIcon).setImageResource(icon)
             findViewById<ImageView>(R.id.ivItemReportExpenseIcon).setColorFilter(
@@ -92,7 +88,9 @@ class ReportExpenseAdapter(
 
             val amountText = "-₱" + String.format("%,.2f", currentExpense.amount)
             findViewById<TextView>(R.id.tvItemReportExpenseAmount).text = amountText
-            findViewById<TextView>(R.id.tvItemReportExpenseAmount).setTextColor(ContextCompat.getColor(activity, R.color.bright_red))
+            findViewById<TextView>(R.id.tvItemReportExpenseAmount).setTextColor(
+                ContextCompat.getColor(context, R.color.bright_red)
+            )
 
             val dateText = determineDateText(currentExpense.date!!)
             findViewById<TextView>(R.id.tvItemReportExpenseDate).text = dateText["date"]

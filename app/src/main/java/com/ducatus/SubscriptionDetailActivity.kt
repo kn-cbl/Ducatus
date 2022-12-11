@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
@@ -74,13 +73,13 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                         val fragmentManager = supportFragmentManager
                         val newFragment = SubscriptionEditDialogFragment()
                         newFragment.arguments = bundle
+                        newFragment.show(fragmentManager, "dialog")
 
-                        val transaction = fragmentManager.beginTransaction()
-                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        transaction
-                            .add(android.R.id.content, newFragment)
-                            .addToBackStack(null)
-                            .commit()
+//                        val transaction = fragmentManager.beginTransaction()
+//                        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                        transaction
+//                            .add(android.R.id.content, newFragment)
+//                            .commit()
                     }
                     true
                 }
@@ -115,10 +114,6 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    override fun getActivityInterface(): Activity {
-        return this
-    }
-
     override fun confirmPayment(subscriptionHistory: SubscriptionHistory) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.confirm_payment_title))
@@ -151,7 +146,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             // check if accountId from the notification is the same as current accountId
             // this prevents checking an item designated for a different account
             if (accountId != null && currentAccountId != accountId) {
-                deselectAccount(firebaseUser!!.uid, currentAccountId, accountId, subscriptionId)
+                selectAccount(firebaseUser!!.uid, accountId, subscriptionId)
             }
             else {
                 loadSubscription(firebaseUser!!.uid, currentAccountId, subscriptionId)
@@ -163,11 +158,24 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         }
     }
 
-    private fun deselectAccount(uid: String, currentAccountId: String, selectedAccountId: String, subscriptionId: String) {
-        databaseReference = database.getReference("accounts").child(uid)
-        databaseReference.child(currentAccountId).child("selected").setValue(false)
-            .addOnSuccessListener {
-                selectAccount(uid, selectedAccountId, subscriptionId)
+    private fun selectAccount(uid: String, accountId: String, subscriptionId: String) {
+        databaseReference = database.getReference("accounts").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    subscriptionDoesNotExist()
+                }
+                else {
+                    val account = snapshot.getValue<Account>()
+                    account?.let {
+                        sharedPreferences.accountId = it.id
+                        sharedPreferences.accountName = it.name
+                        sharedPreferences.accountColor = it.color
+
+                        currentAccountId = sharedPreferences.accountId.toString()
+                        loadSubscription(uid, currentAccountId, subscriptionId)
+                    }
+                }
             }
             .addOnFailureListener {
                 hideProgressDialog()
@@ -177,33 +185,12 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             }
     }
 
-    private fun selectAccount(uid: String, accountId: String, subscriptionId: String) {
-        databaseReference.child(accountId).get()
-            .addOnSuccessListener { snapshot ->
-                val account = snapshot.getValue<Account>()
-
-                databaseReference.child(accountId).child("selected").setValue(true)
-                    .addOnSuccessListener {
-                        sharedPreferences.accountId = accountId
-                        sharedPreferences.accountName = account?.name
-                        sharedPreferences.accountColor = account?.color
-
-                        currentAccountId = sharedPreferences.accountId.toString()
-                        loadSubscription(uid, currentAccountId, subscriptionId)
-                    }
-                    .addOnFailureListener {
-                        hideProgressDialog()
-                        Snackbar
-                            .make(binding.clSubscriptionDetail, it.localizedMessage!!,5000)
-                            .show()
-                    }
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                Snackbar
-                    .make(binding.clSubscriptionDetail, it.localizedMessage!!,5000)
-                    .show()
-            }
+    private fun subscriptionDoesNotExist() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.subscription_empty_title))
+            .setPositiveButton(resources.getString(R.string.go_back)) { _, _ -> onBackPressed() }
+            .setOnDismissListener { onBackPressed() }
+            .show()
     }
 
     private fun loadSubscription(uid: String, accountId: String, subscriptionId: String) {
@@ -217,17 +204,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(resources.getString(R.string.subscription_empty_title))
-                        .setPositiveButton(resources.getString(R.string.go_back)) { _, _ ->
-                            startActivity(Intent(this, NotificationsActivity::class.java))
-                            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-                        }
-                        .setOnDismissListener {
-                            startActivity(Intent(this, NotificationsActivity::class.java))
-                            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-                        }
-                        .show()
+                    subscriptionDoesNotExist()
                 }
                 else {
                     val subscription = snapshot.getValue<Subscription>()
@@ -287,14 +264,31 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                         binding.tvSubscriptionDetailCategory.text = subscription.categoryName
                         binding.tvSubscriptionDetailPaymentType.text = subscription.paymentType
 
+                        when (subscription.frequency) {
+                            0 -> {
+                                binding.tvSubscriptionDetailRecurrence.text = getString(R.string.one_time)
+                            }
+                            1 -> {
+                                val frequencyText =
+                                    if (subscription.recurrence == 1) "Every ${subscription.recurrence} month"
+                                    else "Every ${subscription.recurrence} months"
+
+                                binding.tvSubscriptionDetailRecurrence.text = frequencyText
+                            }
+                        }
+
                         val amountText = "₱" + String.format("%,.2f", subscription.amount)
                         binding.tvSubscriptionDetailAmount.text = amountText
+
+                        binding.tvSubscriptionDetailNotes.text =
+                            if (subscription.notes == null) "No notes"
+                            else subscription.notes
                     }
                 }
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clSubscriptionDetail, it.localizedMessage!!,5000)
+                    .make(binding.clSubscriptionDetail, getString(R.string.load_subscription_error),5000)
                     .show()
             }
     }
@@ -331,13 +325,13 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             }
             .addOnFailureListener {
                 Snackbar
-                    .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
+                    .make(binding.clSubscriptionDetail, getString(R.string.load_subscription_history_error),5000)
                     .show()
             }
     }
 
     private fun savePayment(uid: String, accountId: String, subscription: Subscription, subscriptionHistory: SubscriptionHistory) {
-        showProgressDialogConfirmPayment()
+        showProgressDialogAction(getString(R.string.saving))
         val zdtToday = ZonedDateTime.ofInstant(
             Instant.now(),
             ZoneId.systemDefault()
@@ -357,7 +351,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 updateSubscription(uid, accountId, subscription, subscriptionHistory)
             }
             .addOnFailureListener {
-                hideProgressDialogConfirmPayment()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                     .show()
@@ -397,11 +391,12 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 }
                 else {
                     cancelNotification(this, subscriptionHistory.notificationId!!)
+                    hideProgressDialogAction()
                     loadSubscriptionHistory(uid, accountId, subscription.id!!)
                 }
             }
             .addOnFailureListener {
-                hideProgressDialogConfirmPayment()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                     .show()
@@ -448,11 +443,11 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                     4 -> scheduleNotification(this, 7, accountId, subscription, subscriptionHistory)
                 }
 
-                hideProgressDialogConfirmPayment()
+                hideProgressDialogAction()
                 loadSubscriptionHistory(uid, accountId, subscription.id!!)
             }
             .addOnFailureListener {
-                hideProgressDialogConfirmPayment()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                     .show()
@@ -577,7 +572,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
     }
 
     private fun deleteSubscription(uid: String, accountId: String, subscription: Subscription) {
-        showProgressDialog()
+        showProgressDialogAction(getString(R.string.deleting))
         databaseReference =
             database.getReference("subscriptions")
                 .child(uid)
@@ -592,9 +587,9 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 updateBudget(uid, accountId, subscription)
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 Snackbar
-                    .make(binding.clSubscriptionDetail, it.localizedMessage!!,5000)
+                    .make(binding.clSubscriptionDetail, getString(R.string.delete_loan_error),5000)
                     .show()
             }
     }
@@ -618,14 +613,14 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                         updateAccount(uid, accountId, subscription)
                     }
                     .addOnFailureListener {
-                        hideProgressDialog()
+                        hideProgressDialogAction()
                         Snackbar
                             .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                             .show()
                     }
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                     .show()
@@ -649,14 +644,14 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                         deleteSubscriptionHistory(uid, accountId, subscription.id!!)
                     }
                     .addOnFailureListener {
-                        hideProgressDialog()
+                        hideProgressDialogAction()
                         Snackbar
                             .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                             .show()
                     }
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!, 5000)
                     .show()
@@ -673,11 +668,11 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
 
         databaseReference.removeValue()
             .addOnSuccessListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 onBackPressed()
             }
             .addOnFailureListener {
-                hideProgressDialog()
+                hideProgressDialogAction()
                 Snackbar
                     .make(binding.clSubscriptionDetail, it.localizedMessage!!,5000)
                     .show()
@@ -730,16 +725,16 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         binding.llSubscriptionHistory.visibility = View.VISIBLE
     }
 
-    private fun showProgressDialogConfirmPayment() {
+    private fun showProgressDialogAction(title: String) {
         val bundle = Bundle()
-        bundle.putString("title", getString(R.string.saving))
+        bundle.putString("title", title)
 
         actionDialog = ActionDialogFragment()
         actionDialog.arguments = bundle
         actionDialog.show(supportFragmentManager, "dialog")
     }
 
-    private fun hideProgressDialogConfirmPayment() {
+    private fun hideProgressDialogAction() {
         actionDialog.dismiss()
     }
 }

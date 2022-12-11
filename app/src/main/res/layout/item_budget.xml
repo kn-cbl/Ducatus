@@ -20,6 +20,7 @@
         android:textSize="12sp" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcvItemBudget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -45,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/lighter_gray">
+                    android:backgroundTint="@color/lightest_gray">
 
                     <ImageView
                         android:id="@+id/ivItemBudgetCategoryIcon"
@@ -88,12 +89,12 @@
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 

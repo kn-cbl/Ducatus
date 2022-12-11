@@ -97,10 +97,15 @@
                     android:id="@+id/tvItemTransactionAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:autoSizeMaxTextSize="14sp"
+                    android:autoSizeMinTextSize="10sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:autoSizeTextType="uniform"
                     android:fontFamily="@font/inter_semi_bold"
+                    android:gravity="center_vertical|end"
+                    android:maxLines="1"
                     android:text="@string/amount"
-                    android:textColor="@color/darker_gray"
-                    android:textSize="14sp" />
+                    android:textColor="@color/darker_gray" />
             </LinearLayout>
 
         </LinearLayout>

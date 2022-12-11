@@ -36,8 +36,8 @@ class HomeFragment : Fragment() {
         binding.vpHome.adapter = adapter
 
         val transactionTabs = listOf(
-            activity.getString(R.string.overview),
-            activity.getString(R.string.budgets_and_goals)
+            resources.getString(R.string.overview),
+            resources.getString(R.string.budgets_and_goals)
         )
 
         TabLayoutMediator(binding.tlHome, binding.vpHome) { tab, position ->

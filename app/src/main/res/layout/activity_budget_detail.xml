@@ -34,7 +34,7 @@
         app:title="@string/budget_detail"
         app:titleTextColor="@color/off_white" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
@@ -95,7 +95,7 @@
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 app:dividerInsetEnd="16dp"
                 app:dividerInsetStart="16dp" />
 
@@ -103,7 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">
@@ -249,18 +249,14 @@
                 app:dividerInsetEnd="16dp"
                 app:dividerInsetStart="16dp" />
 
-            <RelativeLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvExpenseHistory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvExpenseHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

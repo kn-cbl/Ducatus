@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ducatus.databinding.FragmentTermsOfServiceBinding
-import com.google.android.material.appbar.MaterialToolbar
 
 class TermsOfServiceFragment : Fragment() {
     private lateinit var activity: Activity

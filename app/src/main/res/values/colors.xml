@@ -7,8 +7,8 @@
     <color name="teal_700">#FF018786</color>
 
     <color name="black">#FF000000</color>
-    <color name="off_black">#2B2B2B</color>
     <color name="almost_black">#FF202020</color>
+    <color name="off_black">#2B2B2B</color>
     <color name="darker_gray">#545454</color>
     <color name="dark_gray">#5C5C5C</color>
     <color name="slightly_darker_gray">#757575</color>

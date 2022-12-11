@@ -10,7 +10,7 @@
         android:id="@+id/imageView7"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/icon_hint"
+        android:contentDescription="@string/icon"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/bg_verify_otp" />
 
@@ -24,17 +24,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/imgBtnVerifyOTPEmailBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/oval"
+            android:backgroundTint="@color/off_white"
             android:contentDescription="@string/go_back"
-            android:padding="6dp"
-            android:scaleX="1.3"
-            android:scaleY="1.3"
             app:srcCompat="@drawable/ic_baseline_arrow_back_24"
             app:tint="@color/darker_gray" />
 

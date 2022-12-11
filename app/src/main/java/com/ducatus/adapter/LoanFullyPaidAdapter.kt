@@ -10,12 +10,10 @@ import com.ducatus.interfaces.LoanInterface
 import com.ducatus.R
 import com.ducatus.data.Loan
 import com.google.android.material.divider.MaterialDivider
-import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class LoanFullyPaidAdapter(
     private val loans: MutableList<Loan>,
@@ -36,14 +34,13 @@ class LoanFullyPaidAdapter(
     }
 
     override fun onBindViewHolder(holder: LoanFullyPaidViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentLoanFullyPaid = loans[position]
 
         holder.itemView.apply {
             findViewById<TextView>(R.id.tvItemLoanIcon).text = currentLoanFullyPaid.name?.get(0)?.uppercase()
             findViewById<TextView>(R.id.tvItemLoanName).text = currentLoanFullyPaid.name
 
-            val notesText = currentLoanFullyPaid.notes ?: activity.getString(R.string.notes_empty)
+            val notesText = currentLoanFullyPaid.notes ?: resources.getString(R.string.notes_empty)
             findViewById<TextView>(R.id.tvItemLoanNotes).text = notesText
 
             findViewById<TextView>(R.id.tvItemLoanAmount).visibility = View.GONE

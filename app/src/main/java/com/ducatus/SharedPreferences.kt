@@ -11,7 +11,6 @@ class SharedPreferences(context: Context) {
     private val currentExpensesChannelId: String = "expenses_channel_0"
     private val currentLoansChannelId: String = "loans_channel_0"
     private val currentSubscriptionsChannelId: String = "subscriptions_channel_0"
-    private val recordedExpense: String = "expense_recorded"
 
     private val customPreferences: SharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
 
@@ -42,9 +41,5 @@ class SharedPreferences(context: Context) {
     var subscriptionsChannelId: String?
         get() = customPreferences.getString(currentSubscriptionsChannelId, "subscriptions_channel_0")
         set(value) = customPreferences.edit().putString(currentSubscriptionsChannelId, value).apply()
-
-    var hasRecordedExpense: Boolean
-        get() = customPreferences.getBoolean(recordedExpense, false)
-        set(value) = customPreferences.edit().putBoolean(recordedExpense, value).apply()
 
 }

@@ -38,7 +38,6 @@ class HomeTransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: HomeTransactionViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentTransaction = transactions[position]
 
         holder.itemView.apply {
@@ -60,17 +59,17 @@ class HomeTransactionAdapter(
             val iconColor = resources.getIdentifier(
                 itemColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val icon = resources.getIdentifier(
                 itemIcon,
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<FrameLayout>(R.id.flItemTransactionRecentIcon).backgroundTintList =
-                ContextCompat.getColorStateList(activity, iconColor)
+                ContextCompat.getColorStateList(context, iconColor)
 
             findViewById<ImageView>(R.id.ivItemTransactionRecentIcon).setImageResource(icon)
             findViewById<ImageView>(R.id.ivItemTransactionRecentIcon).setColorFilter(
@@ -90,12 +89,14 @@ class HomeTransactionAdapter(
             val amountColorRes = resources.getIdentifier(
                 transactionState["color"],
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.amount)
             findViewById<TextView>(R.id.tvItemTransactionRecentAmount).text = amountText
-            findViewById<TextView>(R.id.tvItemTransactionRecentAmount).setTextColor(ContextCompat.getColor(activity, amountColorRes))
+            findViewById<TextView>(R.id.tvItemTransactionRecentAmount).setTextColor(
+                ContextCompat.getColor(context, amountColorRes)
+            )
 
             val dateText = determineDateText(currentTransaction.date!!)
             findViewById<TextView>(R.id.tvItemTransactionRecentDate).text = dateText["date"]

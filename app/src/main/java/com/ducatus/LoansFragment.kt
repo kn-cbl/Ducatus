@@ -1,7 +1,6 @@
 package com.ducatus
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -36,8 +35,8 @@ class LoansFragment : Fragment() {
         binding.vpLoans.adapter = adapter
 
         val transactionTabs = listOf(
-            activity.getString(R.string.active),
-            activity.getString(R.string.fully_paid)
+            resources.getString(R.string.active),
+            resources.getString(R.string.fully_paid)
         )
 
         TabLayoutMediator(binding.tlLoans, binding.vpLoans) { tab, position ->

@@ -6,8 +6,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.ducatus.LoansActiveFragment
 import com.ducatus.LoansFullyPaidFragment
-import com.ducatus.TransactionsBreakdownFragment
-import com.ducatus.TransactionsCalendarOverviewFragment
 
 private const val NUM_TABS = 2
 

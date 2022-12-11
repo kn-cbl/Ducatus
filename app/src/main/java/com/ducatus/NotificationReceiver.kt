@@ -6,8 +6,10 @@ import android.app.TaskStackBuilder
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.ducatus.HomeActivity
+import com.ducatus.R
+import com.ducatus.SharedPreferences
 import com.ducatus.data.UserNotification
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -27,6 +29,16 @@ class NotificationReceiver : BroadcastReceiver() {
         val sharedPreferences = SharedPreferences(context)
 
         when (intent.action) {
+            "com.ducatus.CHALLENGE" -> {
+                val smallIcon = R.drawable.ic_challenges
+                showNotification(
+                    context,
+                    intent,
+                    sharedPreferences.challengesChannelId!!,
+                    smallIcon,
+                    "challenge",
+                )
+            }
             "com.ducatus.EXPENSE" -> {
                 val smallIcon = R.drawable.ic_local_transactions_24
                 showNotification(

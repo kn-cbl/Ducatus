@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.ducatus.common.AppResources
 import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentAccountAddBinding
 import com.ducatus.viewmodel.ColorViewModel
@@ -208,8 +208,7 @@ class AccountAddFragment : Fragment() {
                         accountMonthlyBudget,
                         accountMonthlyBudget,
                         accountMonthlyBudget,
-                        nextMonth,
-                        false
+                        nextMonth
                     )
 
                     addAccount(key!!, uid, account)

@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.adapter.HomeBudgetAdapter
+import com.ducatus.adapter.HomeGoalAdapter
 import com.ducatus.data.Budget
+import com.ducatus.data.Goal
 import com.ducatus.databinding.FragmentHomeBudgetsGoalsBinding
 import com.ducatus.interfaces.HomeBudgetsGoalsInterface
 import com.google.android.material.appbar.MaterialToolbar
@@ -66,14 +67,15 @@ class HomeBudgetsGoalsFragment : Fragment(), HomeBudgetsGoalsInterface {
             findNavController().navigate(action)
         }
 
-//        binding.tvViewGoals.setOnClickListener {
-//            toolbar.setTitle(R.string.goals)
-//            val goalItem = navigationView.menu.findItem(R.id.nav_goals)
-//            goalItem.isChecked = true
-//
-//            val action = HomeFragmentDirections.actionHomeFragmentToGoalsFragment()
-//            findNavController().navigate(action)
-//        }
+        binding.tvHomeViewGoals.setOnClickListener {
+            toolbar.menu.clear()
+            toolbar.setTitle(R.string.goals)
+            val goalItem = navigationView.menu.findItem(R.id.nav_goals)
+            goalItem.isChecked = true
+
+            val action = HomeFragmentDirections.actionHomeFragmentToGoalsFragment()
+            findNavController().navigate(action)
+        }
     }
 
     override fun viewItem(gsonObject: String, type: String) {
@@ -85,7 +87,10 @@ class HomeBudgetsGoalsFragment : Fragment(), HomeBudgetsGoalsInterface {
                 activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }
             "G" -> {
-
+                val intent = Intent(activity, GoalDetailActivity::class.java)
+                intent.putExtra("goal", gsonObject)
+                startActivity(intent)
+                activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }
         }
     }
@@ -111,7 +116,7 @@ class HomeBudgetsGoalsFragment : Fragment(), HomeBudgetsGoalsInterface {
         databaseReference = database.getReference("budgets").child(uid).child(accountId)
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                val homeBudgetAdapter = HomeBudgetAdapter(mutableListOf(), this@HomeBudgetsGoalsFragment)
+                val homeBudgetAdapter = HomeBudgetAdapter(mutableListOf(), this)
                 binding.rvHomeRecentBudgets.adapter = homeBudgetAdapter
                 binding.rvHomeRecentBudgets.layoutManager = LinearLayoutManager(activity)
 
@@ -150,6 +155,44 @@ class HomeBudgetsGoalsFragment : Fragment(), HomeBudgetsGoalsInterface {
 
     private fun loadRecentGoals(uid: String, accountId: String) {
         showProgressDialogGoals()
+        databaseReference = database.getReference("goals").child(uid).child(accountId)
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                val homeGoalAdapter = HomeGoalAdapter(mutableListOf(), this)
+                binding.rvHomeRecentGoals.adapter = homeGoalAdapter
+                binding.rvHomeRecentGoals.layoutManager = LinearLayoutManager(activity)
+
+                val goals = mutableListOf<Goal>()
+                for (child in snapshot.children) {
+                    val goal = child.getValue<Goal>()
+                    if (goal != null) {
+                        goals.add(goal)
+                    }
+                }
+
+                // sort by latest update
+                goals.sortByDescending { it.updatedAt }
+
+                // limit to 3 items only
+                val size =
+                    if (goals.size <= 3) goals.size
+                    else 3
+
+                for (i in 0 until size) {
+                    homeGoalAdapter.addGoal(goals[i])
+                }
+
+                if (homeGoalAdapter.itemCount <= 0) {
+                    binding.tvHomeRecentGoalsEmpty.visibility = View.VISIBLE
+                }
+
+                hideProgressDialogGoals()
+            }
+            .addOnFailureListener {
+                Snackbar
+                    .make(rootLayout, getString(R.string.load_goals_error),5000)
+                    .show()
+            }
     }
 
     private fun sessionExpired() {

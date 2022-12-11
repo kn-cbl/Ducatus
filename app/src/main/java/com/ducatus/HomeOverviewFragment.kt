@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,12 +34,10 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
     private lateinit var activity: Activity
@@ -50,6 +47,7 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var navigationView: NavigationView
     private lateinit var rootLayout: DrawerLayout
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var toolbar: MaterialToolbar
 
     override fun onCreateView(
@@ -88,10 +86,6 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
         }
     }
 
-    override fun getActivityInterface(): Activity {
-        return activity
-    }
-
     override fun viewItem(type: Char, item: String) {
         when (type) {
             'T' -> {
@@ -112,54 +106,61 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
         val firebaseUser: FirebaseUser? = auth.currentUser
         if (firebaseUser != null) {
             database = Firebase.database
-            val currentAccountId = loadAccount()
-
-            loadAccountRemainingBalance(firebaseUser.uid, currentAccountId)
-            loadTransactions(firebaseUser.uid, currentAccountId)
-            loadRecentTransactions(firebaseUser.uid, currentAccountId)
+            loadAccount(firebaseUser.uid)
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun loadAccount(): String {
-        val sharedPreferences = SharedPreferences(activity)
-        val currentAccountName = sharedPreferences.accountName
-        val currentAccountColor = sharedPreferences.accountColor
+    private fun loadAccount(uid: String) {
+        databaseReference = database.getReference("accounts").child(uid)
+        sharedPreferences = SharedPreferences(activity)
+        val currentAccountId = sharedPreferences.accountId.toString()
 
-        val imageColor = resources.getIdentifier(
-            currentAccountColor,
-            "color",
-            activity.packageName
-        )
-
-        binding.ivHomeAccountIcon.setColorFilter(
-            ResourcesCompat.getColor(
-                resources,
-                imageColor,
-                null
-            )
-        )
-
-        val name =
-            currentAccountName?.let {
-                if (it.contains(" "))  it.split(" ")[0]
-                else it
-            }
-
-        binding.tvHomeAccountName.text = name
-        return sharedPreferences.accountId.toString()
+        if (currentAccountId.isNotEmpty()) {
+            databaseReference.child(currentAccountId).get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.exists()) {
+                        getFirstAccount(uid)
+                    }
+                    else {
+                        val account = snapshot.getValue<Account>()
+                        account?.let {
+                            loadAccountData(it)
+                            loadTransactions(uid, currentAccountId)
+                            loadRecentTransactions(uid, currentAccountId)
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    Snackbar
+                        .make(rootLayout, getString(R.string.load_account_error), 5000)
+                        .show()
+                }
+        }
+        else {
+            getFirstAccount(uid)
+        }
     }
 
-    private fun loadAccountRemainingBalance(uid: String, accountId: String) {
-        databaseReference = database.getReference("accounts").child(uid).child(accountId)
+    private fun getFirstAccount(uid: String) {
         databaseReference.get()
             .addOnSuccessListener { snapshot ->
-                val account = snapshot.getValue<Account>()
-                if (account != null) {
-                    val budget = "₱" + String.format("%,.2f", account.remainingBalance)
-                    binding.tvHomeAccountBalance.text = budget
+                for (child in snapshot.children) {
+                    val account = child.getValue<Account>()
+                    account?.let {
+                        sharedPreferences.accountId = it.id
+                        sharedPreferences.accountName = it.name
+                        sharedPreferences.accountColor = it.color
+                        val accountId = sharedPreferences.accountId!!
+
+                        loadAccountData(it)
+                        loadTransactions(uid, accountId)
+                        loadRecentTransactions(uid, accountId)
+                    }
+
+                    break
                 }
             }
             .addOnFailureListener {
@@ -167,6 +168,33 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
                     .make(rootLayout, getString(R.string.load_account_error), 5000)
                     .show()
             }
+    }
+
+    private fun loadAccountData(account: Account) {
+        val iconColor = activity.resources.getIdentifier(
+            account.color,
+            "color",
+            activity.packageName
+        )
+
+        binding.ivHomeAccountIcon.setColorFilter(
+            ResourcesCompat.getColor(
+                activity.resources,
+                iconColor,
+                null
+            )
+        )
+
+        val name =
+            account.name?.let {
+                if (it.contains(" "))  it.split(" ")[0]
+                else it
+            }
+
+        binding.tvHomeAccountName.text = name
+
+        val budget = "₱" + String.format("%,.2f", account.remainingBalance)
+        binding.tvHomeAccountBalance.text = budget
     }
 
     private fun loadTransactions(uid: String, accountId: String) {
@@ -201,7 +229,7 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
                                 expenses[key!!] = transaction.amount
 
                                 // add colors to list for new categories
-                                val iconColor = resources.getIdentifier(
+                                val iconColor = activity.resources.getIdentifier(
                                     transaction.categoryColor!!,
                                     "color",
                                     activity.packageName
@@ -249,7 +277,7 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
                             expenses[key!!] = subscription.amount
 
                             // add colors to list for new categories
-                            val iconColor = resources.getIdentifier(
+                            val iconColor = activity.resources.getIdentifier(
                                 subscription.categoryColor!!,
                                 "color",
                                 activity.packageName
@@ -310,7 +338,7 @@ class HomeOverviewFragment : Fragment(), HomeOverviewInterface {
         // set pie chart data and properties
         pieChart.data = pieData
         pieChart.setUsePercentValues(true)
-        pieChart.setNoDataText(getString(R.string.transactions_empty))
+        pieChart.setNoDataText(activity.getString(R.string.transactions_empty))
         pieChart.setDrawEntryLabels(false)
         pieChart.description.isEnabled = false
         pieChart.dragDecelerationFrictionCoef = 0.9f

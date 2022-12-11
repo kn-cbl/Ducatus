@@ -32,22 +32,22 @@ class CategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentCategory = categories[position]
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
                 currentCategory.color.toString(),
                 "color",
-                activity.packageName
+                context.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flItemCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemCategoryIcon).backgroundTintList =
+                ContextCompat.getColorStateList(context, iconColor)
 
             val icon = resources.getIdentifier(
                 currentCategory.icon.toString(),
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<ImageView>(R.id.ivItemCategoryIcon).setImageResource(icon)

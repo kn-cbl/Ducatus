@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -110,10 +109,6 @@ class LoansActiveFragment : Fragment(), LoanInterface {
                 else -> false
             }
         }
-    }
-
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun viewItem(loanId: String) {
@@ -307,7 +302,7 @@ class LoansActiveFragment : Fragment(), LoanInterface {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.amountLowest -> {
+                R.id.sortAmountLowest -> {
                     mutableLoans?.let { loans ->
                         loans.sortBy { it.amount }
                         adaptLoans(loans)
@@ -315,7 +310,7 @@ class LoansActiveFragment : Fragment(), LoanInterface {
 
                     true
                 }
-                R.id.amountHighest -> {
+                R.id.sortAmountHighest -> {
                     mutableLoans?.let { loans ->
                         loans.sortByDescending { it.amount }
                         adaptLoans(loans)
@@ -344,7 +339,7 @@ class LoansActiveFragment : Fragment(), LoanInterface {
         }
 
         // menu to inflate
-        popup.menuInflater.inflate(R.menu.sort_options_2_menu, popup.menu)
+        popup.menuInflater.inflate(R.menu.sort_options_3_menu, popup.menu)
         popup.show()
     }
 
@@ -364,13 +359,13 @@ class LoansActiveFragment : Fragment(), LoanInterface {
     }
 
     private fun showProgressDialog() {
+        binding.pbLoansActive.visibility = View.VISIBLE
         binding.cvLoansActiveEmpty.visibility = View.GONE
         binding.cvLoansActive.visibility = View.GONE
         binding.cvLoansActiveOverdue.visibility = View.GONE
         binding.tvLoansActiveSort.visibility = View.GONE
         binding.tvLoansActive.visibility = View.GONE
         binding.tvLoansActiveOverdue.visibility = View.GONE
-        binding.pbLoansActive.visibility = View.VISIBLE
         binding.fabAddLoan.visibility = View.GONE
     }
 

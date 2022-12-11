@@ -36,10 +36,23 @@ class UserNotificationAdapter(
 
         holder.itemView.apply {
             findViewById<LinearLayout>(R.id.llItemNotificationInfo).setOnClickListener {
-                listener.viewItem(currentUserNotification.type!! + "Id", currentUserNotification.itemId!!)
+                val type = currentUserNotification.type?.let {
+                    if (it != "loan" && it != "subscription") it
+                    else it + "Id"
+                }
+
+                listener.viewItem(type!!, currentUserNotification.itemId)
             }
 
             when (currentUserNotification.type) {
+                "challenge" -> {
+                    val icon = R.drawable.ic_challenges
+                    findViewById<ImageView>(R.id.ivItemNotificationIcon).setImageResource(icon)
+                }
+                "expense" -> {
+                    val icon = R.drawable.ic_local_transactions_24
+                    findViewById<ImageView>(R.id.ivItemNotificationIcon).setImageResource(icon)
+                }
                 "loan" -> {
                     val icon = R.drawable.ic_baseline_handshake_24
                     findViewById<ImageView>(R.id.ivItemNotificationIcon).setImageResource(icon)

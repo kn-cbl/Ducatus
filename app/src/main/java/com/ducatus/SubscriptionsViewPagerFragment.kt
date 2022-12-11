@@ -1,7 +1,6 @@
 package com.ducatus
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -36,8 +35,8 @@ class SubscriptionsViewPagerFragment : Fragment() {
         binding.vpSubscriptions.adapter = adapter
 
         val transactionTabs = listOf(
-            activity.getString(R.string.one_time),
-            activity.getString(R.string.recurring)
+            resources.getString(R.string.one_time),
+            resources.getString(R.string.recurring)
         )
 
         TabLayoutMediator(binding.tlSubscriptions, binding.vpSubscriptions) { tab, position ->

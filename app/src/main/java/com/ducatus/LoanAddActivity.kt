@@ -10,13 +10,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.widget.GridLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.Loan
 import com.ducatus.databinding.ActivityLoanAddBinding
+import com.ducatus.services.*
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -117,11 +117,9 @@ class LoanAddActivity : AppCompatActivity() {
             ZoneId.systemDefault()
         )
 
-        val janThisYear = ZonedDateTime.of(zdtToday.year, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
-        val lastTwentyYears = janThisYear.minusYears(20)
-
-        val startDate = lastTwentyYears.toInstant().toEpochMilli()
-        val endDate = zdtToday.toInstant().toEpochMilli()
+        val nextFiveYears = zdtToday.plusYears(5)
+        val startDate = zdtToday.toInstant().toEpochMilli()
+        val endDate = nextFiveYears.toInstant().toEpochMilli()
 
         val constraintsBuilder =
             CalendarConstraints.Builder()
@@ -404,7 +402,6 @@ class LoanAddActivity : AppCompatActivity() {
             )
 
             val notificationDate = zdt.minusDays(3).toInstant().toEpochMilli()
-
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.set(AlarmManager.RTC_WAKEUP, notificationDate, pendingIntent)
         }

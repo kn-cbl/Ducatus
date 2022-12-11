@@ -8,7 +8,7 @@
     android:background="@color/darker_white_2"
     tools:context=".HomeOverviewFragment">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/svHome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -62,7 +62,7 @@
                         android:autoSizeStepGranularity="2sp"
                         android:autoSizeTextType="uniform"
                         android:fontFamily="@font/inter_medium"
-                        android:text="@string/username"
+                        android:text="@string/name"
                         android:textColor="@color/off_black" />
                 </LinearLayout>
 
@@ -74,7 +74,6 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="4dp"
-                    android:background="@drawable/btn_green_primary_bg"
                     android:gravity="end"
                     android:orientation="vertical"
                     android:paddingStart="12dp"
@@ -89,14 +88,14 @@
                         android:maxLines="1"
                         android:text="@string/remaining_balance"
                         android:textAlignment="textEnd"
-                        android:textColor="@color/off_white"
+                        android:textColor="@color/off_black"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/tvHomeAccountBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:autoSizeMaxTextSize="12sp"
+                        android:autoSizeMaxTextSize="14sp"
                         android:autoSizeMinTextSize="8sp"
                         android:autoSizeStepGranularity="1sp"
                         android:autoSizeTextType="uniform"
@@ -104,8 +103,7 @@
                         android:maxLines="1"
                         android:text="@string/php_currency_0"
                         android:textAlignment="textEnd"
-                        android:textColor="@color/off_white"
-                        android:textSize="12sp" />
+                        android:textColor="@color/off_black" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -243,15 +241,11 @@
                         android:textColor="@color/slightly_darker_gray"
                         android:visibility="gone" />
 
-                    <RelativeLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvHomeRecentTransactions"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvHomeRecentTransactions"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </RelativeLayout>
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false" />
 
                     <TextView
                         android:id="@+id/tvHomeViewTransactions"
@@ -269,6 +263,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

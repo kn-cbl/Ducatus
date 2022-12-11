@@ -3,7 +3,7 @@ package com.ducatus.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ducatus.EventWrapper
+import com.ducatus.utils.EventWrapper
 
 class AmountViewModel : ViewModel() {
     private val mutableAmount = MutableLiveData<EventWrapper<String>>()

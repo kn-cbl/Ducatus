@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
@@ -53,20 +52,20 @@ class DeleteUserDataDialogFragment : DialogFragment() {
         if (auth.currentUser != null) {
             firebaseUser = auth.currentUser!!
             database = Firebase.database
-            isGoogleOnly(firebaseUser)
+            hasGoogle(firebaseUser)
         }
         else {
             sessionExpired()
         }
     }
 
-    private fun isGoogleOnly(firebaseUser: FirebaseUser) {
+    private fun hasGoogle(firebaseUser: FirebaseUser) {
         val providers = mutableListOf<String>()
         for (item in firebaseUser.providerData) {
             providers.add(item.providerId)
         }
 
-        if (!providers.contains("password")) {
+        if (providers.contains("google.com")) {
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -262,7 +261,7 @@ class DeleteUserDataDialogFragment : DialogFragment() {
         databaseReference = database.getReference("goalHistory").child(firebaseUser.uid)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                deleteChallenges(firebaseUser)
+                deleteChallengeHistory(firebaseUser)
             }
             .addOnFailureListener {
                 Snackbar
@@ -273,9 +272,9 @@ class DeleteUserDataDialogFragment : DialogFragment() {
             }
     }
 
-    private fun deleteChallenges(firebaseUser: FirebaseUser) {
+    private fun deleteChallengeHistory(firebaseUser: FirebaseUser) {
         binding.pbDeleteUser.setProgress(functions * 13, true)
-        databaseReference = database.getReference("challenges").child(firebaseUser.uid)
+        databaseReference = database.getReference("challengeHistory").child(firebaseUser.uid)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteNotifications(firebaseUser)

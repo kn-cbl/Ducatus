@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,6 +23,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -55,7 +55,6 @@ class ResetUserDataFragment : Fragment() {
 
         binding.btnResetUserDataReauthenticate.setOnClickListener {
             firebaseUser?.let {
-                showProgressDialog()
                 when (accountType) {
                     "google" -> getGoogleIdToken()
                     "password" -> validateCredentials()
@@ -94,6 +93,7 @@ class ResetUserDataFragment : Fragment() {
     }
 
     private fun getGoogleIdToken() {
+        showProgressDialog()
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -205,10 +205,22 @@ class ResetUserDataFragment : Fragment() {
                 }
                 else {
                     hideProgressDialog()
-                    val exception = task.exception as FirebaseAuthException
-                    when (exception.errorCode) {
-                        "ERROR_WRONG_PASSWORD" -> binding.tfResetUserDataPassword.error = getString(R.string.password_invalid)
-                        else -> binding.tfResetUserDataPassword.error = exception.localizedMessage
+                    task.exception?.let {
+                        try {
+                            throw it
+                        }
+                        catch (exception: FirebaseAuthException) {
+                            when (exception.errorCode) {
+                                "ERROR_WRONG_PASSWORD" -> binding.tfResetUserDataPassword.error = getString(R.string.password_invalid)
+                                else -> binding.tfResetUserDataPassword.error = exception.localizedMessage
+                            }
+                        }
+                        catch (exception: FirebaseTooManyRequestsException) {
+                            binding.tfResetUserDataPassword.error = exception.localizedMessage
+                        }
+                        catch (exception: Exception) {
+                            binding.tfResetUserDataPassword.error = exception.localizedMessage
+                        }
                     }
                 }
             }

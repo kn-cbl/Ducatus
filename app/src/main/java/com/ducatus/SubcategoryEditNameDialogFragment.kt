@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
@@ -19,7 +18,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.navArgs
 import com.ducatus.databinding.FragmentSubcategoryEditNameDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -114,7 +112,12 @@ class SubcategoryEditNameDialogFragment : DialogFragment() {
     private fun subcategoryExists(uid: String, accountId: String, subcategoryName: String) {
         showProgressDialog()
         database = Firebase.database
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId)
+        databaseReference =
+            database.getReference("subcategories")
+                .child(uid)
+                .child(accountId)
+                .child(args.categoryId)
+
         val query = databaseReference.orderByChild("nameLower").equalTo(subcategoryName.lowercase())
         query.get()
             .addOnSuccessListener { snapshot ->

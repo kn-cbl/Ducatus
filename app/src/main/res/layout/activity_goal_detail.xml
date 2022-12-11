@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clGoalDetail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/off_white"
+    tools:context=".GoalDetailActivity">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/pbGoalDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/green_secondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tbGoalDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24_white"
+        app:title="@string/goal_detail"
+        app:titleTextColor="@color/off_white" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/svGoalDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tbGoalDetail">
+
+        <LinearLayout
+            android:id="@+id/llGoalDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+
+                <FrameLayout
+                    android:id="@+id/flGoalDetailIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/lightest_gray"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivGoalDetailIcon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/category_icon" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_toEndOf="@+id/flGoalDetailIcon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvGoalDetailName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:text="@string/goal_name"
+                        android:textColor="@color/off_black" />
+
+                    <TextView
+                        android:id="@+id/tvGoalDetailNotes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoSizeMaxTextSize="12sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeStepGranularity="1sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:text="@string/notes"
+                        android:textColor="@color/darker_gray" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvGoalDetailTargetDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/target_date"
+                android:textColor="@color/darker_gray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvGoalDetailOverdue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="center_vertical"
+                android:text="@string/overdue"
+                android:textColor="@color/darker_gray"
+                android:textSize="12sp"
+                app:drawableStartCompat="@drawable/ic_baseline_warning_24_red" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:dividerInsetEnd="16dp"
+                app:dividerInsetStart="16dp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pbGoalDetailStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:progress="70"
+                    app:indicatorColor="@color/green_secondary"
+                    app:indicatorSize="240dp"
+                    app:trackColor="@color/gray_alpha"
+                    app:trackThickness="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvGoalDetailProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:text="@string/_0_percent"
+                        android:textColor="@color/off_black"
+                        android:textSize="32sp" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dividerInsetEnd="16dp"
+                app:dividerInsetStart="16dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/target_amount_"
+                    android:textColor="@color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/tvGoalDetailTargetAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/php_currency_0"
+                    android:textColor="@color/off_black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/saved_"
+                    android:textColor="@color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/tvGoalDetailSaved"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/php_currency_0"
+                    android:textColor="@color/off_black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/remaining_"
+                    android:textColor="@color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/tvGoalDetailRemaining"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/php_currency_0"
+                    android:textColor="@color/off_black" />
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/saved_amount_history"
+                android:textColor="@color/off_black"
+                android:textSize="16sp" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:dividerInsetEnd="16dp"
+                app:dividerInsetStart="16dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvGoalHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnGoalDetailAddSavedAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="64dp"
+                android:autoSizeMaxTextSize="12sp"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeStepGranularity="1sp"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/inter_medium"
+                android:maxLines="1"
+                android:text="@string/add_saved_amount"
+                android:textColor="@color/off_white"
+                app:backgroundTint="@color/bright_green"
+                tools:ignore="ButtonStyle,TextContrastCheck,TouchTargetSizeCheck" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

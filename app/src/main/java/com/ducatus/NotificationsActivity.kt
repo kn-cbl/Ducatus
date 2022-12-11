@@ -3,9 +3,7 @@ package com.ducatus
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.View
-import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.adapter.UserNotificationAdapter
 import com.ducatus.data.UserNotification
@@ -58,10 +56,16 @@ class NotificationsActivity : AppCompatActivity(), UserNotificationInterface {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    override fun viewItem(type: String, itemId: String) {
+    override fun viewItem(type: String, itemId: String?) {
         val intent = getActivityIntent(type)
         intent?.let {
-            it.putExtra(type, itemId)
+            if (itemId != null) {
+                it.putExtra(type, itemId)
+            }
+            else {
+                it.putExtra("notification", type)
+            }
+
             startActivity(it)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -70,12 +74,10 @@ class NotificationsActivity : AppCompatActivity(), UserNotificationInterface {
     private fun getActivityIntent(type: String): Intent? {
         var intent: Intent? = null
         when (type) {
-            "loanId" -> {
-                intent = Intent(this, LoanDetailActivity::class.java)
-            }
-            "subscriptionId" -> {
-                intent = Intent(this, SubscriptionDetailActivity::class.java)
-            }
+            "challenge" -> intent = Intent(this, HomeActivity::class.java)
+            "expense" -> intent = Intent(this, HomeActivity::class.java)
+            "loanId" -> intent = Intent(this, LoanDetailActivity::class.java)
+            "subscriptionId" -> intent = Intent(this, SubscriptionDetailActivity::class.java)
         }
 
         return intent
@@ -107,16 +109,12 @@ class NotificationsActivity : AppCompatActivity(), UserNotificationInterface {
                     userNotification?.let { userNotifications.add(it) }
                 }
 
-                if (userNotifications.isNotEmpty()) {
-                    adaptNotifications(userNotifications)
-                }
-                else {
-                    binding.tvNotificationsEmpty.visibility = View.VISIBLE
-                    hideProgressDialog()
-                }
+                adaptNotifications(userNotifications)
             }
             .addOnFailureListener {
-
+                Snackbar
+                    .make(binding.clNotifications, getString(R.string.load_notifications_error), 5000)
+                    .show()
             }
     }
 
@@ -130,6 +128,10 @@ class NotificationsActivity : AppCompatActivity(), UserNotificationInterface {
 
         for (userNotification in userNotifications) {
             userNotificationAdapter.addUserNotification(userNotification)
+        }
+
+        if (userNotificationAdapter.itemCount <= 0) {
+            binding.tvNotificationsEmpty.visibility = View.VISIBLE
         }
 
         hideProgressDialog()
@@ -181,13 +183,6 @@ class NotificationsActivity : AppCompatActivity(), UserNotificationInterface {
         }
 
         dialog.show()
-    }
-
-    private fun disableWindow() {
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        )
     }
 
 }

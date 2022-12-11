@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sortTargetAmountLowest"
+        android:title="@string/target_amount_lowest" />
+
+    <item
+        android:id="@+id/sortTargetAmountHighest"
+        android:title="@string/target_amount_highest" />
+
+    <item
+        android:id="@+id/sortSavedAmountLowest"
+        android:title="@string/saved_amount_lowest" />
+
+    <item
+        android:id="@+id/sortSavedAmountHighest"
+        android:title="@string/saved_amount_highest" />
+
+    <item
+        android:id="@+id/sortTargetDateOldest"
+        android:title="@string/target_date_oldest" />
+
+    <item
+        android:id="@+id/sortTargetDateNewest"
+        android:title="@string/target_date_newest" />
+</menu>

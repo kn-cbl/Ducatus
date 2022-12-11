@@ -31,19 +31,18 @@ class AccountAdapter(
     }
 
     override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentAccount = accounts[position]
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
                 currentAccount.color.toString(),
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<TextView>(R.id.tvItemAccountIcon).text = currentAccount.name?.get(0)?.uppercase()
             findViewById<FrameLayout>(R.id.flItemAccountIcon).backgroundTintList =
-                ContextCompat.getColorStateList(activity, iconColor)
+                ContextCompat.getColorStateList(context, iconColor)
 
             findViewById<TextView>(R.id.tvItemAccountName).text = currentAccount.name
 

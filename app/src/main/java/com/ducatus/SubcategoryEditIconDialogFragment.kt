@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import com.ducatus.databinding.FragmentSubcategoryEditIconDialogBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -160,7 +158,12 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
 
     private fun saveColor(uid: String, accountId: String, subcategoryColor: String, subcategoryIcon: String) {
         showProgressDialog()
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId).child(args.subcategoryId)
+        databaseReference =
+            database.getReference("subcategories")
+                .child(uid)
+                .child(accountId)
+                .child(args.categoryId).child(args.subcategoryId)
+
         databaseReference.child("color").setValue(subcategoryColor)
             .addOnSuccessListener {
                 saveIcon(uid, accountId, subcategoryIcon)
@@ -174,7 +177,13 @@ class SubcategoryEditIconDialogFragment : DialogFragment() {
     }
 
     private fun saveIcon(uid: String, accountId: String, subcategoryIcon: String) {
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId).child(args.subcategoryId)
+        databaseReference =
+            database.getReference("subcategories")
+                .child(uid)
+                .child(accountId)
+                .child(args.categoryId)
+                .child(args.subcategoryId)
+
         databaseReference.child("icon").setValue(subcategoryIcon)
             .addOnSuccessListener {
                 hideProgressDialog()

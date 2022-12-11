@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -20,7 +19,7 @@ import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.Account
 import com.ducatus.data.Budget
 import com.ducatus.data.Category
-import com.ducatus.data.Loan
+import com.ducatus.data.CategoryWithTag
 import com.ducatus.databinding.ActivityBudgetAddBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -35,7 +34,7 @@ import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.util.*
 
 class BudgetAddActivity : AppCompatActivity() {
     private lateinit var actionDialog: ActionDialogFragment
@@ -44,7 +43,7 @@ class BudgetAddActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var selectedAccount: String
+    private lateinit var currentAccountId: String
     private lateinit var selectedCategory: Category
     private var firebaseUser: FirebaseUser? = null
     private var allocatedCategories = 0
@@ -63,24 +62,6 @@ class BudgetAddActivity : AppCompatActivity() {
         loadData()
         inputObserver()
         setAmountPresetClickListener()
-
-//        val spAccount = (binding.tfAddBudgetAccount.editText as? AutoCompleteTextView)
-//        spAccount?.onItemClickListener =
-//            AdapterView.OnItemClickListener { parent, _, position, _ ->
-//                val string: StringWithTag = parent?.getItemAtPosition(position) as StringWithTag
-//
-//                // set remaining budget
-//                accountMonthlyBudget = string.tag3!!.toDouble()
-//                accountRemainingBudget = string.tag2!!.toDouble()
-//
-//                val text = "Remaining budget: ₱" + String.format("%,.2f", accountRemainingBudget)
-//                binding.tfAddBudgetAccount.helperText = text
-//
-//                // store id of selected account
-//                selectedAccount = string.tag
-//                hasSetBudget(firebaseUser.uid, selectedAccount)
-//                loadCategories(firebaseUser.uid, selectedAccount)
-//            }
 
         binding.tbAddBudget.setNavigationOnClickListener {
             onBackPressed()
@@ -119,21 +100,19 @@ class BudgetAddActivity : AppCompatActivity() {
         super.onResume()
 
         firebaseUser?.let {
-            hasSetBudget(it.uid, selectedAccount)
-            loadAccounts(it.uid, selectedAccount)
-            loadCategories(it.uid, selectedAccount)
+            hasSetBudget(it.uid, currentAccountId)
+            loadAccounts(it.uid, currentAccountId)
+            loadCategories(it.uid, currentAccountId)
         }
     }
 
     private fun loadData() {
         auth = Firebase.auth
         if (auth.currentUser != null) {
+            database = Firebase.database
             firebaseUser = auth.currentUser!!
             sharedPreferences = SharedPreferences(this)
-            val currentAccountId = sharedPreferences.accountId.toString()
-
-            selectedAccount = currentAccountId
-            database = Firebase.database
+            currentAccountId = sharedPreferences.accountId.toString()
         }
         else {
             sessionExpired()
@@ -158,13 +137,7 @@ class BudgetAddActivity : AppCompatActivity() {
                 }
 
                 val text = "Remaining budget: ₱" + String.format("%,.2f", accountBudget["remaining"])
-//                binding.tfAddBudgetAccount.helperText = text
                 binding.tvAddBudgetRemainingBudget.text = text
-
-//                val adapter = ArrayAdapter(applicationContext, R.layout.list_item, accounts)
-//                val spinner = (binding.tfAddBudgetAccount.editText as? AutoCompleteTextView)
-//                spinner?.setAdapter(adapter)
-//                spinner?.setText(currentAccount, false)
             }
             .addOnFailureListener {
                 Snackbar
@@ -334,7 +307,7 @@ class BudgetAddActivity : AppCompatActivity() {
         var errors = 0
 
         if (accountBudget["monthly"]!! <= 0.0) {
-            firebaseUser?.let { hasSetBudget(it.uid, selectedAccount) }
+            firebaseUser?.let { hasSetBudget(it.uid, currentAccountId) }
             errors++
         }
 
@@ -361,29 +334,44 @@ class BudgetAddActivity : AppCompatActivity() {
         }
 
         if (errors == 0) {
-            // epoch time
-            val timestamp = (System.currentTimeMillis() / 1000)
-            val budget = Budget(
-                selectedCategory.id,
-                budgetAmount.toDouble(),
-                0.0,
-                timestamp,
-                selectedCategory.name,
-                selectedCategory.nameLower,
-                selectedCategory.color,
-                selectedCategory.icon
-            )
+            firebaseUser?.let {
+                showProgressDialogAdd()
 
-            firebaseUser?.let { setAllocated(it.uid, selectedAccount, budget) }
+                // epoch time
+                val timestamp = (System.currentTimeMillis() / 1000)
+                val budget = Budget(
+                    selectedCategory.id,
+                    budgetAmount.toDouble(),
+                    0.0,
+                    timestamp,
+                    selectedCategory.name,
+                    selectedCategory.nameLower,
+                    selectedCategory.color,
+                    selectedCategory.icon
+                )
+
+                val remainingBudget = accountBudget["remaining"]!! - budget.amountTotal
+                setAllocated(it.uid, currentAccountId, budget, remainingBudget, allocatedCategories)
+            }
         }
     }
 
-    private fun setAllocated(uid: String, accountId: String, budget: Budget) {
-        showProgressDialogAdd()
-        databaseReference = database.getReference("categories").child(uid).child(accountId).child(budget.id!!)
-        databaseReference.child("allocated").setValue(true)
+    private fun setAllocated(
+        uid: String,
+        accountId: String,
+        budget: Budget,
+        remainingBudget: Double,
+        allocatedCategories: Int
+    ) {
+        val categoriesReference =
+            database.getReference("categories")
+                .child(uid)
+                .child(accountId)
+                .child(budget.id!!)
+
+        categoriesReference.child("allocated").setValue(true)
             .addOnSuccessListener {
-                decreaseRemainingBudget(uid, accountId, budget)
+                decreaseRemainingBudget(uid, accountId, budget, remainingBudget, allocatedCategories)
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
@@ -393,13 +381,17 @@ class BudgetAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun decreaseRemainingBudget(uid: String, accountId: String, budget: Budget) {
-        val remainingBudget = accountBudget["remaining"]!! - budget.amountTotal
-
-        databaseReference = database.getReference("accounts").child(uid).child(accountId)
-        databaseReference.child("remainingBudget").setValue(remainingBudget)
+    private fun decreaseRemainingBudget(
+        uid: String,
+        accountId: String,
+        budget: Budget,
+        remainingBudget: Double,
+        allocatedCategories: Int
+    ) {
+        val accountsReference = database.getReference("accounts").child(uid).child(accountId)
+        accountsReference.child("remainingBudget").setValue(remainingBudget)
             .addOnSuccessListener {
-                addBudget(uid, accountId, budget)
+                addBudget(uid, accountId, budget, allocatedCategories)
             }
             .addOnFailureListener {
                 hideProgressDialogAdd()
@@ -409,12 +401,12 @@ class BudgetAddActivity : AppCompatActivity() {
             }
     }
 
-    private fun addBudget(uid: String, accountId: String, budget: Budget) {
-        databaseReference = database.getReference("budgets").child(uid).child(accountId)
-        databaseReference.child(budget.id!!).setValue(budget)
+    private fun addBudget(uid: String, accountId: String, budget: Budget, allocatedCategories: Int) {
+        val budgetsReference = database.getReference("budgets").child(uid).child(accountId)
+        budgetsReference.child(budget.id!!).setValue(budget)
             .addOnSuccessListener {
                 if (allocatedCategories == 0) {
-                    scheduleNotifications(this, accountId)
+                    scheduleNotification(this, accountId)
                 }
 
                 hideProgressDialogAdd()
@@ -446,7 +438,7 @@ class BudgetAddActivity : AppCompatActivity() {
         )
     }
 
-    private fun scheduleNotifications(context: Context, accountId: String) {
+    private fun scheduleNotification(context: Context, accountId: String) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         var notificationChannel = notificationManager.getNotificationChannel(sharedPreferences.expensesChannelId)
         if (notificationChannel == null) {
@@ -463,35 +455,35 @@ class BudgetAddActivity : AppCompatActivity() {
             val notificationIntent = Intent(context, NotificationReceiver::class.java)
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            val zdt = ZonedDateTime.ofInstant(
-                Instant.now(),
-                ZoneId.systemDefault()
-            )
-            val eightPm = zdt.with(LocalTime.MIN).plusHours(20)
-
             val title = "Record your expenses for today"
             val message = "Tap here to open Ducatus."
 
-            // set notifications for 2 weeks
-            for (i in 0 until 14) {
-                val notificationId = zdt.dayOfYear.plus(i)
+            val notificationId = 28800000
+            notificationIntent.action = "com.ducatus.EXPENSE"
+            notificationIntent.putExtra(titleExtra, title)
+            notificationIntent.putExtra(messageExtra, message)
+            notificationIntent.putExtra(notificationIdExtra, notificationId)
+            notificationIntent.putExtra(accountIdExtra, accountId)
 
-                notificationIntent.action = "com.ducatus.EXPENSE"
-                notificationIntent.putExtra(titleExtra, title)
-                notificationIntent.putExtra(messageExtra, message)
-                notificationIntent.putExtra(notificationIdExtra, notificationId)
-                notificationIntent.putExtra(accountIdExtra, accountId)
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    notificationId,
-                    notificationIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+            // six pm every day
+            val zdtNow = ZonedDateTime.ofInstant(
+                Instant.now(),
+                ZoneId.systemDefault()
+            ).with(LocalTime.MIN).plusHours(18).toInstant().toEpochMilli()
 
-                val day = eightPm.plusDays(i.toLong()).toInstant().toEpochMilli()
-                alarmManager.set(AlarmManager.RTC_WAKEUP, day, pendingIntent)
-            }
+            alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                zdtNow,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
         }
     }
 

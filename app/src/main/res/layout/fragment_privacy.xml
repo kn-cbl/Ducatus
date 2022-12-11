@@ -38,7 +38,7 @@
         <ImageView
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:contentDescription="@string/icon_hint"
+            android:contentDescription="@string/icon"
             app:srcCompat="@drawable/privacy_policy" />
 
         <TextView
@@ -70,7 +70,7 @@
         <ImageView
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:contentDescription="@string/icon_hint"
+            android:contentDescription="@string/icon"
             app:srcCompat="@drawable/terms" />
 
         <TextView
@@ -102,7 +102,7 @@
         <ImageView
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:contentDescription="@string/icon_hint"
+            android:contentDescription="@string/icon"
             app:srcCompat="@drawable/ic_baseline_settings_backup_restore_24"
             app:tint="@color/green_secondary" />
 
@@ -135,7 +135,7 @@
         <ImageView
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:contentDescription="@string/icon_hint"
+            android:contentDescription="@string/icon"
             app:srcCompat="@drawable/ic_baseline_delete_forever_24"
             app:tint="@color/green_secondary" />
 

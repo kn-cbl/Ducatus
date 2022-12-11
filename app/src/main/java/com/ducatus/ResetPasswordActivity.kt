@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordBinding
+import com.ducatus.utils.Crypto
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -36,10 +37,9 @@ class ResetPasswordActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        auth = Firebase.auth
-        auth.signOut()
+    override fun onStop() {
+        FirebaseAuth.getInstance().signOut()
+        super.onStop()
     }
 
     private fun inputObserver() {

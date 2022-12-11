@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.interfaces.BudgetInterface
 import com.ducatus.R
 import com.ducatus.data.Budget
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 class BudgetAdapter(
     private val budgets: MutableList<Budget>,
@@ -38,15 +38,14 @@ class BudgetAdapter(
     }
 
     override fun onBindViewHolder(holder: BudgetViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentBudget = budgets[position]
 
         holder.itemView.apply {
             val dateText = when (currentBudget.updatedAt) {
-                null -> activity.getString(R.string.budget_date_no_activity)
+                null -> resources.getString(R.string.no_activity)
                 else -> {
                     val elapsedTime = getElapsedTime(currentBudget.updatedAt!!)
-                    activity.getString(R.string.budget_date_last_activity) + " $elapsedTime"
+                    resources.getString(R.string.last_activity) + " $elapsedTime"
                 }
             }
 
@@ -55,15 +54,16 @@ class BudgetAdapter(
             val iconColor = resources.getIdentifier(
                 currentBudget.categoryColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flItemBudgetCategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemBudgetCategoryIcon).backgroundTintList =
+                ContextCompat.getColorStateList(context, iconColor)
 
             val icon = resources.getIdentifier(
                 currentBudget.categoryIcon,
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<ImageView>(R.id.ivItemBudgetCategoryIcon).setImageResource(icon)
@@ -84,26 +84,32 @@ class BudgetAdapter(
             val spentText = "₱" + String.format("%,.2f", budgetSpent)
             findViewById<TextView>(R.id.tvItemBudgetSpent).text = spentText
             findViewById<TextView>(R.id.tvItemBudgetSpent).setTextColor(
-                ContextCompat.getColor(activity, iconColor)
+                ContextCompat.getColor(context, iconColor)
             )
 
             val budgetLeftText = "₱" + String.format("%,.2f", budgetLeft)
             findViewById<TextView>(R.id.tvItemBudgetLeft).text = budgetLeftText
             findViewById<TextView>(R.id.tvItemBudgetLeft).setTextColor(
-                ContextCompat.getColor(activity, iconColor)
+                ContextCompat.getColor(context, iconColor)
             )
 
             val budgetTotalText = "₱" + String.format("%,.2f", budgetTotal)
             findViewById<TextView>(R.id.tvItemBudgetLimit).text = budgetTotalText
             findViewById<TextView>(R.id.tvItemBudgetLimit).setTextColor(
-                ContextCompat.getColor(activity, iconColor)
+                ContextCompat.getColor(context, iconColor)
             )
 
             val budgetProgress = ((budgetSpent / budgetTotal) * 100).toInt()
             findViewById<LinearProgressIndicator>(R.id.pbItemBudget).progress = budgetProgress
-            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).setIndicatorColor(ContextCompat.getColor(activity, iconColor))
+            findViewById<LinearProgressIndicator>(R.id.pbItemBudget).setIndicatorColor(
+                ContextCompat.getColor(context, iconColor)
+            )
 
             findViewById<ImageView>(R.id.ibViewItemBudget).setOnClickListener {
+                listener.viewItem(currentBudget)
+            }
+
+            findViewById<MaterialCardView>(R.id.mcvItemBudget).setOnClickListener {
                 listener.viewItem(currentBudget)
             }
 
@@ -112,7 +118,7 @@ class BudgetAdapter(
             val statusIconRes = resources.getIdentifier(
                 status["icon"],
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<ImageView>(R.id.ivItemBudgetStatus).setImageResource(statusIconRes)

@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -72,10 +71,6 @@ class SubscriptionsRecurringFragment : Fragment(), SubscriptionInterface {
             startActivity(Intent(activity, SubscriptionAddActivity::class.java))
             activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
-    }
-
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun viewItem(subscriptionId: String) {
@@ -305,34 +300,58 @@ class SubscriptionsRecurringFragment : Fragment(), SubscriptionInterface {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.amountLowest -> {
-                    mutableSubscriptionsRecurring?.let { subscriptions ->
-                        subscriptions.sortBy { it.amount }
-                        adaptSubscriptions(subscriptions)
+                R.id.sortNameUp -> {
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortBy { it.nameLower }
+                        adaptSubscriptions(list)
                     }
 
                     true
                 }
-                R.id.amountHighest -> {
-                    mutableSubscriptionsRecurring?.let { subscriptions ->
-                        subscriptions.sortByDescending { it.amount }
-                        adaptSubscriptions(subscriptions)
+                R.id.sortNameDown -> {
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortByDescending { it.nameLower }
+                        adaptSubscriptions(list)
+                    }
+
+                    true
+                }
+                R.id.sortCategory -> {
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortBy { it.categoryNameLower }
+                        adaptSubscriptions(list)
+                    }
+
+                    true
+                }
+                R.id.sortAmountLowest -> {
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortBy { it.amount }
+                        adaptSubscriptions(list)
+                    }
+
+                    true
+                }
+                R.id.sortAmountHighest -> {
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortByDescending { it.amount }
+                        adaptSubscriptions(list)
                     }
 
                     true
                 }
                 R.id.sortDueDateOldest -> {
-                    mutableSubscriptionsRecurring?.let { subscriptions ->
-                        subscriptions.sortBy { it.dueDate }
-                        adaptSubscriptions(subscriptions)
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortBy { it.dueDate }
+                        adaptSubscriptions(list)
                     }
 
                     true
                 }
                 R.id.sortDueDateNewest -> {
-                    mutableSubscriptionsRecurring?.let { subscriptions ->
-                        subscriptions.sortByDescending { it.dueDate }
-                        adaptSubscriptions(subscriptions)
+                    mutableSubscriptionsRecurring?.let { list ->
+                        list.sortByDescending { it.dueDate }
+                        adaptSubscriptions(list)
                     }
 
                     true

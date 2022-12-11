@@ -11,13 +11,12 @@ import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
@@ -47,7 +46,6 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class SubscriptionEditDialogFragment : DialogFragment() {
-    private lateinit var actionDialog: ActionDialogFragment
     private lateinit var activity: Activity
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentSubscriptionEditDialogBinding
@@ -118,15 +116,7 @@ class SubscriptionEditDialogFragment : DialogFragment() {
         recurrenceViewModel.recurrence.observe(this) { recurrence ->
             selectedRecurrence = recurrence
 
-            val recurrenceText =
-                if (recurrence in 1..11) {
-                    "month/s"
-                }
-                else {
-                    "year/s"
-                }
-
-            val text = "Every $recurrence $recurrenceText"
+            val text = "Every $recurrence month/s"
             binding.tfSubscriptionEditRecurrence.editText?.setText(text)
         }
 
@@ -144,46 +134,60 @@ class SubscriptionEditDialogFragment : DialogFragment() {
 
             val strSubscription = arguments?.getString("subscription")
             selectedSubscription = Gson().fromJson(strSubscription, Subscription::class.java)
-            selectedDate = selectedSubscription.dueDate!!
-            selectedNotification = selectedSubscription.notification
-
-            if (selectedSubscription.frequency == 1) {
-                selectedRecurrence = selectedSubscription.recurrence!!
-                val recurrenceText =
-                    if (selectedRecurrence in 1..11) {
-                        "month/s"
-                    }
-                    else {
-                        "year/s"
-                    }
-
-                val text = "Every $selectedRecurrence $recurrenceText"
-                binding.tfSubscriptionEditRecurrence.editText?.setText(text)
-                binding.tfSubscriptionEditRecurrence.visibility = View.VISIBLE
-                binding.tfSubscriptionEditDate.hint = getString(R.string.start_date)
-            }
-
-            getCategoryRemainingBudget(firebaseUser!!.uid, sharedPreferences.accountId!!, selectedSubscription.categoryId!!)
-            binding.tfSubscriptionEditName.editText?.setText(selectedSubscription.name)
-            binding.tfSubscriptionEditAmount.editText?.setText(selectedSubscription.amount.toInt().toString())
-
-            binding.tfSubscriptionEditPaymentType.editText?.setText(selectedSubscription.paymentType)
-
-            val zdt = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(selectedSubscription.dueDate!!),
-                ZoneId.systemDefault()
-            )
-            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
-            val formattedDate = dtf.format(zdt)
-            binding.tfSubscriptionEditDate.editText?.setText(formattedDate)
-
-            setNotifications(selectedSubscription.notification)
-
-            binding.tfSubscriptionEditNotes.editText?.setText(selectedSubscription.notes)
+            loadSubscription(selectedSubscription)
         }
         else {
             sessionExpired()
         }
+    }
+
+    private fun loadSubscription(subscription: Subscription) {
+        selectedDate = subscription.dueDate!!
+        selectedNotification = subscription.notification
+
+        if (subscription.paidAt != null) {
+            binding.tfSubscriptionEditAmount.editText?.apply {
+                disableFields(this)
+            }
+            binding.tfSubscriptionEditDate.editText?.apply {
+                disableFields(this)
+            }
+            binding.tfSubscriptionEditNotifications.editText?.apply {
+                disableFields(this)
+            }
+        }
+
+        if (subscription.frequency == 1) {
+            selectedRecurrence = subscription.recurrence!!
+
+            val text = "Every $selectedRecurrence month/s"
+            binding.tfSubscriptionEditRecurrence.editText?.setText(text)
+            binding.tfSubscriptionEditRecurrence.visibility = View.VISIBLE
+            binding.tfSubscriptionEditDate.hint = getString(R.string.start_date)
+        }
+
+        getCategoryRemainingBudget(firebaseUser!!.uid, sharedPreferences.accountId!!, subscription.categoryId!!)
+        binding.tfSubscriptionEditName.editText?.setText(subscription.name)
+        binding.tfSubscriptionEditAmount.editText?.setText(subscription.amount.toInt().toString())
+
+        binding.tfSubscriptionEditPaymentType.editText?.setText(subscription.paymentType)
+
+        val zdt = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(subscription.dueDate!!),
+            ZoneId.systemDefault()
+        )
+        val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
+        val formattedDate = dtf.format(zdt)
+        binding.tfSubscriptionEditDate.editText?.setText(formattedDate)
+
+        setNotifications(subscription.notification)
+
+        binding.tfSubscriptionEditNotes.editText?.setText(subscription.notes)
+    }
+
+    private fun disableFields(editText: EditText) {
+        editText.isEnabled = false
+        editText.setTextColor(ContextCompat.getColor(activity, R.color.lighter_gray))
     }
 
     private fun getCategoryRemainingBudget(uid: String, accountId: String, budgetId: String) {
@@ -573,8 +577,8 @@ class SubscriptionEditDialogFragment : DialogFragment() {
                     }
                 }
 
-                hideProgressDialog()
                 subscriptionViewModel.setSubscription(subscription)
+                hideProgressDialog()
                 dismiss()
             }
             .addOnFailureListener {
@@ -712,15 +716,19 @@ class SubscriptionEditDialogFragment : DialogFragment() {
     }
 
     private fun showProgressDialog() {
-        val bundle = Bundle()
-        bundle.putString("title", getString(R.string.saving))
-
-        actionDialog = ActionDialogFragment()
-        actionDialog.arguments = bundle
-        actionDialog.show(childFragmentManager, "dialog")
+        binding.pbEditSubscription.visibility = View.VISIBLE
+        dialog?.setCancelable(false)
+        dialog?.setCanceledOnTouchOutside(false)
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 
     private fun hideProgressDialog() {
-        actionDialog.dismiss()
+        binding.pbEditSubscription.visibility = View.INVISIBLE
+        dialog?.setCancelable(true)
+        dialog?.setCanceledOnTouchOutside(true)
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

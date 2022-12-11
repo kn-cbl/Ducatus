@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cvItemBudgetGoal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
@@ -107,7 +108,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@color/green_primary"
-            android:minHeight="112dp"
+            android:minHeight="136dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
 

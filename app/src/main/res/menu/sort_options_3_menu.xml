@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sortAmountLowest"
+        android:title="@string/amount_lowest" />
+
+    <item
+        android:id="@+id/sortAmountHighest"
+        android:title="@string/amount_highest" />
+
+    <item
+        android:id="@+id/sortDueDateOldest"
+        android:title="@string/due_date_oldest" />
+
+    <item
+        android:id="@+id/sortDueDateNewest"
+        android:title="@string/due_date_newest" />
+</menu>

@@ -3,12 +3,10 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
@@ -224,7 +222,7 @@ class DeleteAccountDialogFragment : DialogFragment() {
         databaseReference = database.getReference("goalHistory").child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                deleteChallenges(uid, accountId)
+                deleteChallengeHistory(uid, accountId)
             }
             .addOnFailureListener {
                 Snackbar
@@ -235,9 +233,9 @@ class DeleteAccountDialogFragment : DialogFragment() {
             }
     }
 
-    private fun deleteChallenges(uid: String, accountId: String) {
+    private fun deleteChallengeHistory(uid: String, accountId: String) {
         binding.pbDeleteAccount.setProgress(functions * 12, true)
-        databaseReference = database.getReference("challenges").child(uid).child(accountId)
+        databaseReference = database.getReference("challengeHistory").child(uid).child(accountId)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteNotifications(uid, accountId)

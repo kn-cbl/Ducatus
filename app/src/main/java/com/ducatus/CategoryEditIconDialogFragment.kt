@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import com.ducatus.databinding.FragmentCategoryEditIconDialogBinding
 import com.ducatus.viewmodel.ColorViewModel
 import com.ducatus.viewmodel.IconViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth

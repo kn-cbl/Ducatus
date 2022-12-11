@@ -5,10 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.interfaces.HomeBudgetsGoalsInterface
 import com.ducatus.R
 import com.ducatus.data.Budget
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.gson.Gson
 
@@ -34,6 +36,20 @@ class HomeBudgetAdapter(
         val currentBudget = budgets[position]
 
         holder.itemView.apply {
+            val iconColor = resources.getIdentifier(
+                currentBudget.categoryColor,
+                "color",
+                context.packageName
+            )
+
+            ContextCompat.getColor(context, iconColor).apply {
+                findViewById<MaterialCardView>(R.id.cvItemBudgetGoal).strokeColor = this
+                findViewById<LinearProgressIndicator>(R.id.pbItemBudgetGoal).setIndicatorColor(this)
+            }
+
+            findViewById<FrameLayout>(R.id.flItemBudgetGoalView).backgroundTintList =
+                ContextCompat.getColorStateList(context, iconColor)
+
             findViewById<TextView>(R.id.tvItemBudgetGoalName).text = currentBudget.categoryName
             findViewById<TextView>(R.id.tvItemBudgetGoalProgress).visibility = View.GONE
 
@@ -46,7 +62,7 @@ class HomeBudgetAdapter(
             val budgetTotalText = "₱" + String.format("%,.2f", currentBudget.amountTotal)
             findViewById<TextView>(R.id.tvItemBudgetGoalLimit).text = budgetTotalText
 
-            findViewById<FrameLayout>(R.id.flItemBudgetGoalView).setOnClickListener {
+            findViewById<MaterialCardView>(R.id.cvItemBudgetGoal).setOnClickListener {
                 listener.viewItem(Gson().toJson(currentBudget), "B")
             }
         }

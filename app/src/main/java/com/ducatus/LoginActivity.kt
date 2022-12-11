@@ -7,20 +7,24 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.common.AppResources
 import com.ducatus.data.Account
 import com.ducatus.data.User
 import com.ducatus.databinding.ActivityLoginBinding
+import com.ducatus.utils.Crypto
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
@@ -171,41 +175,31 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val firebaseUser: FirebaseUser? = task.result.user
-                    if (firebaseUser != null) {
-                        checkSelectedAccount(firebaseUser)
+                    firebaseUser?.let {
+                        isEmailVerified(it.isEmailVerified)
                     }
                 }
                 else {
                     hideProgressDialog()
-                    val exception = task.exception as FirebaseAuthException
-                    when (exception.errorCode) {
-                        "ERROR_WRONG_PASSWORD" -> binding.tvLoginErrorAuth.text = getString(R.string.password_invalid)
-                        "ERROR_USER_NOT_FOUND" -> binding.tvLoginErrorAuth.text = getString(R.string.user_does_not_exist)
-                        else -> binding.tvLoginErrorAuth.text = exception.localizedMessage
+                    task.exception?.let {
+                        try {
+                            throw it
+                        }
+                        catch (exception: FirebaseAuthException) {
+                            when (exception.errorCode) {
+                                "ERROR_WRONG_PASSWORD" -> binding.tvLoginErrorAuth.text = getString(R.string.password_invalid)
+                                "ERROR_USER_NOT_FOUND" -> binding.tvLoginErrorAuth.text = getString(R.string.user_does_not_exist)
+                                else -> binding.tvLoginErrorAuth.text = exception.localizedMessage
+                            }
+                        }
+                        catch (exception: FirebaseTooManyRequestsException) {
+                            binding.tvLoginErrorAuth.text = exception.localizedMessage
+                        }
+                        catch (exception: Exception) {
+                            binding.tvLoginErrorAuth.text = exception.localizedMessage
+                        }
                     }
                 }
-            }
-    }
-
-    private fun checkSelectedAccount(firebaseUser: FirebaseUser) {
-        databaseReference = database.getReference("accounts").child(firebaseUser.uid)
-        databaseReference.get()
-            .addOnSuccessListener {
-                for(child in it.children) {
-                    if (child.child("selected").value.toString() == "true") {
-                        val sharedPreferences = SharedPreferences(applicationContext)
-                        sharedPreferences.accountId = child.child("id").value.toString()
-                        sharedPreferences.accountName = child.child("name").value.toString()
-                        sharedPreferences.accountColor = child.child("color").value.toString()
-                        break
-                    }
-                }
-
-                verifyEmail(firebaseUser.isEmailVerified)
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                binding.tvLoginErrorAuth.text = it.localizedMessage
             }
     }
 
@@ -254,15 +248,14 @@ class LoginActivity : AppCompatActivity() {
                         0.0,
                         0.0,
                         0.0,
-                        null,
-                        true
+                        null
                     )
 
                     databaseReference.child(key!!).setValue(account)
                         .addOnSuccessListener {
+                            sharedPreferences.accountId = account.id
                             sharedPreferences.accountName = account.name
                             sharedPreferences.accountColor = account.color
-
                             createDefaultCategories(firebaseUser, key)
                         }
                         .addOnFailureListener {
@@ -298,7 +291,7 @@ class LoginActivity : AppCompatActivity() {
                     databaseReference.child(accountId).setValue(categories)
                         .addOnSuccessListener {
                             createNotificationChannels()
-                            checkSelectedAccount(firebaseUser)
+                            isEmailVerified(firebaseUser.isEmailVerified)
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
@@ -306,7 +299,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                 }
                 else {
-                    checkSelectedAccount(firebaseUser)
+                    isEmailVerified(firebaseUser.isEmailVerified)
                 }
             }
             .addOnFailureListener {
@@ -340,18 +333,15 @@ class LoginActivity : AppCompatActivity() {
         if (channels.isNotEmpty()) notificationManager.createNotificationChannels(channels)
     }
 
-    private fun verifyEmail(verified: Boolean) {
-        if (verified) {
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-        else {
-            startActivity(Intent(this, VerifyEmailActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
+    private fun isEmailVerified(verified: Boolean) {
+        val intent =
+            if (verified) Intent(this, HomeActivity::class.java)
+            else Intent(this, VerifyEmailActivity::class.java)
+
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        finish()
     }
 
     // Google Sign In

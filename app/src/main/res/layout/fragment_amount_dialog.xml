@@ -42,7 +42,7 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/inter_regular"
                 android:hint="@string/_0"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:maxLength="10"
                 android:textColor="@color/off_black"
                 android:textColorHint="@color/gray"

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sortNameUp"
+        android:title="@string/name_up" />
+
+    <item
+        android:id="@+id/sortNameDown"
+        android:title="@string/name_down" />
+
+    <item
+        android:id="@+id/sortCategory"
+        android:title="@string/category" />
+
+    <item
+        android:id="@+id/sortAmountLowest"
+        android:title="@string/amount_lowest" />
+
+    <item
+        android:id="@+id/sortAmountHighest"
+        android:title="@string/amount_highest" />
+
+    <item
+        android:id="@+id/sortDateAddedOldest"
+        android:title="@string/date_added_oldest" />
+
+    <item
+        android:id="@+id/sortDateAddedNewest"
+        android:title="@string/date_added_newest" />
+</menu>

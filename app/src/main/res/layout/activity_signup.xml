@@ -38,12 +38,13 @@
         <TextView
             android:id="@+id/tvSignupErrorAuth"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:fontFamily="@font/inter_medium"
             android:gravity="center"
+            android:minHeight="48dp"
             android:textColor="#ff0000"
             android:textSize="12sp" />
 
@@ -190,7 +191,7 @@
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/icon_hint"
+                android:contentDescription="@string/icon"
                 app:srcCompat="@drawable/line" />
 
             <TextView

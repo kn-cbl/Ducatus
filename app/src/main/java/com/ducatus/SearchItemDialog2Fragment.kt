@@ -11,7 +11,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.ducatus.databinding.FragmentSearchItemDialogBinding
-import com.ducatus.viewmodel.SearchViewModel
 import com.ducatus.viewmodel.SearchViewModel2
 
 class SearchItemDialog2Fragment : DialogFragment() {

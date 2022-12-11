@@ -5,5 +5,4 @@ data class User (
     val password: String? = null,
     val username: String? = null,
     val mobileNumber: String? = null,
-    val enabled: Boolean = true,
 )

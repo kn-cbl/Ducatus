@@ -1,5 +1,6 @@
 package com.ducatus
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,19 +8,30 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.data.*
 import com.ducatus.databinding.ActivityTransactionAddBinding
+import com.google.android.gms.vision.Frame
+import com.google.android.gms.vision.text.TextRecognizer
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -36,9 +48,10 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.googlecode.tesseract.android.TessBaseAPI
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
-import java.io.File
+import java.io.*
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
@@ -57,15 +70,43 @@ class TransactionAddActivity : AppCompatActivity() {
     private lateinit var storageReference: StorageReference
     private lateinit var currentAccountId: String
     private lateinit var selectedCategory: Category
-    private val requestPickImage = 1
+    private val requestCaptureImage = 1
+    private val requestPickImage = 2
+    private val dataPath = Environment.getExternalStorageDirectory().toString() + "/tesseract/"
+    private val tessdata = "tessdata"
     private var firebaseUser: FirebaseUser? = null
     private var selectedSubcategory: Subcategory? = null
     private var selectedCategoryWithTag: CategoryWithTag? = null
     private var remainingBudget: Double = 0.0
     private var transactionType = 0
     private var imageUri: Uri? = null
+    private var isCamera: Boolean = false
     private var dateTimeMap: MutableMap<String, Long> =
         mutableMapOf("date" to 0, "hour" to 0, "minute" to 0)
+
+    companion object {
+        val PERMISSIONS = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
+
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all {
+                it.value
+            }
+            if (granted) {
+                captureImage()
+            }
+            else {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(resources.getString(R.string.permissions_required_title))
+                    .setMessage(resources.getString(R.string.permissions_required_message))
+                    .setPositiveButton(resources.getString(R.string.dismiss)) { _, _ -> }
+                    .show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,7 +184,17 @@ class TransactionAddActivity : AppCompatActivity() {
         }
 
         binding.fabScanImage.setOnClickListener {
-            selectImage()
+            if (Build.VERSION.SDK_INT >= 29) {
+                captureImage()
+            }
+            else {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    captureImage()
+                }
+                else {
+                    requestPermissionsLauncher.launch(PERMISSIONS)
+                }
+            }
         }
     }
 
@@ -215,7 +266,10 @@ class TransactionAddActivity : AppCompatActivity() {
                     MaterialAlertDialogBuilder(this)
                         .setTitle(resources.getString(R.string.allocate_budgets))
                         .setMessage(resources.getString(R.string.allocate_budgets_message))
-                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> allocateBudget() }
+                        .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                            startActivity(Intent(this, BudgetAddActivity::class.java))
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                        }
                         .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
                         .show()
                 }
@@ -225,11 +279,6 @@ class TransactionAddActivity : AppCompatActivity() {
                     .make(binding.clAddTransaction, it.localizedMessage!!, 5000)
                     .show()
             }
-    }
-
-    private fun allocateBudget() {
-        startActivity(Intent(this, BudgetAddActivity::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun loadCategories(uid: String, accountId: String) {
@@ -271,14 +320,12 @@ class TransactionAddActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.allocate_budgets))
             .setMessage(resources.getString(R.string.allocate_budgets_message))
-            .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> addCategories() }
+            .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                startActivity(Intent(this, CategoriesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
             .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
             .show()
-    }
-
-    private fun addCategories() {
-        startActivity(Intent(this, CategoriesActivity::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun hasRemainingBudget(uid: String, accountId: String, categories: MutableList<CategoryWithTag>) {
@@ -328,6 +375,7 @@ class TransactionAddActivity : AppCompatActivity() {
                 }
                 else {
                     binding.tfAddTransactionCategory.error = getString(R.string.categories_remaining_budget_empty)
+                    hideProgressDialog()
                 }
             }
             .addOnFailureListener {
@@ -510,6 +558,35 @@ class TransactionAddActivity : AppCompatActivity() {
         }
     }
 
+    private fun createFile(): File {
+        val fileName = "ocr.jpg"
+        val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+
+        val file = File(path, fileName)
+        file.createNewFile()
+        return file
+    }
+
+    private fun captureImage() {
+//        try {
+//            val m = StrictMode::class.java.getMethod("disableDeathOnFileUriExposure")
+//            m.invoke(null)
+//        }
+//        catch (e: java.lang.Exception) {
+//            e.printStackTrace()
+//        }
+        val file = createFile()
+        imageUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
+//        val imagesDir = Environment.getExternalStorageDirectory().toString() + "/tesseract/images"
+//        prepareDirectory(imagesDir)
+//        val imagePath = "$imagesDir/ocr.jpg"
+//        imageUri = Uri.fromFile(File(imagePath))
+
+        val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        startActivityForResult(captureIntent, requestCaptureImage)
+    }
+
     private fun selectImage() {
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
@@ -520,57 +597,222 @@ class TransactionAddActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == requestPickImage && resultCode == RESULT_OK) {
-            data?.data?.let { uri ->
-                var imageName = "transaction_receipt.jpg"
-                contentResolver.query(uri, null, null, null, null)
-                    ?.use { cursor ->
-                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        cursor.moveToFirst()
-                        imageName = cursor.getString(nameIndex)
+        when {
+            requestCode == requestCaptureImage && resultCode == RESULT_OK -> {
+                imageUri?.let { uri ->
+                    isCamera = true
+                    val imageName = "receipt.jpg"
+                    val options = UCrop.Options().apply {
+                        setHideBottomControls(false)
+                        setFreeStyleCropEnabled(true)
                     }
 
-                val options = UCrop.Options()
-                options.setHideBottomControls(false)
-                options.setFreeStyleCropEnabled(true)
+                    UCrop.of(uri, Uri.fromFile(File(cacheDir, imageName)))
+                        .withMaxResultSize(3840, 3840)
+                        .withOptions(options)
+                        .start(this)
+                }
+            }
+            requestCode == requestPickImage && resultCode == RESULT_OK -> {
+                data?.data?.let { uri ->
+                    var imageName = "receipt.jpg"
+                    contentResolver.query(uri, null, null, null, null)
+                        ?.use { cursor ->
+                            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                            cursor.moveToFirst()
+                            imageName = cursor.getString(nameIndex)
+                        }
 
-                UCrop.of(uri, Uri.fromFile(File(cacheDir, imageName)))
-                    .withMaxResultSize(480, 480)
-                    .withOptions(options)
-                    .start(this)
+                    val options = UCrop.Options().apply {
+                        setHideBottomControls(false)
+                        setFreeStyleCropEnabled(true)
+                    }
+
+                    UCrop.of(uri, Uri.fromFile(File(cacheDir, imageName)))
+                        .withMaxResultSize(480, 480)
+                        .withOptions(options)
+                        .start(this)
+                }
+            }
+            requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK -> {
+                data?.let { returnIntent ->
+                    val resultUri = UCrop.getOutput(returnIntent)
+                    resultUri?.let { uri ->
+                        if (isCamera) { // image from camera
+                            isCamera = false
+                            uri.path?.let {
+//                                val imagePath = Environment.getExternalStorageDirectory().toString() + "/tesseract/images"
+//                                prepareDirectory(imagePath)
+
+//                                detectTextTess(it)
+
+//                                prepareTesseract()
+//                                startOCR(imageUri!!)
+                                detectText(it)
+                            }
+                        }
+
+                        val imageName = uri.path?.let { File(it).name }
+                        binding.tfAddTransactionImage.editText?.setText(imageName)
+
+                        imageUri = uri
+                        Picasso.get().invalidate(uri)
+                        Picasso.get()
+                            .load(uri)
+                            .into(binding.ivAddtransactionImage)
+                    }
+                }
+            }
+            resultCode == UCrop.RESULT_ERROR -> {
+                if (data != null) {
+                    val error = UCrop.getError(data)
+                    Snackbar
+                        .make(binding.clAddTransaction, error.toString(), 5000)
+                        .show()
+                }
+            }
+            else -> {
+                isCamera = false
             }
         }
-        else if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
-            data?.let { returnIntent ->
-                val resultUri = UCrop.getOutput(returnIntent)
-                resultUri?.let { uri ->
-                    val imageName = uri.path?.let { File(it).name }
-                    binding.tfAddTransactionImage.editText?.setText(imageName)
+    }
 
-                    imageUri = uri
-                    Picasso.get()
-                        .load(uri)
-                        .into(binding.ivAddtransactionImage)
+    private fun detectText(imagePath: String) {
+        try {
+            val textRecognizer = TextRecognizer.Builder(this).build()
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+            val frame = Frame.Builder().setBitmap(bitmap).build()
+            val sparseArray = textRecognizer.detect(frame)
+            var detectedText = ""
 
-//                    contentResolver.query(uri, null, null, null, null)
-//                        ?.use { cursor ->
-//
-//
-//                            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-//                            cursor.moveToFirst()
-//                            binding.tfAddTransactionAttachment.editText?.setText(cursor.getString(nameIndex))
-//                        }
+            for (i in 0 until sparseArray.size()) {
+                val textBlockValue = sparseArray.get(sparseArray.keyAt(i)).value
+                detectedText +=
+                    if (textBlockValue.toDoubleOrNull() != null) {
+                        ": $textBlockValue\n"
+                    }
+                    else {
+                        " $textBlockValue"
+                    }
+
+                if (i != 0) {
+                    val previousTextBlockValue = sparseArray.get(sparseArray.keyAt(i - 1)).value
+                    if (previousTextBlockValue.lowercase() == "subtotal" || previousTextBlockValue.lowercase() == "total") {
+                        if (textBlockValue.toDoubleOrNull() != null) {
+                            binding.tfAddTransactionAmount.editText?.setText(textBlockValue)
+                        }
+                        else {
+                            if (i + 1 < sparseArray.size()) {
+                                val nextTextBlockValue = sparseArray.get(sparseArray.keyAt(i + 1)).value
+                                if (nextTextBlockValue.toDoubleOrNull() != null) {
+                                    binding.tfAddTransactionAmount.editText?.setText(nextTextBlockValue)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            binding.tfAddTransactionNotes.editText?.setText(detectedText)
+        }
+
+        catch (exception: Exception) {}
+    }
+    
+    private fun prepareDirectory(path: String) {
+        val dir = File(path)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+    }
+    
+    private fun prepareTesseract() {
+        prepareDirectory(dataPath + tessdata)
+        copyTessDataFiles(tessdata)
+    }
+    
+    private fun copyTessDataFiles(path: String) {
+        try {
+            val fileList = assets.list(path)
+            if (fileList != null) {
+                for (fileName in fileList) {
+                    val pathToDataFile = "$dataPath$path/$fileName"
+                    if (!File(pathToDataFile).exists()) {
+                        val inputStream = assets.open("$path/$fileName")
+                        val outputStream = FileOutputStream(pathToDataFile)
+
+                        val bytes = ByteArray(1024)
+                        var len: Int
+
+                        while (inputStream.read(bytes).also { len = it } > 0) {
+                            outputStream.write(bytes, 0, len)
+                        }
+
+                        inputStream.close()
+                        outputStream.close()
+                    }
                 }
             }
         }
-        else if (resultCode == UCrop.RESULT_ERROR) {
-            if (data != null) {
-                val error = UCrop.getError(data)
-                Snackbar
-                    .make(binding.clAddTransaction, error.toString(), 5000)
-                    .show()
-            }
+        catch (exception: IOException) {
+            Log.e("IOException", "Unable to copy files to tessdata $exception")
         }
+    }
+
+    private fun detectTextTess(imagePath: String) {
+//        val tess = TessBaseAPI()
+//        val dataPath = Environment.getExternalStorageDirectory().toString() + "/tesseract/"
+//        val dir = File(dataPath + "tessdata")
+//        if (!dataPath.exists()) {
+//            dataPath.mkdir()
+//        }
+//
+//        Log.d("dataPath", "${dataPath.absolutePath}")
+
+//        if (!tess.init(dataPath.absolutePath, "eng")) {
+//            tess.recycle()
+//            return
+//        }
+//
+//        Snackbar.make(binding.clAddTransaction, "tess init", 3000).show()
+//
+//
+//        tess.setImage(image)
+//        val text = tess.utF8Text
+//
+//        Snackbar.make(binding.clAddTransaction, text, 10000).show()
+//        tess.recycle()
+    }
+    
+    private fun startOCR(imageUri: Uri) {
+        try {
+            val options = BitmapFactory.Options().apply { 
+                inSampleSize = 4
+            }
+            val bitmap = BitmapFactory.decodeFile(imageUri.path, options)
+
+            val result = extractText(bitmap)
+
+            binding.tfAddTransactionNotes.editText?.setText(result)
+        }
+        catch (exception: Exception) {
+            Log.e("OCR", exception.localizedMessage!!)
+        }
+    }
+
+    private fun extractText(bitmap: Bitmap): String {
+        val tessBaseApi = TessBaseAPI()
+        tessBaseApi.init(dataPath, "eng")
+        tessBaseApi.setImage(bitmap)
+        var extractedText = ""
+        try {
+            extractedText = tessBaseApi.utF8Text
+        }
+        catch (exception: Exception) {
+            Log.e("OCR", "Could not recognize text")
+        }
+
+        tessBaseApi.recycle()
+        return extractedText
     }
 
     private fun inputObserver() {
@@ -726,11 +968,6 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun storeImage(uid: String, accountId: String, uri: Uri, transaction: Transaction) {
-//            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri.toString()))
-//            val outputStream = ByteArrayOutputStream()
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-//            val data = outputStream.toByteArray()
-
         // generate unique id
         val imageId = UUID.randomUUID().toString()
         transaction.imagePath = imageId
@@ -750,13 +987,13 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun decreaseBudget(uid: String, accountId: String, transaction: Transaction) {
-        databaseReference =
+        val budgetsReference =
             database.getReference("budgets")
                 .child(uid)
                 .child(accountId)
                 .child(transaction.categoryId!!)
 
-        databaseReference.get()
+        budgetsReference.get()
             .addOnSuccessListener { snapshot ->
                 val budget = snapshot.getValue<Budget>()
                 if (budget != null) {
@@ -774,7 +1011,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
                     budget.updatedAt = zdt.toInstant().toEpochMilli()
 
-                    databaseReference.setValue(budget)
+                    budgetsReference.setValue(budget)
                         .addOnSuccessListener {
                             decreaseAccountBalance(uid, accountId, transaction)
                         }
@@ -795,13 +1032,13 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun decreaseAccountBalance(uid: String, accountId: String, transaction: Transaction) {
-        databaseReference =
+        val accountsReference =
             database.getReference("accounts")
                 .child(uid)
                 .child(accountId)
                 .child("remainingBalance")
 
-        databaseReference.get()
+        accountsReference.get()
             .addOnSuccessListener { snapshot ->
                 val remainingBalance = snapshot.value.toString().toDouble()
                 val newRemainingBalance = when (transaction.type) {
@@ -809,7 +1046,7 @@ class TransactionAddActivity : AppCompatActivity() {
                     else -> remainingBalance + transaction.amount
                 }
 
-                databaseReference.setValue(newRemainingBalance)
+                accountsReference.setValue(newRemainingBalance)
                     .addOnSuccessListener {
                         addTransaction(uid, accountId, transaction)
                     }
@@ -829,14 +1066,14 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun addTransaction(uid: String, accountId: String, transaction: Transaction) {
-        databaseReference = database.getReference("transactions").child(uid).child(accountId)
+        val transactionsReference = database.getReference("transactions").child(uid).child(accountId)
 
-        val key = databaseReference.push().key
+        val key = transactionsReference.push().key
         transaction.id = key!!
 
-        databaseReference.child(key).setValue(transaction)
+        transactionsReference.child(key).setValue(transaction)
             .addOnSuccessListener {
-                cancelNotification(this, accountId)
+                cancelNotification(this, accountId) // cancel today's notification
                 hideProgressDialogAdd()
                 onBackPressed()
             }
@@ -854,12 +1091,7 @@ class TransactionAddActivity : AppCompatActivity() {
         if (notificationChannel != null) {
             val notificationIntent = Intent(context, NotificationReceiver::class.java)
             notificationIntent.action = "com.ducatus.EXPENSE"
-
-            val zdt = ZonedDateTime.ofInstant(
-                Instant.now(),
-                ZoneId.systemDefault()
-            )
-            val notificationId = zdt.dayOfYear
+            val notificationId = 28800000
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -873,7 +1105,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
             // schedule future notifications
             if (notificationChannel.importance != NotificationManager.IMPORTANCE_NONE) {
-                scheduleNotifications(context, accountId)
+                scheduleNotification(context, accountId)
             }
         }
     }
@@ -887,42 +1119,42 @@ class TransactionAddActivity : AppCompatActivity() {
         )
     }
 
-    private fun scheduleNotifications(context: Context, accountId: String) {
+    private fun scheduleNotification(context: Context, accountId: String) {
         enableReceiver(context)
 
         // pass to broadcast receiver
         val notificationIntent = Intent(context, NotificationReceiver::class.java)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val zdt = ZonedDateTime.ofInstant(
-            Instant.now(),
-            ZoneId.systemDefault()
-        )
-        val eightPm = zdt.with(LocalTime.MIN).plusHours(20)
-
         val title = "Record your expenses for today"
         val message = "Tap here to open Ducatus."
 
-        for (i in 0 until 14) {
-            val notificationId = zdt.dayOfYear.plus(i)
+        val notificationId = 28800000
+        notificationIntent.action = "com.ducatus.EXPENSE"
+        notificationIntent.putExtra(titleExtra, title)
+        notificationIntent.putExtra(messageExtra, message)
+        notificationIntent.putExtra(notificationIdExtra, notificationId)
+        notificationIntent.putExtra(accountIdExtra, accountId)
 
-            notificationIntent.action = "com.ducatus.EXPENSE"
-            notificationIntent.putExtra(titleExtra, title)
-            notificationIntent.putExtra(messageExtra, message)
-            notificationIntent.putExtra(notificationIdExtra, notificationId)
-            notificationIntent.putExtra(accountIdExtra, accountId)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            notificationId,
+            notificationIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                notificationId,
-                notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+        // six pm every day
+        val zdtNow = ZonedDateTime.ofInstant(
+            Instant.now(),
+            ZoneId.systemDefault()
+        ).with(LocalTime.MIN).plusHours(18).plusDays(1).toInstant().toEpochMilli()
 
-            // set notifications for 2 weeks
-            val day = eightPm.plusDays(i.toLong()).toInstant().toEpochMilli()
-            alarmManager.set(AlarmManager.RTC_WAKEUP, day, pendingIntent)
-        }
+        alarmManager.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP,
+            zdtNow,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
     }
 
     private fun sessionExpired() {

@@ -11,8 +11,10 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityUpdatePasswordBinding
+import com.ducatus.utils.Crypto
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
@@ -125,10 +127,22 @@ class UpdatePasswordActivity : AppCompatActivity() {
                     }
                     else {
                         hideProgressDialog()
-                        val exception = task.exception as FirebaseAuthException
-                        when (exception.errorCode) {
-                            "ERROR_WRONG_PASSWORD" -> binding.tfUpdatePasswordCurrent.error = getString(R.string.password_invalid)
-                            else -> binding.tfUpdatePasswordCurrent.error = exception.localizedMessage
+                        task.exception?.let {
+                            try {
+                                throw it
+                            }
+                            catch (exception: FirebaseAuthException) {
+                                when (exception.errorCode) {
+                                    "ERROR_WRONG_PASSWORD" -> binding.tfUpdatePasswordCurrent.error = getString(R.string.password_invalid)
+                                    else -> binding.tfUpdatePasswordCurrent.error = exception.localizedMessage
+                                }
+                            }
+                            catch (exception: FirebaseTooManyRequestsException) {
+                                binding.tfUpdatePasswordCurrent.error = exception.localizedMessage
+                            }
+                            catch (exception: Exception) {
+                                binding.tfUpdatePasswordCurrent.error = exception.localizedMessage
+                            }
                         }
                     }
                 }

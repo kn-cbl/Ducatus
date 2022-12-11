@@ -28,7 +28,7 @@
             android:title="@string/loans" />
         <item
             android:id="@+id/nav_goals"
-            android:icon="@drawable/ic_goals"
+            android:icon="@drawable/ic_baseline_crisis_alert_24"
             android:title="@string/goals" />
         <item
             android:id="@+id/nav_challenges"
@@ -38,10 +38,10 @@
             android:id="@+id/nav_tips"
             android:icon="@drawable/ic_outline_lightbulb_24"
             android:title="@string/tips" />
-        <item
-            android:id="@+id/nav_help"
-            android:icon="@drawable/ic_outline_help_outline_24"
-            android:title="@string/help" />
+<!--        <item-->
+<!--            android:id="@+id/nav_help"-->
+<!--            android:icon="@drawable/ic_outline_help_outline_24"-->
+<!--            android:title="@string/help" />-->
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_outline_settings_24"

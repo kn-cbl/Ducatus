@@ -1,6 +1,5 @@
 package com.ducatus
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
@@ -13,7 +12,7 @@ import com.ducatus.viewmodel.AmountViewModel
 
 class AmountDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentAmountDialogBinding
-    private val viewModel: AmountViewModel by activityViewModels()
+    private val amountViewModel: AmountViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +32,7 @@ class AmountDialogFragment : DialogFragment() {
 
         binding.btnAmountConfirm.setOnClickListener {
             val amount = binding.tfAmount.editText?.text.toString().trim { it <= ' '}
-            viewModel.setAmount(amount)
+            amountViewModel.setAmount(amount)
             dismiss()
         }
     }

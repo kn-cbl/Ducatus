@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -101,10 +100,6 @@ class LoansFullyPaidFragment : Fragment(), LoanInterface {
                 else -> false
             }
         }
-    }
-
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun viewItem(loanId: String) {
@@ -269,7 +264,7 @@ class LoansFullyPaidFragment : Fragment(), LoanInterface {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.amountLowest -> {
+                R.id.sortAmountLowest -> {
                     mutableLoans?.let { loans ->
                         loans.sortBy { it.amount }
                         adaptLoans(loans)
@@ -277,7 +272,7 @@ class LoansFullyPaidFragment : Fragment(), LoanInterface {
 
                     true
                 }
-                R.id.amountHighest -> {
+                R.id.sortAmountHighest -> {
                     mutableLoans?.let { loans ->
                         loans.sortByDescending { it.amount }
                         adaptLoans(loans)

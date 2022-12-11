@@ -3,7 +3,6 @@ package com.ducatus
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -30,6 +29,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var sharedPreferences: SharedPreferences
     private var firebaseUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,8 +38,6 @@ class HomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         loadData()
-
-//        networkObserver()
 
         binding.tbHome.setNavigationOnClickListener {
             binding.dlHome.open()
@@ -79,15 +77,21 @@ class HomeActivity : AppCompatActivity() {
                     val action = Navigation.findNavController(this, R.id.fcHome)
                     action.navigate(R.id.loansFragment)
                 }
-//                R.id.nav_goals -> {
-//                    startActivity(Intent(this, EditGoal::class.java))
-//                }
-//                R.id.nav_challenges -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, ChallengesFragment()).commit()
-//                }
-//                R.id.nav_tips -> {
-//                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, TipsFragment()).commit()
-//                }
+                R.id.nav_goals -> {
+                    title = R.string.goals
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.goalsFragment)
+                }
+                R.id.nav_challenges -> {
+                    title = R.string.challenges
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.challengesFragment)
+                }
+                R.id.nav_tips -> {
+                    title = R.string.tips
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.tipsFragment)
+                }
 //                R.id.nav_help -> {
 //                    supportFragmentManager.beginTransaction().replace(binding.fcHome.id, HelpFragment()).commit()
 //                }
@@ -121,6 +125,9 @@ class HomeActivity : AppCompatActivity() {
         hasNotification()
     }
 
+    /**
+     * Check notification type upon opening app from notification
+     */
     private fun hasNotification() {
         val notificationIntent = intent.getStringExtra("notification")
         if (notificationIntent != null) {
@@ -128,6 +135,18 @@ class HomeActivity : AppCompatActivity() {
             val itemId = intent.getStringExtra("itemId")
 
             when (notificationIntent) {
+                "challenge" -> {
+                    intent.removeExtra("notification")
+                    intent.removeExtra("accountId")
+                    intent.removeExtra("itemId")
+
+                    binding.tbHome.menu.clear()
+                    binding.tbHome.setTitle(R.string.challenges)
+                    binding.nvHome.menu.findItem(R.id.nav_challenges).isChecked = true
+
+                    val action = Navigation.findNavController(this, R.id.fcHome)
+                    action.navigate(R.id.challengesFragment)
+                }
                 "expense" -> {
                     intent.removeExtra("notification")
                     intent.removeExtra("accountId")
@@ -181,66 +200,69 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Load dependencies
+     */
     private fun loadData() {
         auth = Firebase.auth
         firebaseUser = auth.currentUser
-        if (firebaseUser != null) {
-            loadAccount(firebaseUser!!.uid)
-        }
-        else {
-            sessionExpired()
-        }
+        firebaseUser?.run {
+            sharedPreferences = SharedPreferences(applicationContext)
+            database = Firebase.database
+            databaseReference = database.getReference("accounts").child(uid)
+            loadAccount(uid)
+
+        } ?: sessionExpired()
     }
 
+    /**
+     * Load the account referenced from shared preferences accountId
+     * @param uid: firebase user uid
+     */
     private fun loadAccount(uid: String) {
-        val sharedPreferences = SharedPreferences(this)
         val currentAccountId = sharedPreferences.accountId.toString()
-        val currentAccountName = sharedPreferences.accountName
-        val currentAccountColor = sharedPreferences.accountColor
-
-        val headerView = binding.nvHome.getHeaderView(0)
-        val iconColor = resources.getIdentifier(
-            currentAccountColor,
-            "color",
-            this.packageName
-        )
-
-        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text = currentAccountName?.get(0)?.uppercase()
-        headerView.findViewById<TextView>(R.id.tvHeaderIcon).setTextColor(
-            ContextCompat.getColor(this, iconColor)
-        )
-
-        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(
-            ContextCompat.getColor(this, iconColor)
-        )
-
-        val name =
-            currentAccountName?.let {
-                if (it.contains(" "))  it.split(" ")[0]
-                else it
-            }
-
-        headerView.findViewById<TextView>(R.id.tvHeaderName).text = name
-        val headerBalance = headerView.findViewById<TextView>(R.id.tvHeaderBalance)
-
-        database = Firebase.database
-        loadAccountRemainingBalance(uid, currentAccountId, headerBalance)
-    }
-
-    private fun loadAccountRemainingBalance(uid: String, accountId: String, headerBalance: TextView) {
-        databaseReference = database.getReference("accounts").child(uid).child(accountId)
-        databaseReference.get()
-            .addOnSuccessListener { snapshot ->
-                val account = snapshot.getValue<Account>()
-                if (account != null) {
-                    val budget = "₱" + String.format("%,.2f", account.remainingBalance)
-                    headerBalance.text = budget
-
-                    account.budgetRenewsAt?.let {
-                        if (isRenewalDate(it)) {
-                            setAccountRenewalDate(uid, accountId, it)
+        if (currentAccountId.isNotEmpty()) {
+            databaseReference.child(currentAccountId).get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.exists()) {
+                        // accountId does not exist in the database
+                        getFirstAccount(uid)
+                    }
+                    else {
+                        val account = snapshot.getValue<Account>()
+                        account?.let {
+                            loadAccountData(uid, it)
                         }
                     }
+                }
+                .addOnFailureListener {
+                    Snackbar
+                        .make(binding.dlHome, getString(R.string.load_account_error), 5000)
+                        .show()
+                }
+        }
+        else {
+            getFirstAccount(uid)
+        }
+    }
+
+    /**
+     * Get the first account found in the database
+     * @param uid: firebase user uid
+     */
+    private fun getFirstAccount(uid: String) {
+        databaseReference.get()
+            .addOnSuccessListener { snapshot ->
+                for (child in snapshot.children) {
+                    val account = child.getValue<Account>()
+                    account?.let {
+                        sharedPreferences.accountId = it.id
+                        sharedPreferences.accountName = it.name
+                        sharedPreferences.accountColor = it.color
+                        loadAccountData(uid, it)
+                    }
+
+                    break
                 }
             }
             .addOnFailureListener {
@@ -250,6 +272,53 @@ class HomeActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Set UI data
+     * @param uid: Firebase user uid
+     * @param account: Account fetched from database
+     */
+    private fun loadAccountData(uid: String, account: Account) {
+        val headerView = binding.nvHome.getHeaderView(0)
+        val iconColor = resources.getIdentifier(
+            account.color,
+            "color",
+            this.packageName
+        )
+
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).text =
+            account.name?.get(0)?.uppercase()
+
+        headerView.findViewById<TextView>(R.id.tvHeaderIcon).setTextColor(
+            ContextCompat.getColor(this, iconColor)
+        )
+
+        headerView.findViewById<RelativeLayout>(R.id.rlHeader).setBackgroundColor(
+            ContextCompat.getColor(this, iconColor)
+        )
+
+        val name =
+            account.name?.let {
+                if (it.contains(" "))  it.split(" ")[0]
+                else it
+            }
+
+        headerView.findViewById<TextView>(R.id.tvHeaderName).text = name
+        val headerBalance = headerView.findViewById<TextView>(R.id.tvHeaderBalance)
+
+        val budget = "₱" + String.format("%,.2f", account.remainingBalance)
+        headerBalance.text = budget
+
+        account.budgetRenewsAt?.let {
+            if (isRenewalDate(it)) {
+                setAccountRenewalDate(uid, account.id!!, it)
+            }
+        }
+    }
+
+    /**
+     * Check if today's date is past renewal date
+     * @param date: Renewal date
+     */
     private fun isRenewalDate(date: Long): Boolean {
         val zdtToday = ZonedDateTime.ofInstant(
             Instant.now(),
@@ -263,16 +332,37 @@ class HomeActivity : AppCompatActivity() {
         return false
     }
 
+    /**
+     * Set account's renewal date next month and renew remaining balance
+     * @param uid: Firebase user uid
+     * @param accountId: Current account's id
+     * @param date: Current account's renewal date
+     */
     private fun setAccountRenewalDate(uid: String, accountId: String, date: Long) {
-        // set renewal date of account to next month
-        val zdtRenewal = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(date),
-            ZoneId.systemDefault()
-        )
-        val nextMonth = zdtRenewal.plusMonths(1).toInstant().toEpochMilli()
-        databaseReference.child("budgetRenewsAt").setValue(nextMonth)
-            .addOnSuccessListener {
-                renewMonthlyBudget(uid, accountId)
+        val accountsReference = database.getReference("accounts").child(uid).child(accountId)
+        accountsReference.get()
+            .addOnSuccessListener { snapshot ->
+                val account = snapshot.getValue<Account>()
+                account?.let {
+                    // set renewal date of account to next month
+                    val zdtRenewal = ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(date),
+                        ZoneId.systemDefault()
+                    ).plusMonths(1).toInstant().toEpochMilli()
+
+                    it.budgetRenewsAt = zdtRenewal
+                    it.remainingBalance = it.monthlyBudget
+
+                    accountsReference.setValue(it)
+                        .addOnSuccessListener {
+                            renewMonthlyBudget(uid, accountId)
+                        }
+                        .addOnFailureListener {
+                            Snackbar
+                                .make(binding.dlHome, getString(R.string.renew_budget_error), 5000)
+                                .show()
+                        }
+                }
             }
             .addOnFailureListener {
                 Snackbar
@@ -281,9 +371,14 @@ class HomeActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Reset amount spent of all budgets to 0
+     * @param uid: Firebase user uid
+     * @param accountId: Current account's id
+     */
     private fun renewMonthlyBudget(uid: String, accountId: String) {
-        databaseReference = database.getReference("budgets").child(uid).child(accountId)
-        databaseReference.get()
+        val budgetsReference = database.getReference("budgets").child(uid).child(accountId)
+        budgetsReference.get()
             .addOnSuccessListener { snapshot ->
                 val newBudgets = mutableMapOf<String, Budget>()
                 for (child in snapshot.children) {
@@ -294,12 +389,13 @@ class HomeActivity : AppCompatActivity() {
                     }
                 }
 
-                databaseReference.setValue(newBudgets)
+                budgetsReference.setValue(newBudgets)
                     .addOnSuccessListener {
                         MaterialAlertDialogBuilder(this)
                             .setTitle(resources.getString(R.string.budget_renewed_title))
                             .setMessage(resources.getString(R.string.budget_renewed_message))
-                            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ -> }
+                            .setPositiveButton(resources.getString(R.string.got_it)) { _, _ -> recreate() }
+                            .setOnDismissListener { recreate() }
                             .show()
                     }
                     .addOnFailureListener {
@@ -315,35 +411,9 @@ class HomeActivity : AppCompatActivity() {
             }
     }
 
-    private fun networkObserver() {
-        var activityStarted = false
-
-        // add 3 second delay
-        object : CountDownTimer(3000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // do nothing
-            }
-            override fun onFinish() {
-                activityStarted = true
-            }
-        }.start()
-
-        if (activityStarted) {
-            val snackbarAvailable = Snackbar.make(binding.dlHome, getString(R.string.connection_available), Snackbar.LENGTH_LONG)
-            val snackbarUnavailable = Snackbar.make(binding.dlHome, getString(R.string.connection_unavailable), Snackbar.LENGTH_INDEFINITE)
-
-            NetworkConnectivityObserver(this).observe(this) {
-                if (it == NetworkStatus.Available) {
-                    snackbarUnavailable.dismiss()
-                    snackbarAvailable.show()
-                }
-                else if (it == NetworkStatus.Unavailable) {
-                    snackbarUnavailable.show()
-                }
-            }
-        }
-    }
-
+    /**
+     * User session has expired
+     */
     private fun sessionExpired() {
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.session_expired))
@@ -358,12 +428,4 @@ class HomeActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
-//    private fun replaceFragmentAnimation(fragment: Fragment) {
-//        val transaction = supportFragmentManager.beginTransaction()
-//        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
-//        transaction.replace(binding.fcHome.id, fragment)
-//        transaction.addToBackStack(null)
-//        transaction.commit()
-//    }
 }

@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import com.ducatus.databinding.ActivityResetPasswordEmailBinding
-import com.google.firebase.auth.FirebaseAuth
+import com.ducatus.utils.AppExecutors
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import javax.mail.Message

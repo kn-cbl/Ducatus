@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -63,11 +62,6 @@ class CategoriesFragment : Fragment(), CategoryInterface {
             val action = CategoriesFragmentDirections.actionCategoriesFragmentToCategoryAddFragment()
             findNavController().navigate(action)
         }
-    }
-
-    // get activity to be used in adapter
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun showPopup(view: View, position: Int, categoryId: String) {
@@ -174,7 +168,11 @@ class CategoriesFragment : Fragment(), CategoryInterface {
 
     private fun deleteSubcategories(categoryId: String) {
         val currentAccountId = sharedPreferences.accountId.toString()
-        databaseReference = database.getReference("subcategories").child(firebaseUser.uid).child(currentAccountId)
+        databaseReference =
+            database.getReference("subcategories")
+                .child(firebaseUser.uid)
+                .child(currentAccountId)
+
         databaseReference.child(categoryId).removeValue()
             .addOnSuccessListener {
                 deleteBudget(categoryId)

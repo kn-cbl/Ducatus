@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -105,13 +104,8 @@ class CategoryEditFragment : Fragment(), SubcategoryInterface, DialogInterface.O
     }
 
     override fun onStop() {
-        super.onStop()
         firebaseUser?.let { subcategoryReference.removeEventListener(subcategoriesListener) }
-    }
-
-    // get activity to be used in adapter
-    override fun getActivityInterface(): Activity {
-        return activity
+        super.onStop()
     }
 
     override fun onDismiss(p0: DialogInterface?) {

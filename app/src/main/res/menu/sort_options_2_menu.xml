@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/amountLowest"
+        android:id="@+id/sortNameUp"
+        android:title="@string/name_up" />
+
+    <item
+        android:id="@+id/sortNameDown"
+        android:title="@string/name_down" />
+
+    <item
+        android:id="@+id/sortCategory"
+        android:title="@string/category" />
+
+    <item
+        android:id="@+id/sortAmountLowest"
         android:title="@string/amount_lowest" />
 
     <item
-        android:id="@+id/amountHighest"
+        android:id="@+id/sortAmountHighest"
         android:title="@string/amount_highest" />
 
     <item

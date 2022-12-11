@@ -9,6 +9,7 @@ import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.ducatus.common.AppResources
 import com.ducatus.databinding.FragmentIconDialogBinding
 import com.ducatus.viewmodel.IconViewModel
 
@@ -49,7 +50,7 @@ class IconDialogFragment : DialogFragment() {
                 image?.setColorFilter(
                     ResourcesCompat.getColor(
                         resources,
-                        R.color.very_dark_blue,
+                        R.color.dark_gray,
                         null
                     )
                 )

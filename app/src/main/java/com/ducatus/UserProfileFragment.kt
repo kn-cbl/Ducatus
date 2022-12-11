@@ -6,13 +6,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.ducatus.databinding.FragmentUserProfileBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,12 +25,10 @@ import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import java.io.File
-import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
     private lateinit var activity: Activity

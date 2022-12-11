@@ -116,6 +116,21 @@ class LoanLendDialogFragment : DialogFragment() {
                 binding.tvLoanLendTitle.text = getString(R.string.pay_loan)
             }
 
+            val remainingLoanText = getString(R.string.remaining_loan_2) + " ₱" + String.format("%,.2f", selectedLoan.amount)
+            binding.tvLoanLendRemaining.apply {
+                text = remainingLoanText
+                visibility = View.VISIBLE
+            }
+
+            binding.tfLoanLendAmount.editText?.doOnTextChanged { text, _, _, _ ->
+                if (text != null && text.toString().toDouble() > selectedLoan.amount) {
+                    binding.tvLoanLendRemainingNotice.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tvLoanLendRemainingNotice.visibility = View.GONE
+                }
+            }
+
             // set date and time to current date and time
             val zdt = ZonedDateTime.ofInstant(
                 Instant.now(),
@@ -125,6 +140,7 @@ class LoanLendDialogFragment : DialogFragment() {
             val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
             val formattedDate = dtf.format(startOfDay)
 
+            binding.tfLoanLendDate.visibility = View.GONE
             binding.tfLoanLendDate.isEnabled = false
             binding.tfLoanLendDate.editText?.setText(formattedDate)
             dateTimeMap["date"] = startOfDay.toInstant().toEpochMilli()
@@ -136,6 +152,7 @@ class LoanLendDialogFragment : DialogFragment() {
             val msHour: Long = zdt.hour * milliseconds * 60 * 60
             val msMinute: Long = zdt.minute * milliseconds * 60
 
+            binding.tfLoanLendTime.visibility = View.GONE
             binding.tfLoanLendTime.isEnabled = false
             binding.tfLoanLendTime.editText?.setText(formattedTime)
             dateTimeMap["hour"] = msHour

@@ -3,7 +3,6 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -140,11 +139,6 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
         toolbar.menu.clear()
         toolbar.inflateMenu(R.menu.search_menu)
         firebaseUser?.let { loadTransactions(selectedDate, selectedDateRange, selectedDateType) }
-    }
-
-    // get activity to be used in adapter
-    override fun getActivityInterface(): Activity {
-        return activity
     }
 
     override fun viewItem(transaction: Transaction) {
@@ -438,7 +432,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
     }
 
     private fun adaptTransactions(transactions: MutableList<Transaction>) {
-        val transactionGroupAdapter = TransactionGroupAdapter(mutableListOf(), this)
+        val transactionGroupAdapter = TransactionGroupAdapter(mutableListOf())
         binding.rvTransactionsBreakdown.adapter = transactionGroupAdapter
         binding.rvTransactionsBreakdown.layoutManager = LinearLayoutManager(activity)
 
@@ -568,34 +562,58 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
         val popup = PopupMenu(activity, view)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.amountLowest -> {
-                    mutableTransactions?.let { transactions ->
-                        transactions.sortBy { it.amount }
-                        adaptTransactions(transactions)
+                R.id.sortNameUp -> {
+                    mutableTransactions?.let { list ->
+                        list.sortBy { it.nameLower }
+                        adaptTransactions(list)
                     }
 
                     true
                 }
-                R.id.amountHighest -> {
-                    mutableTransactions?.let { transactions ->
-                        transactions.sortByDescending { it.amount }
-                        adaptTransactions(transactions)
+                R.id.sortNameDown -> {
+                    mutableTransactions?.let { list ->
+                        list.sortByDescending { it.nameLower }
+                        adaptTransactions(list)
+                    }
+
+                    true
+                }
+                R.id.sortCategory -> {
+                    mutableTransactions?.let { list ->
+                        list.sortBy { it.categoryNameLower }
+                        adaptTransactions(list)
+                    }
+
+                    true
+                }
+                R.id.sortAmountLowest -> {
+                    mutableTransactions?.let { list ->
+                        list.sortBy { it.amount }
+                        adaptTransactions(list)
+                    }
+
+                    true
+                }
+                R.id.sortAmountHighest -> {
+                    mutableTransactions?.let { list ->
+                        list.sortByDescending { it.amount }
+                        adaptTransactions(list)
                     }
 
                     true
                 }
                 R.id.sortDateAddedOldest -> {
-                    mutableTransactions?.let { transactions ->
-                        transactions.sortBy { it.date!! }
-                        adaptTransactions(transactions)
+                    mutableTransactions?.let { list ->
+                        list.sortBy { it.date!! }
+                        adaptTransactions(list)
                     }
 
                     true
                 }
                 R.id.sortDateAddedNewest -> {
-                    mutableTransactions?.let { transactions ->
-                        transactions.sortByDescending { it.date!! }
-                        adaptTransactions(transactions)
+                    mutableTransactions?.let { list ->
+                        list.sortByDescending { it.date!! }
+                        adaptTransactions(list)
                     }
 
                     true
@@ -605,7 +623,7 @@ class TransactionsBreakdownFragment : Fragment(), TransactionInterface {
         }
 
         // menu to inflate
-        popup.menuInflater.inflate(R.menu.sort_options_menu, popup.menu)
+        popup.menuInflater.inflate(R.menu.sort_options_1_menu, popup.menu)
         popup.show()
     }
 

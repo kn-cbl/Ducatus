@@ -37,7 +37,6 @@ class SubscriptionAdapter(
     }
 
     override fun onBindViewHolder(holder: SubscriptionViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentSubscription = subscriptions[position]
 
         holder.itemView.apply {
@@ -55,17 +54,17 @@ class SubscriptionAdapter(
             val iconColor = resources.getIdentifier(
                 itemColor,
                 "color",
-                activity.packageName
+                context.packageName
             )
 
             val icon = resources.getIdentifier(
                 itemIcon,
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<FrameLayout>(R.id.flItemSubscriptionIcon).backgroundTintList =
-                ContextCompat.getColorStateList(activity, iconColor)
+                ContextCompat.getColorStateList(context, iconColor)
 
             findViewById<ImageView>(R.id.ivItemSubscriptionIcon).setImageResource(icon)
             findViewById<ImageView>(R.id.ivItemSubscriptionIcon).setColorFilter(
@@ -79,17 +78,33 @@ class SubscriptionAdapter(
             findViewById<TextView>(R.id.tvItemSubscriptionName).text = currentSubscription.name
             findViewById<TextView>(R.id.tvItemSubscriptionCategory).text = itemCategory
 
-            if (isOverdue(currentSubscription.dueDate!!)) {
-                findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon)
-                    .setImageResource(R.drawable.ic_baseline_warning_24_red)
-            }
-            else {
-                when (currentSubscription.frequency) {
-                    0 -> {
+            when (currentSubscription.frequency) {
+                0 -> {
+                    if (isOverdue(currentSubscription.dueDate!!) && currentSubscription.paidAt == null) {
                         findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon)
-                            .visibility = View.INVISIBLE
+                            .setImageResource(R.drawable.ic_baseline_warning_24_red)
                     }
-                    else -> {
+                    else {
+                        findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon).visibility =
+                            View.INVISIBLE
+                    }
+
+
+                    findViewById<TextView>(R.id.tvItemSubscriptionFrequency).text =
+                        resources.getString(R.string.one_time)
+                }
+                else -> {
+                    val frequencyText =
+                        if (currentSubscription.recurrence == 1) "Every ${currentSubscription.recurrence} month"
+                        else "Every ${currentSubscription.recurrence} months"
+
+                    findViewById<TextView>(R.id.tvItemSubscriptionFrequency).text = frequencyText
+
+                    if (isOverdue(currentSubscription.renewsAt!!)) {
+                        findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon)
+                            .setImageResource(R.drawable.ic_baseline_warning_24_red)
+                    }
+                    else {
                         findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon)
                             .setImageResource(R.drawable.ic_local_due_date_24_bright_blue)
                     }

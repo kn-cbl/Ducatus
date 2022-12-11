@@ -3,12 +3,12 @@ package com.ducatus
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.ducatus.common.AppResources
 import com.ducatus.data.Account
 import com.ducatus.databinding.FragmentResetUserDataDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -268,7 +268,7 @@ class ResetUserDataDialogFragment : DialogFragment() {
         databaseReference = database.getReference("goalHistory").child(uid)
         databaseReference.removeValue()
             .addOnSuccessListener {
-                deleteChallenges(uid)
+                deleteChallengeHistory(uid)
             }
             .addOnFailureListener {
                 Snackbar
@@ -279,9 +279,9 @@ class ResetUserDataDialogFragment : DialogFragment() {
             }
     }
 
-    private fun deleteChallenges(uid: String) {
+    private fun deleteChallengeHistory(uid: String) {
         binding.pbResetData.setProgress(functions * 13, true)
-        databaseReference = database.getReference("challenges").child(uid)
+        databaseReference = database.getReference("challengeHistory").child(uid)
         databaseReference.removeValue()
             .addOnSuccessListener {
                 deleteNotifications(uid)

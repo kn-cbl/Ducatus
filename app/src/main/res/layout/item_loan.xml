@@ -96,8 +96,13 @@
                     android:id="@+id/tvItemLoanAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:autoSizeMaxTextSize="14sp"
+                    android:autoSizeMinTextSize="10sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:autoSizeTextType="uniform"
                     android:fontFamily="@font/inter_semi_bold"
-                    android:gravity="end"
+                    android:gravity="center_vertical|end"
+                    android:maxLines="1"
                     android:text="@string/php_currency_0"
                     android:textColor="@color/darker_gray" />
 

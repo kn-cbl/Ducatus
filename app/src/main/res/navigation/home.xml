@@ -53,11 +53,35 @@
         <action
             android:id="@+id/action_homeFragment_to_reportsFragment"
             app:destination="@id/reportsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_goalsFragment"
+            app:destination="@id/goalsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_challengesFragment"
+            app:destination="@id/challengesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_tipsFragment"
+            app:destination="@id/tipsFragment" />
     </fragment>
     <fragment
         android:id="@+id/reportsFragment"
         android:name="com.ducatus.ReportsFragment"
         android:label="fragment_reports"
         tools:layout="@layout/fragment_reports" />
+    <fragment
+        android:id="@+id/goalsFragment"
+        android:name="com.ducatus.GoalsFragment"
+        android:label="fragment_goals"
+        tools:layout="@layout/fragment_goals" />
+    <fragment
+        android:id="@+id/challengesFragment"
+        android:name="com.ducatus.ChallengesFragment"
+        android:label="fragment_challenges"
+        tools:layout="@layout/fragment_challenges" />
+    <fragment
+        android:id="@+id/tipsFragment"
+        android:name="com.ducatus.TipsFragment"
+        android:label="fragment_tips"
+        tools:layout="@layout/fragment_tips" />
 
 </navigation>

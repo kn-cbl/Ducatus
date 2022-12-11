@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -183,7 +182,12 @@ class SubcategoryAddFragment : Fragment() {
     private fun subcategoryExists(uid: String, accountId: String, subcategoryData: Map<String, String>) {
         showProgressDialog()
         database = Firebase.database
-        databaseReference = database.getReference("subcategories").child(uid).child(accountId).child(args.categoryId)
+        databaseReference =
+            database.getReference("subcategories")
+                .child(uid)
+                .child(accountId)
+                .child(args.categoryId)
+
         val query = databaseReference.orderByChild("nameLower").equalTo(subcategoryData["name"])
         query.get()
             .addOnSuccessListener { snapshot ->

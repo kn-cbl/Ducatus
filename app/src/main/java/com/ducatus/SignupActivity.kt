@@ -12,9 +12,11 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.common.AppResources
 import com.ducatus.data.Account
 import com.ducatus.data.User
 import com.ducatus.databinding.ActivitySignupBinding
+import com.ducatus.utils.Crypto
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -165,29 +167,6 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
-    private fun checkSelectedAccount(firebaseUser: FirebaseUser) {
-        database = Firebase.database
-        databaseReference = database.getReference("accounts").child(firebaseUser.uid)
-        databaseReference.get()
-            .addOnSuccessListener {
-                for(child in it.children) {
-                    if (child.child("selected").value.toString() == "true") {
-                        sharedPreferences.accountId = child.child("id").value.toString()
-                        sharedPreferences.accountName = child.child("name").value.toString()
-                        sharedPreferences.accountColor = child.child("color").value.toString()
-                        break
-                    }
-                }
-
-                createNotificationChannels()
-                verifyEmail(firebaseUser.isEmailVerified)
-            }
-            .addOnFailureListener {
-                hideProgressDialog()
-                binding.tvSignupErrorAuth.text = it.localizedMessage
-            }
-    }
-
     private fun createNotificationChannels() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val channelMap = mapOf(
@@ -261,16 +240,14 @@ class SignupActivity : AppCompatActivity() {
                         0.0,
                         0.0,
                         0.0,
-                        null,
-                        true
+                        null
                     )
 
                     databaseReference.child(key!!).setValue(account)
                         .addOnSuccessListener {
-                            val sharedPreferences = SharedPreferences(applicationContext)
+                            sharedPreferences.accountId = account.id
                             sharedPreferences.accountName = account.name
                             sharedPreferences.accountColor = account.color
-
                             createDefaultCategories(firebaseUser, key)
                         }
                         .addOnFailureListener {
@@ -305,7 +282,8 @@ class SignupActivity : AppCompatActivity() {
                     val categories = AppResources().getCategories(keys)
                     databaseReference.child(accountId).setValue(categories)
                         .addOnSuccessListener {
-                            checkSelectedAccount(firebaseUser)
+                            createNotificationChannels()
+                            isEmailVerified(firebaseUser.isEmailVerified)
                         }
                         .addOnFailureListener {
                             hideProgressDialog()
@@ -313,7 +291,7 @@ class SignupActivity : AppCompatActivity() {
                         }
                 }
                 else {
-                    checkSelectedAccount(firebaseUser)
+                    isEmailVerified(firebaseUser.isEmailVerified)
                 }
             }
             .addOnFailureListener {
@@ -377,21 +355,15 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
-    private fun verifyEmail(isEmailVerified: Boolean) {
-        if (isEmailVerified) {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
-        else {
-            val intent = Intent(this, VerifyEmailActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            finish()
-        }
+    private fun isEmailVerified(verified: Boolean) {
+        val intent =
+            if (verified) Intent(this, HomeActivity::class.java)
+            else Intent(this, VerifyEmailActivity::class.java)
+
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        finish()
     }
 
     private fun generateRandomColor(): Int {

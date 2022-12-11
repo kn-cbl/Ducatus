@@ -1,25 +1,15 @@
 package com.ducatus
 
-import android.Manifest
 import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.StrictMode
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.util.Pair
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,8 +20,7 @@ import com.ducatus.data.Transaction
 import com.ducatus.data.ExpenseReport
 import com.ducatus.databinding.FragmentReportsBinding
 import com.ducatus.interfaces.HomeOverviewInterface
-import com.ducatus.pdfservice.FileHandler
-import com.ducatus.pdfservice.PdfService
+import com.ducatus.services.PdfService
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -52,7 +41,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import java.io.File
+import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
@@ -75,23 +64,6 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
     private var selectedDateType: Int = 0
     private var datePickerOption: Int = 0
     private var mutableExpenseReport: MutableList<ExpenseReport>? = null
-
-    companion object {
-        val PERMISSIONS = arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-    }
-
-    private val requestPermissionsLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val granted = permissions.entries.all {
-                it.value
-            }
-            if (granted) {
-                mutableExpenseReport?.let { createPdf(it) }
-            }
-        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -152,10 +124,6 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
         }
     }
 
-    override fun getActivityInterface(): Activity {
-        return activity
-    }
-
     override fun viewItem(type: Char, item: String) {
         when (type) {
             'S' -> {
@@ -171,18 +139,6 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
                 activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }
         }
-    }
-
-    private fun hasPermissions(context: Context, permissions: Array<String>): Boolean = permissions.all {
-        ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun showDeniedDialog() {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle(resources.getString(R.string.reports_permission_denied_title))
-            .setMessage(resources.getString(R.string.reports_permission_denied_message))
-            .setPositiveButton(resources.getString(R.string.ok)) { _, _ -> }
-            .show()
     }
 
     private fun showPopupDate(view: View) {
@@ -636,29 +592,24 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
         val exportExpensesReport = bottomSheetDialog.findViewById<TextView>(R.id.tvExportExpensesReport)
         exportExpensesReport?.setOnClickListener {
             mutableExpenseReport?.let {
-                if (Build.VERSION.SDK_INT >= 29) {
-                    createPdf(it)
-                }
-                else {
-                    if (hasPermissions(activity, PERMISSIONS)) {
-                        createPdf(it)
-                    }
-                    else {
-                        requestPermissionsLauncher.launch(PERMISSIONS)
-                    }
-                }
+                createDocument()
             }
+
             bottomSheetDialog.dismiss()
         }
 
         bottomSheetDialog.show()
     }
 
-    private fun createPdf(transactionsReport: MutableList<ExpenseReport>) {
-        val onFinish: (File) -> Unit = { openFile(it) }
+    private fun createPdf(outputStream: OutputStream, transactionsReport: MutableList<ExpenseReport>) {
+        val onFinish = {
+            Snackbar
+                .make(rootLayout, getString(R.string.saved_expense_report), Snackbar.LENGTH_LONG)
+                .show()
+        }
         val onError: (Exception) -> Unit = {
             Snackbar
-                .make(rootLayout, "PDF Error", 5000)
+                .make(rootLayout, getString(R.string.generic_error), 5000)
                 .show()
         }
 
@@ -694,6 +645,7 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
 
         val pdfService = PdfService()
         pdfService.createPdf(
+            outputStream,
             sharedPreferences.accountName.toString(),
             formattedDate,
             transactionsReport,
@@ -702,26 +654,37 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
         )
     }
 
-    private fun openFile(file: File) {
-        val path = FileHandler().getRealPath(activity, file.toUri())
-        val pdfFile = path?.let { File(it) }
-        val builder = StrictMode.VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
-        builder.detectFileUriExposure()
+    private fun createDocument() {
+        val zdtToday = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+        val dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        val today = dtf.format(zdtToday)
 
-        val pdfIntent = Intent(Intent.ACTION_VIEW)
-        if (pdfFile != null) {
-            pdfIntent.setDataAndType(pdfFile.toUri(), "application/pdf")
+        val createDocumentIntent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_TITLE, "Expenses report $today.pdf")
         }
-        pdfIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivityForResult(createDocumentIntent, 100)
+    }
 
-        try {
-            startActivity(pdfIntent)
-        }
-        catch (exception: ActivityNotFoundException) {
-            Snackbar
-                .make(rootLayout, exception.localizedMessage!!, 5000)
-                .show()
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            data?.data?.let {
+                try {
+                    val outputStream = activity.contentResolver.openOutputStream(it)
+                    if (outputStream != null) {
+                        createPdf(outputStream, mutableExpenseReport!!)
+                    }
+                }
+                catch (exception: Exception) {
+                    Snackbar
+                        .make(rootLayout, getString(R.string.generic_error), 5000)
+                        .show()
+                }
+            }
         }
     }
 

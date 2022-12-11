@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,6 +23,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -55,7 +55,6 @@ class DeleteUserAccountFragment : Fragment() {
 
         binding.btnDeleteUserAccountReauthenticate.setOnClickListener {
             firebaseUser?.let {
-                showProgressDialog()
                 when (accountType) {
                     "google" -> getGoogleIdToken()
                     "password" -> validateCredentials()
@@ -94,6 +93,7 @@ class DeleteUserAccountFragment : Fragment() {
     }
 
     private fun getGoogleIdToken() {
+        showProgressDialog()
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -179,8 +179,8 @@ class DeleteUserAccountFragment : Fragment() {
         }
         catch (e: Exception){}
 
-        val email = binding.tfDeleteUserAccountEmail.editText?.text.toString().trim {it <= ' '}
-        val password = binding.tfDeleteUserAccountPassword.editText?.text.toString().trim {it <= ' '}
+        val email = binding.tfDeleteUserAccountEmail.editText?.text.toString().trim { it <= ' '}
+        val password = binding.tfDeleteUserAccountPassword.editText?.text.toString().trim { it <= ' '}
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             if (TextUtils.isEmpty(email)) binding.tfDeleteUserAccountEmail.error = getString(R.string.email_empty)
@@ -205,10 +205,22 @@ class DeleteUserAccountFragment : Fragment() {
                 }
                 else {
                     hideProgressDialog()
-                    val exception = task.exception as FirebaseAuthException
-                    when (exception.errorCode) {
-                        "ERROR_WRONG_PASSWORD" -> binding.tfDeleteUserAccountPassword.error = getString(R.string.password_invalid)
-                        else -> binding.tfDeleteUserAccountPassword.error = exception.localizedMessage
+                    task.exception?.let {
+                        try {
+                            throw it
+                        }
+                        catch (exception: FirebaseAuthException) {
+                            when (exception.errorCode) {
+                                "ERROR_WRONG_PASSWORD" -> binding.tfDeleteUserAccountPassword.error = getString(R.string.password_invalid)
+                                else -> binding.tfDeleteUserAccountPassword.error = exception.localizedMessage
+                            }
+                        }
+                        catch (exception: FirebaseTooManyRequestsException) {
+                            binding.tfDeleteUserAccountPassword.error = exception.localizedMessage
+                        }
+                        catch (exception: Exception) {
+                            binding.tfDeleteUserAccountPassword.error = exception.localizedMessage
+                        }
                     }
                 }
             }

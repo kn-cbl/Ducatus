@@ -407,6 +407,7 @@ class TransactionDetailActivity : AppCompatActivity() {
                 if (dateTimeMap["minute"] != msMinute) changes++
                 if (paymentType != selectedTransaction.paymentType) changes++
                 if (notes != selectedTransaction.notes) changes++
+                if (imageUri != null) changes++
 
                 if (changes == 0) {
                     onBackPressed()

@@ -32,22 +32,22 @@ class SubcategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: SubcategoryViewHolder, position: Int) {
-        val activity = listener.getActivityInterface()
         val currentSubcategory = subcategories[position]
 
         holder.itemView.apply {
             val iconColor = resources.getIdentifier(
                 currentSubcategory.color.toString(),
                 "color",
-                activity.packageName
+                context.packageName
             )
 
-            findViewById<FrameLayout>(R.id.flItemSubcategoryIcon).backgroundTintList = ContextCompat.getColorStateList(activity, iconColor)
+            findViewById<FrameLayout>(R.id.flItemSubcategoryIcon).backgroundTintList =
+                ContextCompat.getColorStateList(context, iconColor)
 
             val icon = resources.getIdentifier(
                 currentSubcategory.icon.toString(),
                 "drawable",
-                activity.packageName
+                context.packageName
             )
 
             findViewById<ImageView>(R.id.ivItemSubcategoryIcon).setImageResource(icon)

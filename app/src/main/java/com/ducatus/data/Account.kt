@@ -8,6 +8,5 @@ data class Account(
     var monthlyBudget: Double = 0.0,
     var remainingBudget: Double = 0.0,
     var remainingBalance: Double = 0.0,
-    var budgetRenewsAt: Long? = null,
-    val selected: Boolean = false,
+    var budgetRenewsAt: Long? = null
 )
