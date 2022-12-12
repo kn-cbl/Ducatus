@@ -259,8 +259,13 @@ class BudgetEditDialogFragment : DialogFragment() {
 
     private fun updateAccountRemainingBudget(uid: String, accountId: String, budget: Budget, newBudgetAmount: Double) {
         showProgressDialogEdit()
-        databaseReference = database.getReference("accounts").child(uid).child(accountId)
-        databaseReference.child("remainingBudget").get()
+        databaseReference = 
+            database.getReference("accounts")
+                .child(uid)
+                .child(accountId)
+                .child("remainingBudget")
+                
+        databaseReference.get()
             .addOnSuccessListener { snapshot ->
                 val remainingBudget = snapshot.value.toString().toDouble()
                 val reallocatedBudget = remainingBudget + budget.amountTotal - newBudgetAmount
