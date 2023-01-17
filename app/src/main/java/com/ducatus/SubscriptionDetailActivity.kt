@@ -8,20 +8,26 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentTransaction
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.adapter.SubscriptionHistoryAdapter
+import com.ducatus.common.AppResources
 import com.ducatus.data.Account
 import com.ducatus.data.Subscription
 import com.ducatus.data.SubscriptionHistory
 import com.ducatus.databinding.ActivitySubscriptionDetailBinding
 import com.ducatus.interfaces.SubscriptionHistoryInterface
 import com.ducatus.viewmodel.SubscriptionViewModel
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -48,6 +54,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
     private lateinit var sharedPreferences: SharedPreferences
     private var selectedSubscription: Subscription? = null
     private var mutableSubscriptionHistory = mutableListOf<SubscriptionHistory>()
+    private var nextDueDate: Long? = null
     private var firebaseUser: FirebaseUser? = null
     private val subscriptionViewModel: SubscriptionViewModel by viewModels()
 
@@ -119,12 +126,25 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             .setTitle(resources.getString(R.string.confirm_payment_title))
             .setPositiveButton(resources.getString(R.string.confirm)) { _, _ ->
                 firebaseUser?.let {
-                    savePayment(
-                        it.uid,
-                        sharedPreferences.accountId.toString(),
-                        selectedSubscription!!,
-                        subscriptionHistory
-                    )
+                    when (selectedSubscription!!.frequency) {
+                        0 -> { // one time payment
+                            savePayment(
+                                it.uid,
+                                sharedPreferences.accountId.toString(),
+                                selectedSubscription!!,
+                                subscriptionHistory,
+                                null
+                            )
+                        }
+                        1 -> { // recurring payment
+                            showNextDueDateDialog(
+                                it.uid,
+                                sharedPreferences.accountId.toString(),
+                                selectedSubscription!!,
+                                subscriptionHistory
+                            )
+                        }
+                    }
                 }
             }
             .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
@@ -209,31 +229,8 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 else {
                     val subscription = snapshot.getValue<Subscription>()
                     if (subscription != null) {
+                        loadSubscriptionHistory(uid, accountId, subscriptionId)
                         selectedSubscription = subscription
-
-                        // check renewal date if subscription is recurring
-                        // create new history if today is over the renewal date
-                        if (subscription.frequency == 1) {
-                            val zdtToday = ZonedDateTime.ofInstant(
-                                Instant.now(),
-                                ZoneId.systemDefault()
-                            )
-                            val zdtRenewalDate = ZonedDateTime.ofInstant(
-                                Instant.ofEpochMilli(subscription.renewsAt!!),
-                                ZoneId.systemDefault()
-                            )
-                            val today = zdtToday.toInstant().toEpochMilli()
-                            val renewalDate = zdtRenewalDate.toInstant().toEpochMilli()
-                            if (today > renewalDate) {
-                                createNewHistory(uid, accountId, subscription, false)
-                            }
-                            else {
-                                loadSubscriptionHistory(uid, accountId, subscriptionId)
-                            }
-                        }
-                        else {
-                            loadSubscriptionHistory(uid, accountId, subscriptionId)
-                        }
 
                         binding.tbSubscriptionDetail.title = subscription.name
 
@@ -262,7 +259,13 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                         )
 
                         binding.tvSubscriptionDetailCategory.text = subscription.categoryName
-                        binding.tvSubscriptionDetailPaymentType.text = subscription.paymentType
+
+                        val paymentTypes = AppResources().getPaymentTypes()
+                        val paymentType =
+                            if (subscription.paymentType != 4) paymentTypes[subscription.paymentType]
+                            else subscription.paymentTypeOthers
+
+                        binding.tvSubscriptionDetailPaymentType.text = paymentType
 
                         when (subscription.frequency) {
                             0 -> {
@@ -330,7 +333,109 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             }
     }
 
-    private fun savePayment(uid: String, accountId: String, subscription: Subscription, subscriptionHistory: SubscriptionHistory) {
+    private fun showNextDueDateDialog(
+        uid: String,
+        accountId: String,
+        subscription: Subscription,
+        subscriptionHistory: SubscriptionHistory
+    ) {
+        val nextDueDateDialogFragment = Dialog(this).apply {
+            setCancelable(true)
+            setContentView(R.layout.fragment_next_due_date_dialog)
+        }
+
+        val tfNextDueDate = nextDueDateDialogFragment.findViewById<TextInputLayout>(R.id.tfNextDueDate)
+        val btnNextDueDateCancel = nextDueDateDialogFragment.findViewById<Button>(R.id.btnNextDueDateCancel)
+        val btnNextDueDateOK = nextDueDateDialogFragment.findViewById<Button>(R.id.btnNextDueDateOK)
+
+        setDatePicker(tfNextDueDate, subscription)
+
+        btnNextDueDateCancel.setOnClickListener {
+            nextDueDateDialogFragment.dismiss()
+        }
+
+        btnNextDueDateOK.setOnClickListener {
+            val isValidDueDate = validateNextDueDate(tfNextDueDate)
+            if (isValidDueDate) {
+                nextDueDateDialogFragment.dismiss()
+                savePayment(uid, accountId, subscription, subscriptionHistory, nextDueDate)
+            }
+            else {
+                tfNextDueDate.error = getString(R.string.select_next_due_date_error)
+            }
+        }
+
+        nextDueDateDialogFragment.show()
+    }
+
+    private fun validateNextDueDate(textInputLayout: TextInputLayout): Boolean {
+        textInputLayout.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text == null) {
+                textInputLayout.error = getString(R.string.select_next_due_date_error)
+            }
+            else {
+                textInputLayout.error = null
+            }
+        }
+
+        return nextDueDate != null
+    }
+
+    private fun setDatePicker(textInputLayout: TextInputLayout, subscription: Subscription) {
+        val recurringDate = subscription.dueDate!! + subscription.recurrence!!
+        val zdtRecurringDate = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(recurringDate),
+            ZoneId.systemDefault()
+        )
+
+        val startDate = zdtRecurringDate.toInstant().toEpochMilli()
+        val endDate = zdtRecurringDate.plusMonths(1).toInstant().toEpochMilli()
+
+        val constraintsBuilder =
+            CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+                .setStart(startDate)
+                .setEnd(endDate)
+
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select date")
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setCalendarConstraints(constraintsBuilder.build())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener { date ->
+            val zdt = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(date),
+                ZoneId.systemDefault()
+            )
+            val endOfDay = zdt.with(LocalTime.MAX)
+            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
+            val formattedDate = dtf.format(endOfDay)
+
+            textInputLayout.editText?.setText(formattedDate)
+            nextDueDate = endOfDay.toInstant().toEpochMilli()
+        }
+
+        textInputLayout.editText?.setOnClickListener {
+            if (!datePicker.isAdded) {
+                datePicker.show(supportFragmentManager, "tag")
+            }
+        }
+
+        textInputLayout.setEndIconOnClickListener {
+            if (!datePicker.isAdded) {
+                datePicker.show(supportFragmentManager, "tag")
+            }
+        }
+    }
+
+    private fun savePayment(
+        uid: String,
+        accountId: String,
+        subscription: Subscription,
+        subscriptionHistory: SubscriptionHistory,
+        nextDueDate: Long?
+    ) {
         showProgressDialogAction(getString(R.string.saving))
         val zdtToday = ZonedDateTime.ofInstant(
             Instant.now(),
@@ -348,7 +453,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
 
         databaseReference.setValue(subscriptionHistory)
             .addOnSuccessListener {
-                updateSubscription(uid, accountId, subscription, subscriptionHistory)
+                updateSubscription(uid, accountId, subscription, subscriptionHistory, nextDueDate)
             }
             .addOnFailureListener {
                 hideProgressDialogAction()
@@ -358,7 +463,13 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             }
     }
 
-    private fun updateSubscription(uid: String, accountId: String, subscription: Subscription, subscriptionHistory: SubscriptionHistory) {
+    private fun updateSubscription(
+        uid: String,
+        accountId: String,
+        subscription: Subscription,
+        subscriptionHistory: SubscriptionHistory,
+        nextDueDate: Long?
+    ) {
         var isCompleted = false
         when (subscription.frequency) {
             0 -> {
@@ -367,14 +478,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 isCompleted = true
             }
             1 -> {
-                // get renewal date
-                val zdtRenewalDate = ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(subscription.renewsAt!!),
-                    ZoneId.systemDefault()
-                )
-                val renewalDate = zdtRenewalDate.with(LocalTime.MAX).plusMonths(subscription.recurrence!!.toLong())
-                subscription.dueDate = subscription.renewsAt
-                subscription.renewsAt = renewalDate.toInstant().toEpochMilli()
+                subscription.dueDate = nextDueDate
             }
         }
 
@@ -387,7 +491,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         databaseReference.setValue(subscription)
             .addOnSuccessListener {
                 if (!isCompleted) {
-                    createNewHistory(uid, accountId, subscription, true)
+                    createNewHistory(uid, accountId, subscription)
                 }
                 else {
                     cancelNotification(this, subscriptionHistory.notificationId!!)
@@ -403,7 +507,7 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             }
     }
 
-    private fun createNewHistory(uid: String, accountId: String, subscription: Subscription, updated: Boolean) {
+    private fun createNewHistory(uid: String, accountId: String, subscription: Subscription) {
         databaseReference =
             database.getReference("subscriptionHistory")
                 .child(uid)
@@ -411,24 +515,10 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
                 .child(subscription.id!!)
 
         val key = databaseReference.push().key!!
-
-        val zdt = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(subscription.renewsAt!!),
-            ZoneId.systemDefault()
-        )
-
-        val renewalDate =
-            if (updated) {
-                zdt.toInstant().toEpochMilli()
-            }
-            else {
-                zdt.with(LocalTime.MAX).plusMonths(subscription.recurrence!!.toLong()).toInstant().toEpochMilli()
-            }
-
         val subscriptionHistory = SubscriptionHistory(
             key,
             subscription.amount,
-            renewalDate,
+            subscription.dueDate,
             null,
             subscription.id,
             System.currentTimeMillis().toInt()
@@ -495,14 +585,14 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
             val notificationIntent = Intent(context, NotificationReceiver::class.java)
 
             val zdt = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(subscription.renewsAt!!),
+                Instant.ofEpochMilli(subscription.dueDate!!),
                 ZoneId.systemDefault()
             ).with(LocalTime.MIN)
 
             val dtf = DateTimeFormatter.ofPattern("MMM dd, h:mm a")
             val formattedDate = dtf.format(zdt)
             val formattedAmount = "₱" + String.format("%,.2f", subscription.amount)
-            val dueDate = getElapsedTime(subscription.renewsAt!!)
+            val dueDate = getElapsedTime(subscription.dueDate!!)
 
             val title = "Payment for ${subscription.name} due $dueDate"
             val message = "Confirm your payment of $formattedAmount on or before $formattedDate."
@@ -545,7 +635,12 @@ class SubscriptionDetailActivity : AppCompatActivity(), SubscriptionHistoryInter
         val elapsedDays = ChronoUnit.DAYS.between(startDate, endDate)
         val dateText =
             if (elapsedDays > 0) {
-                "in $elapsedDays days"
+                if (elapsedDays.toInt() == 1) {
+                    "in $elapsedDays day"
+                }
+                else {
+                    "in $elapsedDays days"
+                }
             }
             else if (elapsedDays.toInt() == 0){
                 "today"

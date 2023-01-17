@@ -334,14 +334,18 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun isEmailVerified(verified: Boolean) {
-        val intent =
-            if (verified) Intent(this, HomeActivity::class.java)
-            else Intent(this, VerifyEmailActivity::class.java)
-
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        finish()
+        if (verified) {
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            finish()
+        }
+        else {
+            val intent = Intent(this, VerifyEmailActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
     }
 
     // Google Sign In

@@ -12,6 +12,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.interfaces.HomeOverviewInterface
 import com.ducatus.R
+import com.ducatus.common.AppResources
 import com.ducatus.data.Transaction
 import com.google.gson.Gson
 import java.time.Instant
@@ -82,17 +83,26 @@ class HomeTransactionAdapter(
 
             findViewById<TextView>(R.id.tvItemTransactionRecentName).text = currentTransaction.name
             findViewById<TextView>(R.id.tvItemTransactionRecentCategory).text = itemName
-            findViewById<TextView>(R.id.tvItemTransactionRecentType).text = currentTransaction.paymentType
+
+            val paymentTypes = AppResources().getPaymentTypes()
+            val paymentType =
+                if (currentTransaction.paymentType != 4) paymentTypes[currentTransaction.paymentType]
+                else currentTransaction.paymentTypeOthers
+
+            findViewById<TextView>(R.id.tvItemTransactionRecentType).text = paymentType
 
             // expense or income
-            val transactionState = determineTransactionType(currentTransaction.type)
+            val amountColor =
+                if (currentTransaction.type == 0) "bright_red"
+                else "green_secondary"
+
             val amountColorRes = resources.getIdentifier(
-                transactionState["color"],
+                amountColor,
                 "color",
                 context.packageName
             )
 
-            val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.amount)
+            val amountText = "(₱" + String.format("%,.2f", currentTransaction.amount) + ")"
             findViewById<TextView>(R.id.tvItemTransactionRecentAmount).text = amountText
             findViewById<TextView>(R.id.tvItemTransactionRecentAmount).setTextColor(
                 ContextCompat.getColor(context, amountColorRes)
@@ -111,23 +121,6 @@ class HomeTransactionAdapter(
     fun addTransaction(transaction: Transaction) {
         transactions.add(transaction)
         notifyItemInserted(transactions.size - 1)
-    }
-
-    private fun determineTransactionType(type: Int): Map<String, String> {
-        val currency: String
-        val color: String
-        when (type) {
-            0 -> {
-                currency = "-₱"
-                color = "bright_red"
-            }
-            else -> {
-                currency = "₱"
-                color = "green_secondary"
-            }
-        }
-
-        return mapOf("currency" to currency, "color" to color)
     }
 
     private fun determineDateText(date: Long): Map<String, String> {

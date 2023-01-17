@@ -86,7 +86,7 @@ class ReportExpenseAdapter(
             findViewById<TextView>(R.id.tvItemReportExpenseCategory).text = itemName
             findViewById<TextView>(R.id.tvItemReportExpenseType).text = currentExpense.paymentType
 
-            val amountText = "-₱" + String.format("%,.2f", currentExpense.amount)
+            val amountText = "(₱" + String.format("%,.2f", currentExpense.amount) + ")"
             findViewById<TextView>(R.id.tvItemReportExpenseAmount).text = amountText
             findViewById<TextView>(R.id.tvItemReportExpenseAmount).setTextColor(
                 ContextCompat.getColor(context, R.color.bright_red)

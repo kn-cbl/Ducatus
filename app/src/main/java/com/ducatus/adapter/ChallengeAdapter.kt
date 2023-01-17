@@ -34,16 +34,6 @@ class ChallengeAdapter(
         val currentChallenge = challenges[position]
 
         holder.itemView.apply {
-//            val dateText = when (currentChallenge.updatedAt) {
-//                null -> resources.getString(R.string.no_activity)
-//                else -> {
-//                    val elapsedTime = getElapsedTime(currentChallenge.updatedAt!!)
-//                    resources.getString(R.string.last_activity) + " $elapsedTime"
-//                }
-//            }
-//
-//            findViewById<TextView>(R.id.tvItemChallengeDate).text = dateText
-
             findViewById<TextView>(R.id.tvItemChallengeName).text = currentChallenge.title
 
             if (currentChallenge.dateStarted == null) {

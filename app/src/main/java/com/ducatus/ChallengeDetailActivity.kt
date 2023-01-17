@@ -33,7 +33,6 @@ import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 class ChallengeDetailActivity : AppCompatActivity() {
     private lateinit var actionDialog: ActionDialogFragment
@@ -99,14 +98,15 @@ class ChallengeDetailActivity : AppCompatActivity() {
     private fun loadChallengeHistoryInitialState(challengeId: Int) {
         showProgressDialog()
         challengesHistory = mutableListOf()
-        val challengeAmountList = AppResources().challengesAmount[challengeId]
+        val challengeAmountList = AppResources().getChallengesAmounts()
+        val challengeAmount = challengeAmountList[challengeId]
 
-        if (challengeAmountList != null) {
-            for (i in challengeAmountList.indices) {
+        if (challengeAmount != null) {
+            for (i in challengeAmount.indices) {
                 challengesHistory.add(
                     ChallengeHistory(
                         "",
-                        challengeAmountList[i],
+                        challengeAmount[i],
                         null,
                         i,
                         challengeId,

@@ -8,8 +8,12 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.common.AppResources
 import com.ducatus.data.Transaction
 import com.ducatus.databinding.ActivityTransactionDetailBinding
 import com.google.android.material.datepicker.CalendarConstraints
@@ -48,6 +52,7 @@ class TransactionDetailActivity : AppCompatActivity() {
     private lateinit var selectedTransaction: Transaction
     private val requestPickImage = 1
     private var firebaseUser: FirebaseUser? = null
+    private var selectedPaymentType: Int = 0
     private var imageUri: Uri? = null
     private var dateTimeMap: MutableMap<String, Long> =
         mutableMapOf("date" to 0, "hour" to 0, "minute" to 0)
@@ -58,6 +63,7 @@ class TransactionDetailActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         setDateTimePicker()
+        setPaymentTypes()
         inputObserver()
         loadData()
 
@@ -191,6 +197,24 @@ class TransactionDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun setPaymentTypes() {
+        val paymentTypes = AppResources().getPaymentTypes()
+        val adapter = ArrayAdapter(this, R.layout.list_item, paymentTypes)
+
+        val spPaymentType = (binding.tfTransactionDetailPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setAdapter(adapter)
+        spPaymentType?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                selectedPaymentType = position
+                if (position == 4) {
+                    binding.tfTransactionDetailPaymentTypeOthers.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tfTransactionDetailPaymentTypeOthers.visibility = View.GONE
+                }
+            }
+    }
+
     private fun loadData() {
         auth = Firebase.auth
         firebaseUser = auth.currentUser
@@ -260,7 +284,19 @@ class TransactionDetailActivity : AppCompatActivity() {
 
         binding.tfTransactionDetailAmount.editText?.setText(transaction.amount.toInt().toString())
 
-        binding.tfTransactionDetailPaymentType.editText?.setText(transaction.paymentType)
+        selectedPaymentType = transaction.paymentType
+        val paymentTypes = AppResources().getPaymentTypes()
+        val paymentType = paymentTypes[transaction.paymentType]
+        val spPaymentType = (binding.tfTransactionDetailPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setText(paymentType, false)
+
+        if (transaction.paymentType == 4) {
+            binding.tfTransactionDetailPaymentTypeOthers.apply {
+                editText?.setText(transaction.paymentTypeOthers)
+                visibility = View.VISIBLE
+            }
+        }
+
         binding.tfTransactionDetailNotes.editText?.setText(transaction.notes)
 
         if (transaction.imagePath == null) {
@@ -360,12 +396,17 @@ class TransactionDetailActivity : AppCompatActivity() {
                 binding.tfTransactionDetailName.error = null
             }
         }
+
         binding.tfTransactionDetailPaymentType.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text != null) binding.tfTransactionDetailPaymentType.error = null
+        }
+
+        binding.tfTransactionDetailPaymentTypeOthers.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
-                binding.tfTransactionDetailPaymentType.error = getString(R.string.payment_type_empty)
+                binding.tfTransactionDetailPaymentTypeOthers.error = getString(R.string.payment_type_empty_2)
             }
             else {
-                binding.tfTransactionDetailPaymentType.error = null
+                binding.tfTransactionDetailPaymentTypeOthers.error = null
             }
         }
     }
@@ -373,6 +414,7 @@ class TransactionDetailActivity : AppCompatActivity() {
     private fun validateData() {
         val name = binding.tfTransactionDetailName.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfTransactionDetailPaymentType.editText?.text.toString().trim { it <= ' ' }
+        var paymentTypeOthers: String? = binding.tfTransactionDetailPaymentTypeOthers.editText?.text.toString().trim { it <= ' ' }
         var notes: String? = binding.tfTransactionDetailNotes.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
 
@@ -380,10 +422,29 @@ class TransactionDetailActivity : AppCompatActivity() {
             binding.tfTransactionDetailName.error = getString(R.string.transaction_name_empty)
             errors++
         }
+
         if (TextUtils.isEmpty(paymentType)) {
-            binding.tfTransactionDetailPaymentType.error = getString(R.string.payment_type_empty)
+            binding.tfTransactionDetailPaymentType.apply {
+                error = getString(R.string.payment_type_empty)
+                requestFocus()
+            }
             errors++
         }
+        else {
+            if (selectedPaymentType == 4) {
+                if (TextUtils.isEmpty(paymentTypeOthers)) {
+                    binding.tfTransactionDetailPaymentTypeOthers.apply {
+                        error = getString(R.string.payment_type_empty_2)
+                        requestFocus()
+                    }
+                    errors++
+                }
+            }
+            else {
+                paymentTypeOthers = null
+            }
+        }
+
         if (TextUtils.isEmpty(notes)) {
             notes = null
         }
@@ -405,7 +466,8 @@ class TransactionDetailActivity : AppCompatActivity() {
                 if (dateTimeMap["date"] != startOfDay) changes++
                 if (dateTimeMap["hour"] != msHour) changes++
                 if (dateTimeMap["minute"] != msMinute) changes++
-                if (paymentType != selectedTransaction.paymentType) changes++
+                if (selectedPaymentType != selectedTransaction.paymentType) changes++
+                if (paymentTypeOthers != selectedTransaction.paymentTypeOthers) changes++
                 if (notes != selectedTransaction.notes) changes++
                 if (imageUri != null) changes++
 
@@ -418,7 +480,8 @@ class TransactionDetailActivity : AppCompatActivity() {
                     selectedTransaction.name = name
                     selectedTransaction.nameLower = name.lowercase()
                     selectedTransaction.date = dateTimeMap["date"]
-                    selectedTransaction.paymentType = paymentType
+                    selectedTransaction.paymentType = selectedPaymentType
+                    selectedTransaction.paymentTypeOthers = paymentTypeOthers
                     selectedTransaction.notes = notes
 
                     if (imageUri != null) {

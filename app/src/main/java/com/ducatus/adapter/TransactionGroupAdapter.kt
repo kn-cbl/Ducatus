@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.R
-import com.ducatus.interfaces.TransactionInterface
 import com.ducatus.data.TransactionGroup
 import java.time.Instant
 import java.time.ZoneId
@@ -36,12 +35,10 @@ class TransactionGroupAdapter(
         val currentTransactionGroup = transactionsGroup[position]
 
         holder.itemView.apply {
-            var currency = "₱"
             var amount = currentTransactionGroup.amountTotal
             var amountColor = "green_secondary"
 
             if (amount < 0) {
-                currency = "-₱"
                 amount *= -1
                 amountColor = "bright_red"
             }
@@ -55,7 +52,7 @@ class TransactionGroupAdapter(
             val dateText = determineDateText(currentTransactionGroup.date!!)
             findViewById<TextView>(R.id.tvItemTransactionDate).text = dateText
 
-            val text = currency + String.format("%,.2f", amount)
+            val text = "(₱" + String.format("%,.2f", amount) + ")"
             findViewById<TextView>(R.id.tvItemTransactionTotal).text = text
             findViewById<TextView>(R.id.tvItemTransactionTotal)
                 .setTextColor(ContextCompat.getColor(context, amountColorRes))

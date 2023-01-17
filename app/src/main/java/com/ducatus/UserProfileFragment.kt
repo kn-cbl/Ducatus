@@ -144,7 +144,6 @@ class UserProfileFragment : Fragment(), DialogInterface.OnDismissListener {
     }
 
     private fun selectImage() {
-//        val photoPickerIntent = Intent(Intent.ACTION_GET_CONTENT)
         val photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
         startActivityForResult(photoPickerIntent, requestPickImage)

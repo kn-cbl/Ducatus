@@ -236,6 +236,7 @@ class GoalAddActivity : AppCompatActivity() {
             else {
                 targetAmount = text.toString()
                 binding.tfGoalAddTargetAmount.error = null
+                binding.tfGoalAddSavedAlready.error = null
 
                 if (savedAlready != null) {
                     if (text.toString().toDouble() < binding.tfGoalAddSavedAlready.editText?.text.toString().toDouble()) {

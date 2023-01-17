@@ -16,18 +16,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
+import com.ducatus.common.AppResources
 import com.ducatus.data.*
 import com.ducatus.databinding.FragmentSubscriptionEditDialogBinding
 import com.ducatus.viewmodel.AmountViewModel
 import com.ducatus.viewmodel.SubscriptionRecurrenceViewModel
 import com.ducatus.viewmodel.SubscriptionViewModel
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -56,6 +53,7 @@ class SubscriptionEditDialogFragment : DialogFragment() {
     private lateinit var selectedSubscription: Subscription
     private var firebaseUser: FirebaseUser? = null
     private var remainingBudget: Double = 0.0
+    private var selectedPaymentType: Int = 0
     private var selectedDate: Long = 0
     private var selectedNotification = 0
     private var selectedRecurrence = 0
@@ -76,7 +74,7 @@ class SubscriptionEditDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadData()
-        setDatePicker()
+        setPaymentTypes()
         inputObserver()
 
         amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
@@ -147,13 +145,10 @@ class SubscriptionEditDialogFragment : DialogFragment() {
 
         if (subscription.paidAt != null) {
             binding.tfSubscriptionEditAmount.editText?.apply {
-                disableFields(this)
-            }
-            binding.tfSubscriptionEditDate.editText?.apply {
-                disableFields(this)
+                visibility = View.GONE
             }
             binding.tfSubscriptionEditNotifications.editText?.apply {
-                disableFields(this)
+                visibility = View.GONE
             }
         }
 
@@ -163,31 +158,28 @@ class SubscriptionEditDialogFragment : DialogFragment() {
             val text = "Every $selectedRecurrence month/s"
             binding.tfSubscriptionEditRecurrence.editText?.setText(text)
             binding.tfSubscriptionEditRecurrence.visibility = View.VISIBLE
-            binding.tfSubscriptionEditDate.hint = getString(R.string.start_date)
         }
 
         getCategoryRemainingBudget(firebaseUser!!.uid, sharedPreferences.accountId!!, subscription.categoryId!!)
         binding.tfSubscriptionEditName.editText?.setText(subscription.name)
         binding.tfSubscriptionEditAmount.editText?.setText(subscription.amount.toInt().toString())
 
-        binding.tfSubscriptionEditPaymentType.editText?.setText(subscription.paymentType)
+        selectedPaymentType = subscription.paymentType
+        val paymentTypes = AppResources().getPaymentTypes()
+        val paymentType = paymentTypes[subscription.paymentType]
+        val spPaymentType = (binding.tfSubscriptionEditPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setText(paymentType, false)
 
-        val zdt = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(subscription.dueDate!!),
-            ZoneId.systemDefault()
-        )
-        val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
-        val formattedDate = dtf.format(zdt)
-        binding.tfSubscriptionEditDate.editText?.setText(formattedDate)
+        if (subscription.paymentType == 4) {
+            binding.tfSubscriptionEditPaymentTypeOthers.apply {
+                editText?.setText(subscription.paymentTypeOthers)
+                visibility = View.VISIBLE
+            }
+        }
 
         setNotifications(subscription.notification)
 
         binding.tfSubscriptionEditNotes.editText?.setText(subscription.notes)
-    }
-
-    private fun disableFields(editText: EditText) {
-        editText.isEnabled = false
-        editText.setTextColor(ContextCompat.getColor(activity, R.color.lighter_gray))
     }
 
     private fun getCategoryRemainingBudget(uid: String, accountId: String, budgetId: String) {
@@ -215,59 +207,26 @@ class SubscriptionEditDialogFragment : DialogFragment() {
             }
     }
 
-    private fun setDatePicker() {
-        val zdtToday = ZonedDateTime.ofInstant(
-            Instant.now(),
-            ZoneId.systemDefault()
-        )
+    private fun setPaymentTypes() {
+        val paymentTypes = AppResources().getPaymentTypes()
+        val adapter = ArrayAdapter(activity, R.layout.list_item, paymentTypes)
 
-        val janThisYear = ZonedDateTime.of(zdtToday.year, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())
-        val lastTwentyYears = janThisYear.minusYears(20)
-        val nextFiveYears = janThisYear.plusYears(5)
-
-        val startDate = lastTwentyYears.toInstant().toEpochMilli()
-        val endDate = nextFiveYears.toInstant().toEpochMilli()
-
-        val constraintsBuilder =
-            CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
-                .setStart(startDate)
-                .setEnd(endDate)
-
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select date")
-            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-            .setCalendarConstraints(constraintsBuilder.build())
-            .build()
-
-        datePicker.addOnPositiveButtonClickListener { date ->
-            val zdt = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(date),
-                ZoneId.systemDefault()
-            )
-            val endOfDay = zdt.with(LocalTime.MAX)
-            val dtf = DateTimeFormatter.ofPattern("MMM dd, uuuu")
-            val formattedDate = dtf.format(endOfDay)
-
-            binding.tfSubscriptionEditDate.editText?.setText(formattedDate)
-            selectedDate = endOfDay.toInstant().toEpochMilli()
-        }
-
-        binding.tfSubscriptionEditDate.editText?.setOnClickListener {
-            if (!datePicker.isAdded) {
-                datePicker.show(childFragmentManager, "tag")
+        val spPaymentType = (binding.tfSubscriptionEditPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setAdapter(adapter)
+        spPaymentType?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                selectedPaymentType = position
+                if (position == 4) {
+                    binding.tfSubscriptionEditPaymentTypeOthers.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tfSubscriptionEditPaymentTypeOthers.visibility = View.GONE
+                }
             }
-        }
-
-        binding.tfSubscriptionEditDate.setEndIconOnClickListener {
-            if (!datePicker.isAdded) {
-                datePicker.show(childFragmentManager, "tag")
-            }
-        }
     }
 
     private fun setNotifications(type: Int) {
-        val notifications = listOf("None", "On due date", "1 day before", "3 days before", "1 week before")
+        val notifications = AppResources().getSubscriptionNotifications()
         val adapter = ArrayAdapter(activity, R.layout.list_item, notifications)
         val spinner = (binding.tfSubscriptionEditNotifications.editText as? AutoCompleteTextView)
         spinner?.setAdapter(adapter)
@@ -308,20 +267,20 @@ class SubscriptionEditDialogFragment : DialogFragment() {
         }
 
         binding.tfSubscriptionEditPaymentType.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text != null) binding.tfSubscriptionEditPaymentType.error = null
+        }
+
+        binding.tfSubscriptionEditPaymentTypeOthers.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
-                binding.tfSubscriptionEditPaymentType.error = getString(R.string.payment_type_empty)
+                binding.tfSubscriptionEditPaymentTypeOthers.error = getString(R.string.payment_type_empty_2)
             }
             else {
-                binding.tfSubscriptionEditPaymentType.error = null
+                binding.tfSubscriptionEditPaymentTypeOthers.error = null
             }
         }
 
         binding.tfSubscriptionEditRecurrence.editText?.doOnTextChanged { text, _, _, _ ->
             if (text != null) binding.tfSubscriptionEditRecurrence.error = null
-        }
-
-        binding.tfSubscriptionEditDate.editText?.doOnTextChanged { text, _, _, _ ->
-            if (text != null) binding.tfSubscriptionEditDate.error = null
         }
 
         binding.tfSubscriptionEditNotifications.editText?.doOnTextChanged { text, _, _, _ ->
@@ -341,8 +300,8 @@ class SubscriptionEditDialogFragment : DialogFragment() {
         val amount = binding.tfSubscriptionEditAmount.editText?.text.toString().trim { it <= ' ' }
         val name = binding.tfSubscriptionEditName.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfSubscriptionEditPaymentType.editText?.text.toString().trim { it <= ' ' }
+        var paymentTypeOthers: String? = binding.tfSubscriptionEditPaymentTypeOthers.editText?.text.toString().trim { it <= ' ' }
         val recurrence = binding.tfSubscriptionEditRecurrence.editText?.text.toString().trim { it <= ' ' }
-        val date = binding.tfSubscriptionEditDate.editText?.text.toString().trim { it <= ' ' }
         val notifications = binding.tfSubscriptionEditNotifications.editText?.text.toString().trim { it <= ' ' }
         var notes: String? = binding.tfSubscriptionEditNotes.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
@@ -356,14 +315,20 @@ class SubscriptionEditDialogFragment : DialogFragment() {
             binding.tfSubscriptionEditPaymentType.error = getString(R.string.payment_type_empty)
             errors++
         }
+        else {
+            if (selectedPaymentType == 4) {
+                if (TextUtils.isEmpty(paymentTypeOthers)) {
+                    binding.tfSubscriptionEditPaymentTypeOthers.error = getString(R.string.payment_type_empty_2)
+                    errors++
+                }
+            }
+            else {
+                paymentTypeOthers = null
+            }
+        }
 
         if (selectedSubscription.frequency == 1 && TextUtils.isEmpty(recurrence)) {
             binding.tfSubscriptionEditRecurrence.error = getString(R.string.select_recurrence)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(date)) {
-            binding.tfSubscriptionEditDate.error = getString(R.string.date_empty)
             errors++
         }
 
@@ -395,7 +360,8 @@ class SubscriptionEditDialogFragment : DialogFragment() {
             var changes = 0
             if (name.lowercase() != selectedSubscription.nameLower) changes++
             if (amount.toDouble() != selectedSubscription.amount) changes++
-            if (paymentType != selectedSubscription.paymentType) changes++
+            if (selectedPaymentType != selectedSubscription.paymentType) changes++
+            if (paymentTypeOthers != selectedSubscription.paymentTypeOthers) changes++
             if (selectedRecurrence != selectedSubscription.recurrence) changes++
             if (selectedDate != selectedSubscription.dueDate) changes++
             if (selectedNotification != selectedSubscription.notification) changes++
@@ -407,24 +373,14 @@ class SubscriptionEditDialogFragment : DialogFragment() {
             else {
                 firebaseUser?.let {
                     showProgressDialog()
+
                     selectedSubscription.name = name
-                    selectedSubscription.paymentType = paymentType
+                    selectedSubscription.paymentType = selectedPaymentType
+                    selectedSubscription.paymentTypeOthers = paymentTypeOthers
                     selectedSubscription.recurrence = selectedRecurrence
                     selectedSubscription.dueDate = selectedDate
                     selectedSubscription.notification = selectedNotification
                     selectedSubscription.notes = notes
-
-                    if (selectedSubscription.frequency == 1) {
-                        val zdtRenewalDate =
-                            ZonedDateTime.ofInstant(
-                                Instant.ofEpochMilli(selectedDate),
-                                ZoneId.systemDefault()
-                            )
-                                .with(LocalTime.MAX)
-                                .plusMonths(selectedRecurrence.toLong()).toInstant().toEpochMilli()
-
-                        selectedSubscription.renewsAt = zdtRenewalDate
-                    }
 
                     decreaseBudget(it.uid, sharedPreferences.accountId!!, selectedSubscription, amount.toDouble())
                 }

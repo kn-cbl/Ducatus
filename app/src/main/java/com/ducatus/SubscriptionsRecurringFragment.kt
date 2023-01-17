@@ -268,7 +268,7 @@ class SubscriptionsRecurringFragment : Fragment(), SubscriptionInterface {
                 ZoneId.systemDefault()
             )
             val today = zdtToday.toInstant().toEpochMilli()
-            if (today < subscription.renewsAt!!) {
+            if (today < subscription.dueDate!!) {
                 subscriptionAdapter.addSubscription(subscription)
             }
             else {

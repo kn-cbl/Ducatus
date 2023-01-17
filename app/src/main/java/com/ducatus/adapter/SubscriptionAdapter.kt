@@ -93,14 +93,14 @@ class SubscriptionAdapter(
                     findViewById<TextView>(R.id.tvItemSubscriptionFrequency).text =
                         resources.getString(R.string.one_time)
                 }
-                else -> {
+                1 -> {
                     val frequencyText =
                         if (currentSubscription.recurrence == 1) "Every ${currentSubscription.recurrence} month"
                         else "Every ${currentSubscription.recurrence} months"
 
                     findViewById<TextView>(R.id.tvItemSubscriptionFrequency).text = frequencyText
 
-                    if (isOverdue(currentSubscription.renewsAt!!)) {
+                    if (isOverdue(currentSubscription.dueDate!!)) {
                         findViewById<ImageView>(R.id.ivItemSubscriptionTypeIcon)
                             .setImageResource(R.drawable.ic_baseline_warning_24_red)
                     }
@@ -118,7 +118,7 @@ class SubscriptionAdapter(
             val zdtDueDate = when (currentSubscription.frequency) {
                 1 -> {
                     ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(currentSubscription.renewsAt!!),
+                        Instant.ofEpochMilli(currentSubscription.dueDate!!),
                         ZoneId.systemDefault()
                     )
                 }

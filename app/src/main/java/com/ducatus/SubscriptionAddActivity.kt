@@ -1,9 +1,6 @@
 package com.ducatus
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -17,6 +14,7 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.common.AppResources
 import com.ducatus.data.*
 import com.ducatus.databinding.ActivitySubscriptionAddBinding
 import com.ducatus.viewmodel.SubscriptionRecurrenceViewModel
@@ -51,10 +49,11 @@ class SubscriptionAddActivity : AppCompatActivity() {
     private var firebaseUser: FirebaseUser? = null
     private var remainingBudget: Double = 0.0
     private var selectedSubcategory: Subcategory? = null
-    private var selectedFrequency = 0
+    private var selectedPaymentType: Int = 0
+    private var selectedFrequency: Int = 0
     private var selectedDate: Long = 0
-    private var selectedNotification = 0
-    private var selectedRecurrence = 0
+    private var selectedNotification: Int = 0
+    private var selectedRecurrence: Int = 0
     private val recurrenceViewModel: SubscriptionRecurrenceViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +65,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
         loadData()
         setAmountPresetClickListener()
         setDatePicker()
+        setPaymentTypes()
         setFrequencies()
         setNotifications()
         inputObserver()
@@ -114,12 +114,10 @@ class SubscriptionAddActivity : AppCompatActivity() {
             AdapterView.OnItemClickListener { _, _, position, _ ->
                 selectedFrequency = position
                 if (position == 0) {
-                    binding.tfAddSubscriptionDate.hint = getString(R.string.due_date)
                     binding.tfAddSubscriptionRecurrence.visibility = View.GONE
                     selectedRecurrence = 0
                 }
                 else {
-                    binding.tfAddSubscriptionDate.hint = getString(R.string.start_date)
                     binding.tfAddSubscriptionRecurrence.visibility = View.VISIBLE
                 }
             }
@@ -452,6 +450,24 @@ class SubscriptionAddActivity : AppCompatActivity() {
         }
     }
 
+    private fun setPaymentTypes() {
+        val paymentTypes = AppResources().getPaymentTypes()
+        val adapter = ArrayAdapter(this, R.layout.list_item, paymentTypes)
+
+        val spPaymentType = (binding.tfAddSubscriptionPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setAdapter(adapter)
+        spPaymentType?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                selectedPaymentType = position
+                if (position == 4) {
+                    binding.tfAddSubscriptionPaymentTypeOthers.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tfAddSubscriptionPaymentTypeOthers.visibility = View.GONE
+                }
+            }
+    }
+
     private fun setFrequencies() {
         val frequencies = listOf("One Time", "Recurrent")
         val adapter = ArrayAdapter(this, R.layout.list_item, frequencies)
@@ -459,7 +475,7 @@ class SubscriptionAddActivity : AppCompatActivity() {
     }
 
     private fun setNotifications() {
-        val notifications = listOf("None", "On due date", "1 day before", "3 days before", "1 week before")
+        val notifications = AppResources().getSubscriptionNotifications()
         val adapter = ArrayAdapter(this, R.layout.list_item, notifications)
         (binding.tfAddSubscriptionNotifications.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
@@ -499,11 +515,15 @@ class SubscriptionAddActivity : AppCompatActivity() {
         }
 
         binding.tfAddSubscriptionPaymentType.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text != null) binding.tfAddSubscriptionPaymentType.error = null
+        }
+
+        binding.tfAddSubscriptionPaymentTypeOthers.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
-                binding.tfAddSubscriptionPaymentType.error = getString(R.string.payment_type_empty)
+                binding.tfAddSubscriptionPaymentTypeOthers.error = getString(R.string.payment_type_empty_2)
             }
             else {
-                binding.tfAddSubscriptionPaymentType.error = null
+                binding.tfAddSubscriptionPaymentTypeOthers.error = null
             }
         }
 
@@ -530,57 +550,19 @@ class SubscriptionAddActivity : AppCompatActivity() {
             val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
-        catch (e: Exception){}
+        catch (e: Exception) {}
 
         val amount = binding.tfAddSubscriptionAmount.editText?.text.toString().trim { it <= ' ' }
         val name = binding.tfAddSubscriptionName.editText?.text.toString().trim { it <= ' ' }
         val category = binding.tfAddSubscriptionCategory.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfAddSubscriptionPaymentType.editText?.text.toString().trim { it <= ' ' }
+        var paymentTypeOthers: String? = binding.tfAddSubscriptionPaymentTypeOthers.editText?.text.toString().trim { it <= ' ' }
         val frequency = binding.tfAddSubscriptionFrequency.editText?.text.toString().trim { it <= ' ' }
         val recurrence = binding.tfAddSubscriptionRecurrence.editText?.text.toString().trim { it <= ' ' }
         val date = binding.tfAddSubscriptionDate.editText?.text.toString().trim { it <= ' ' }
         val notifications = binding.tfAddSubscriptionNotifications.editText?.text.toString().trim { it <= ' ' }
         var notes: String? = binding.tfAddSubscriptionNotes.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
-
-        if (TextUtils.isEmpty(name)) {
-            binding.tfAddSubscriptionName.error = getString(R.string.subscription_name_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(category)) {
-            binding.tfAddSubscriptionCategory.error = getString(R.string.category_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(paymentType)) {
-            binding.tfAddSubscriptionPaymentType.error = getString(R.string.payment_type_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(frequency)) {
-            binding.tfAddSubscriptionFrequency.error = getString(R.string.frequency_empty)
-            errors++
-        }
-
-        if (selectedFrequency == 1 && TextUtils.isEmpty(recurrence)) {
-            binding.tfAddSubscriptionRecurrence.error = getString(R.string.select_recurrence)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(date)) {
-            binding.tfAddSubscriptionDate.error = getString(R.string.date_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(notifications)) {
-            binding.tfAddSubscriptionNotifications.error = getString(R.string.notification_empty)
-            errors++
-        }
-
-        if (TextUtils.isEmpty(notes)) {
-            notes = null
-        }
 
         if (TextUtils.isEmpty(amount)) {
             binding.tfAddSubscriptionAmount.error = getString(R.string.amount_empty)
@@ -597,6 +579,78 @@ class SubscriptionAddActivity : AppCompatActivity() {
             }
         }
 
+        if (TextUtils.isEmpty(name)) {
+            binding.tfAddSubscriptionName.apply {
+                error = getString(R.string.subscription_name_empty)
+                requestFocus()
+            }
+            errors++
+        }
+
+        if (TextUtils.isEmpty(category)) {
+            binding.tfAddSubscriptionCategory.error = getString(R.string.category_empty)
+            errors++
+        }
+
+
+        if (TextUtils.isEmpty(paymentType)) {
+            binding.tfAddSubscriptionPaymentType.apply {
+                error = getString(R.string.payment_type_empty)
+                requestFocus()
+            }
+            errors++
+        }
+        else {
+            if (selectedPaymentType == 4) {
+                if (TextUtils.isEmpty(paymentTypeOthers)) {
+                    binding.tfAddSubscriptionPaymentTypeOthers.apply {
+                        error = getString(R.string.payment_type_empty_2)
+                        requestFocus()
+                    }
+                    errors++
+                }
+            }
+            else {
+                paymentTypeOthers = null
+            }
+        }
+
+        if (TextUtils.isEmpty(frequency)) {
+            binding.tfAddSubscriptionFrequency.apply {
+                error = getString(R.string.frequency_empty)
+                requestFocus()
+            }
+            errors++
+        }
+
+        if (selectedFrequency == 1 && TextUtils.isEmpty(recurrence)) {
+            binding.tfAddSubscriptionRecurrence.apply {
+                error = getString(R.string.select_recurrence)
+                requestFocus()
+            }
+            errors++
+        }
+
+        if (TextUtils.isEmpty(date)) {
+            binding.tfAddSubscriptionDate.apply {
+                error = getString(R.string.date_empty)
+                requestFocus()
+            }
+            errors++
+        }
+
+        if (TextUtils.isEmpty(notifications)) {
+            binding.tfAddSubscriptionNotifications.apply {
+                error = getString(R.string.notification_empty)
+                requestFocus()
+            }
+            errors++
+        }
+
+        if (TextUtils.isEmpty(notes)) {
+            notes = null
+        }
+
         if (errors == 0) {
             firebaseUser?.let {
                 showProgressDialogAdd()
@@ -605,21 +659,19 @@ class SubscriptionAddActivity : AppCompatActivity() {
                     ZoneId.systemDefault()
                 ).toInstant().toEpochMilli()
 
-                val renewsAt = getRenewalDate(selectedFrequency, selectedRecurrence)
-
                 val subscription = Subscription(
                     null,
                     name,
                     name.lowercase(),
                     amount.toDouble(),
-                    paymentType,
+                    selectedPaymentType,
+                    paymentTypeOthers,
                     selectedFrequency,
                     zdtToday.toString(),
                     zdtToday,
                     selectedDate,
                     selectedNotification,
                     selectedRecurrence,
-                    renewsAt,
                     null,
                     notes,
                     selectedCategory.id,
@@ -637,24 +689,6 @@ class SubscriptionAddActivity : AppCompatActivity() {
                 decreaseBudget(it.uid, sharedPreferences.accountId!!, subscription)
             }
         }
-    }
-
-    private fun getRenewalDate(frequency: Int, recurrence: Int): Long? {
-        val date = when (frequency) {
-            0 -> {
-                null
-            }
-            else -> {
-                val zdt = ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(selectedDate),
-                    ZoneId.systemDefault()
-                )
-
-                zdt.with(LocalTime.MAX).plusMonths(recurrence.toLong()).toInstant().toEpochMilli()
-            }
-        }
-
-        return date
     }
 
     private fun decreaseBudget(uid: String, accountId: String, subscription: Subscription) {
@@ -755,17 +789,11 @@ class SubscriptionAddActivity : AppCompatActivity() {
         val subscriptionHistory = SubscriptionHistory(
             key,
             subscription.amount,
-            null,
+            subscription.dueDate,
             null,
             subscription.id,
             System.currentTimeMillis().toInt()
         )
-
-        // 0 for one time, 1 for recurring
-        when (subscription.frequency) {
-            0 -> subscriptionHistory.dueAt = subscription.dueDate
-            1 -> subscriptionHistory.dueAt = subscription.renewsAt
-        }
 
         subscriptionHistoryReference.child(key).setValue(subscriptionHistory)
             .addOnSuccessListener {

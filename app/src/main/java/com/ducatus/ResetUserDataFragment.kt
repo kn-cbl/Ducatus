@@ -61,6 +61,10 @@ class ResetUserDataFragment : Fragment() {
                 }
             }
         }
+
+        binding.btnResetUserDataCancel.setOnClickListener {
+            activity.onBackPressed()
+        }
     }
 
     private fun loadData() {

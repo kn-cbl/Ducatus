@@ -68,17 +68,6 @@ class BudgetEditDialogFragment : DialogFragment() {
         loadData()
         inputObserver()
 
-        // disable editing of budget category and budget total when user has already added
-        // a transaction record for the budget
-//        if (args.budgetSpent.toDouble() > 0) {
-//            binding.tfEditBudgetAmount.editText?.isEnabled = false
-//            binding.tfEditBudgetAmount.editText?.setTextColor(ContextCompat.getColor(activity, R.color.gray))
-//            editable = false
-//        }
-//        else {
-//
-//        }
-
         amountViewModel.amount.observe(viewLifecycleOwner) { amount ->
             amount.getContentIfNotHandled()?.let { content ->
                 binding.tfEditBudgetAmount.editText?.setText(content)

@@ -61,6 +61,10 @@ class DeleteUserAccountFragment : Fragment() {
                 }
             }
         }
+
+        binding.btnDeleteUserAccountCancel.setOnClickListener {
+            activity.onBackPressed()
+        }
     }
 
     private fun loadData() {

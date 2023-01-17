@@ -25,6 +25,10 @@ class VerifyEmailActivity : AppCompatActivity() {
 
         sendEmail()
 
+        binding.ibVerifyEmailBack.setOnClickListener {
+            onBackPressed()
+        }
+
         binding.btnResendEmail.setOnClickListener {
             resendEmail()
         }
@@ -39,11 +43,6 @@ class VerifyEmailActivity : AppCompatActivity() {
         super.onBackPressed()
         FirebaseAuth.getInstance().signOut()
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-    }
-
-    override fun onStop() {
-        FirebaseAuth.getInstance().signOut()
-        super.onStop()
     }
 
     private fun sendEmail() {
@@ -122,8 +121,7 @@ class VerifyEmailActivity : AppCompatActivity() {
                 binding.btnResendEmail.text = message
             }
             override fun onFinish() {
-                binding.btnResendEmail.text = getString(R.string.resend_email_verification)
-                binding.btnResendEmail.isClickable = true
+                hideProgressDialogResend()
             }
         }.start()
     }
@@ -170,6 +168,8 @@ class VerifyEmailActivity : AppCompatActivity() {
 
     private fun hideProgressDialogResend() {
         binding.pbResendEmailVerification.visibility = View.INVISIBLE
+        binding.btnResendEmail.text = getString(R.string.resend_email_verification)
+        binding.btnResendEmail.isClickable = true
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

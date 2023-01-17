@@ -14,6 +14,7 @@ import androidx.core.util.Pair
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.adapter.ReportExpenseAdapter
+import com.ducatus.common.AppResources
 import com.ducatus.data.Expense
 import com.ducatus.data.Subscription
 import com.ducatus.data.Transaction
@@ -350,13 +351,18 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
                 for (child in snapshot.children) {
                     val transaction = child.getValue<Transaction>()
                     if (transaction != null) {
+                        val paymentTypes = AppResources().getPaymentTypes()
+                        val paymentType =
+                            if (transaction.paymentType != 4) paymentTypes[transaction.paymentType]
+                            else transaction.paymentTypeOthers
+
                         transactionsReport.add(
                             ExpenseReport(
                                 transaction.name,
                                 transaction.amount,
                                 transaction.date,
                                 transaction.type,
-                                transaction.paymentType,
+                                paymentType,
                                 transaction.categoryName,
                                 transaction.subcategoryName
                             )
@@ -371,7 +377,7 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
                                 transaction.amount,
                                 transaction.date,
                                 'T',
-                                transaction.paymentType,
+                                paymentType,
                                 transaction.categoryName,
                                 transaction.categoryColor,
                                 transaction.categoryIcon,
@@ -447,13 +453,18 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
                 for (child in snapshot.children) {
                     val subscription = child.getValue<Subscription>()
                     if (subscription != null) {
+                        val paymentTypes = AppResources().getPaymentTypes()
+                        val paymentType =
+                            if (subscription.paymentType != 4) paymentTypes[subscription.paymentType]
+                            else subscription.paymentTypeOthers
+
                         transactionsReport.add(
                             ExpenseReport(
                                 subscription.name,
                                 subscription.amount,
                                 subscription.createdAt,
                                 2,
-                                subscription.paymentType,
+                                paymentType,
                                 subscription.categoryName,
                                 subscription.subcategoryName
                             )
@@ -466,7 +477,7 @@ class ReportsFragment : Fragment(), HomeOverviewInterface {
                             subscription.amount,
                             subscription.createdAt,
                             'S',
-                            subscription.paymentType,
+                            paymentType,
                             subscription.categoryName,
                             subscription.categoryColor,
                             subscription.categoryIcon,

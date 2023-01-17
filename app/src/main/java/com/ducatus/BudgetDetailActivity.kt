@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ducatus.adapter.ExpenseHistoryAdapter
+import com.ducatus.common.AppResources
 import com.ducatus.data.*
 import com.ducatus.databinding.ActivityBudgetDetailBinding
 import com.ducatus.interfaces.ExpenseHistoryInterface
@@ -176,7 +177,10 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
         val budgetSpent = budget.amountSpent.toString().toDouble()
         val budgetLeft = budgetTotal.minus(budgetSpent)
 
-        val spentText = "₱" + String.format("%,.2f", budgetSpent)
+        val spentText =
+            if (budgetSpent > 0) "₱" + String.format("%,.2f", budgetSpent)
+            else "₱0.00"
+
         binding.tvBudgetDetailSpent.text = spentText
         binding.tvBudgetDetailSpent.setTextColor(
             ContextCompat.getColor(this, iconColor)
@@ -236,6 +240,11 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                 for (child in snapshot.children) {
                     val transaction = child.getValue<Transaction>()
                     if (transaction != null) {
+                        val paymentTypes = AppResources().getPaymentTypes()
+                        val paymentType =
+                            if (transaction.paymentType != 4) paymentTypes[transaction.paymentType]
+                            else transaction.paymentTypeOthers
+
                         expensesHistory.add(
                             ExpenseHistory(
                                 transaction.name,
@@ -243,7 +252,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                                 transaction.date,
                                 'T',
                                 transaction.type == 0,
-                                transaction.paymentType,
+                                paymentType,
                                 transaction.imagePath
                             )
                         )
@@ -267,6 +276,11 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                 for (child in snapshot.children) {
                     val subscription = child.getValue<Subscription>()
                     if (subscription != null) {
+                        val paymentTypes = AppResources().getPaymentTypes()
+                        val paymentType =
+                            if (subscription.paymentType != 4) paymentTypes[subscription.paymentType]
+                            else subscription.paymentTypeOthers
+
                         expensesHistory.add(
                             ExpenseHistory(
                                 subscription.name,
@@ -274,7 +288,7 @@ class BudgetDetailActivity : AppCompatActivity(), ExpenseHistoryInterface {
                                 subscription.dueDate,
                                 'S',
                                 true,
-                                subscription.paymentType,
+                                paymentType,
                                 null,
                             )
                         )

@@ -26,5 +26,9 @@ class DeleteUserAccountConfirmFragment : Fragment() {
             val action = DeleteUserAccountConfirmFragmentDirections.actionDeleteUserAccountConfirmFragmentToDeleteUserDataDialogFragment("delete app user")
             findNavController().navigate(action)
         }
+
+        binding.btnDeleteUserAccountCancel.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 }

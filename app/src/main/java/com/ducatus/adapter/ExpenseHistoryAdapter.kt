@@ -57,14 +57,15 @@ class ExpenseHistoryAdapter(
                     )
                 }
                 else -> {
-                    findViewById<TextView>(R.id.tvExpenseHistoryReceipt).text = context.getString(
-                        R.string.receipt_attached
-                    )
-                    findViewById<TextView>(R.id.tvExpenseHistoryReceipt).setOnClickListener {
-                        listener.viewImage(currentExpenseHistory.imagePath)
+                    findViewById<TextView>(R.id.tvExpenseHistoryReceipt).apply {
+                        text = context.getString(
+                            R.string.receipt_attached
+                        )
+                        visibility = View.VISIBLE
+                        setOnClickListener {
+                            listener.viewImage(currentExpenseHistory.imagePath)
+                        }
                     }
-
-                    findViewById<ImageView>(R.id.ivExpenseHistoryReceipt).visibility = View.VISIBLE
                 }
             }
 

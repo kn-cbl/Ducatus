@@ -8,7 +8,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -17,17 +16,16 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import com.ducatus.common.AppResources
 import com.ducatus.data.*
 import com.ducatus.databinding.ActivityTransactionAddBinding
 import com.google.android.gms.vision.Frame
@@ -48,7 +46,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.googlecode.tesseract.android.TessBaseAPI
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import java.io.*
@@ -72,13 +69,13 @@ class TransactionAddActivity : AppCompatActivity() {
     private lateinit var selectedCategory: Category
     private val requestCaptureImage = 1
     private val requestPickImage = 2
-    private val dataPath = Environment.getExternalStorageDirectory().toString() + "/tesseract/"
-    private val tessdata = "tessdata"
     private var firebaseUser: FirebaseUser? = null
     private var selectedSubcategory: Subcategory? = null
     private var selectedCategoryWithTag: CategoryWithTag? = null
+    private var selectedPaymentType: Int = 0
     private var remainingBudget: Double = 0.0
     private var transactionType = 0
+    private var tempImageUri: Uri? = null
     private var imageUri: Uri? = null
     private var isCamera: Boolean = false
     private var dateTimeMap: MutableMap<String, Long> =
@@ -116,6 +113,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
         loadData()
         setAmountPresetClickListener()
+        setPaymentTypes()
         setDateTimePicker()
         inputObserver()
 
@@ -138,13 +136,9 @@ class TransactionAddActivity : AppCompatActivity() {
         binding.rgAddTransaction.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbTransactionExpense -> {
-                    binding.rbTransactionExpense.setTextColor(ContextCompat.getColor(this, R.color.off_white))
-                    binding.rbTransactionIncome.setTextColor(ContextCompat.getColor(this, R.color.bright_blue))
                     transactionType = 0
                 }
                 R.id.rbTransactionIncome -> {
-                    binding.rbTransactionIncome.setTextColor(ContextCompat.getColor(this, R.color.off_white))
-                    binding.rbTransactionExpense.setTextColor(ContextCompat.getColor(this, R.color.bright_blue))
                     transactionType = 1
                 }
             }
@@ -453,6 +447,24 @@ class TransactionAddActivity : AppCompatActivity() {
         }
     }
 
+    private fun setPaymentTypes() {
+        val paymentTypes = AppResources().getPaymentTypes()
+        val adapter = ArrayAdapter(this, R.layout.list_item, paymentTypes)
+
+        val spPaymentType = (binding.tfAddTransactionPaymentType.editText as? AutoCompleteTextView)
+        spPaymentType?.setAdapter(adapter)
+        spPaymentType?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                selectedPaymentType = position
+                if (position == 4) {
+                    binding.tfAddTransactionPaymentTypeOthers.visibility = View.VISIBLE
+                }
+                else {
+                    binding.tfAddTransactionPaymentTypeOthers.visibility = View.GONE
+                }
+            }
+    }
+
     private fun setDateTimePicker() {
         val zdtToday = ZonedDateTime.ofInstant(
             Instant.now(),
@@ -568,22 +580,11 @@ class TransactionAddActivity : AppCompatActivity() {
     }
 
     private fun captureImage() {
-//        try {
-//            val m = StrictMode::class.java.getMethod("disableDeathOnFileUriExposure")
-//            m.invoke(null)
-//        }
-//        catch (e: java.lang.Exception) {
-//            e.printStackTrace()
-//        }
         val file = createFile()
-        imageUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
-//        val imagesDir = Environment.getExternalStorageDirectory().toString() + "/tesseract/images"
-//        prepareDirectory(imagesDir)
-//        val imagePath = "$imagesDir/ocr.jpg"
-//        imageUri = Uri.fromFile(File(imagePath))
+        tempImageUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
 
         val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
         startActivityForResult(captureIntent, requestCaptureImage)
     }
 
@@ -599,7 +600,7 @@ class TransactionAddActivity : AppCompatActivity() {
 
         when {
             requestCode == requestCaptureImage && resultCode == RESULT_OK -> {
-                imageUri?.let { uri ->
+                tempImageUri?.let { uri ->
                     isCamera = true
                     val imageName = "receipt.jpg"
                     val options = UCrop.Options().apply {
@@ -641,13 +642,6 @@ class TransactionAddActivity : AppCompatActivity() {
                         if (isCamera) { // image from camera
                             isCamera = false
                             uri.path?.let {
-//                                val imagePath = Environment.getExternalStorageDirectory().toString() + "/tesseract/images"
-//                                prepareDirectory(imagePath)
-
-//                                detectTextTess(it)
-
-//                                prepareTesseract()
-//                                startOCR(imageUri!!)
                                 detectText(it)
                             }
                         }
@@ -717,103 +711,6 @@ class TransactionAddActivity : AppCompatActivity() {
 
         catch (exception: Exception) {}
     }
-    
-    private fun prepareDirectory(path: String) {
-        val dir = File(path)
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-    }
-    
-    private fun prepareTesseract() {
-        prepareDirectory(dataPath + tessdata)
-        copyTessDataFiles(tessdata)
-    }
-    
-    private fun copyTessDataFiles(path: String) {
-        try {
-            val fileList = assets.list(path)
-            if (fileList != null) {
-                for (fileName in fileList) {
-                    val pathToDataFile = "$dataPath$path/$fileName"
-                    if (!File(pathToDataFile).exists()) {
-                        val inputStream = assets.open("$path/$fileName")
-                        val outputStream = FileOutputStream(pathToDataFile)
-
-                        val bytes = ByteArray(1024)
-                        var len: Int
-
-                        while (inputStream.read(bytes).also { len = it } > 0) {
-                            outputStream.write(bytes, 0, len)
-                        }
-
-                        inputStream.close()
-                        outputStream.close()
-                    }
-                }
-            }
-        }
-        catch (exception: IOException) {
-            Log.e("IOException", "Unable to copy files to tessdata $exception")
-        }
-    }
-
-    private fun detectTextTess(imagePath: String) {
-//        val tess = TessBaseAPI()
-//        val dataPath = Environment.getExternalStorageDirectory().toString() + "/tesseract/"
-//        val dir = File(dataPath + "tessdata")
-//        if (!dataPath.exists()) {
-//            dataPath.mkdir()
-//        }
-//
-//        Log.d("dataPath", "${dataPath.absolutePath}")
-
-//        if (!tess.init(dataPath.absolutePath, "eng")) {
-//            tess.recycle()
-//            return
-//        }
-//
-//        Snackbar.make(binding.clAddTransaction, "tess init", 3000).show()
-//
-//
-//        tess.setImage(image)
-//        val text = tess.utF8Text
-//
-//        Snackbar.make(binding.clAddTransaction, text, 10000).show()
-//        tess.recycle()
-    }
-    
-    private fun startOCR(imageUri: Uri) {
-        try {
-            val options = BitmapFactory.Options().apply { 
-                inSampleSize = 4
-            }
-            val bitmap = BitmapFactory.decodeFile(imageUri.path, options)
-
-            val result = extractText(bitmap)
-
-            binding.tfAddTransactionNotes.editText?.setText(result)
-        }
-        catch (exception: Exception) {
-            Log.e("OCR", exception.localizedMessage!!)
-        }
-    }
-
-    private fun extractText(bitmap: Bitmap): String {
-        val tessBaseApi = TessBaseAPI()
-        tessBaseApi.init(dataPath, "eng")
-        tessBaseApi.setImage(bitmap)
-        var extractedText = ""
-        try {
-            extractedText = tessBaseApi.utF8Text
-        }
-        catch (exception: Exception) {
-            Log.e("OCR", "Could not recognize text")
-        }
-
-        tessBaseApi.recycle()
-        return extractedText
-    }
 
     private fun inputObserver() {
         binding.tfAddTransactionAmount.editText?.doOnTextChanged { text, _, _, _ ->
@@ -858,11 +755,15 @@ class TransactionAddActivity : AppCompatActivity() {
         }
 
         binding.tfAddTransactionPaymentType.editText?.doOnTextChanged { text, _, _, _ ->
+            if (text != null) binding.tfAddTransactionPaymentType.error = null
+        }
+
+        binding.tfAddTransactionPaymentTypeOthers.editText?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.isEmpty()) {
-                binding.tfAddTransactionPaymentType.error = getString(R.string.payment_type_empty)
+                binding.tfAddTransactionPaymentTypeOthers.error = getString(R.string.payment_type_empty_2)
             }
             else {
-                binding.tfAddTransactionPaymentType.error = null
+                binding.tfAddTransactionPaymentTypeOthers.error = null
             }
         }
     }
@@ -881,6 +782,7 @@ class TransactionAddActivity : AppCompatActivity() {
         val time = binding.tfAddTransactionTime.editText?.text.toString().trim { it <= ' ' }
         val category = binding.tfAddTransactionCategory.editText?.text.toString().trim { it <= ' ' }
         val paymentType = binding.tfAddTransactionPaymentType.editText?.text.toString().trim { it <= ' ' }
+        var paymentTypeOthers: String? = binding.tfAddTransactionPaymentTypeOthers.editText?.text.toString().trim { it <= ' ' }
         var notes: String? = binding.tfAddTransactionNotes.editText?.text.toString().trim { it <= ' ' }
         var errors = 0
 
@@ -905,8 +807,25 @@ class TransactionAddActivity : AppCompatActivity() {
         }
 
         if (TextUtils.isEmpty(paymentType)) {
-            binding.tfAddTransactionPaymentType.error = getString(R.string.payment_type_empty)
+            binding.tfAddTransactionPaymentType.apply {
+                error = getString(R.string.payment_type_empty)
+                requestFocus()
+            }
             errors++
+        }
+        else {
+            if (selectedPaymentType == 4) {
+                if (TextUtils.isEmpty(paymentTypeOthers)) {
+                    binding.tfAddTransactionPaymentTypeOthers.apply {
+                        error = getString(R.string.payment_type_empty_2)
+                        requestFocus()
+                    }
+                    errors++
+                }
+            }
+            else {
+                paymentTypeOthers = null
+            }
         }
 
         if (TextUtils.isEmpty(notes)) {
@@ -940,7 +859,8 @@ class TransactionAddActivity : AppCompatActivity() {
                     name.lowercase(),
                     amount.toDouble(),
                     transactionType,
-                    paymentType,
+                    selectedPaymentType,
+                    paymentTypeOthers,
                     notes,
                     null,
                     totalDate,

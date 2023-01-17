@@ -81,7 +81,10 @@ class BudgetAdapter(
             val budgetSpent = currentBudget.amountSpent
             val budgetLeft = budgetTotal.minus(budgetSpent)
 
-            val spentText = "₱" + String.format("%,.2f", budgetSpent)
+            val spentText =
+                if (budgetSpent > 0) "₱" + String.format("%,.2f", budgetSpent)
+                else "₱0.00"
+
             findViewById<TextView>(R.id.tvItemBudgetSpent).text = spentText
             findViewById<TextView>(R.id.tvItemBudgetSpent).setTextColor(
                 ContextCompat.getColor(context, iconColor)

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ducatus.R
+import com.ducatus.common.AppResources
 import com.ducatus.interfaces.TransactionInterface
 import com.ducatus.data.Transaction
 import com.google.android.material.card.MaterialCardView
@@ -73,17 +74,26 @@ class TransactionAdapter(
 
             findViewById<TextView>(R.id.tvItemTransactionName).text = currentTransaction.name
             findViewById<TextView>(R.id.tvItemTransactionCategory).text = itemName
-            findViewById<TextView>(R.id.tvItemTransactionType).text = currentTransaction.paymentType
+
+            val paymentTypes = AppResources().getPaymentTypes()
+            val paymentType =
+                if (currentTransaction.paymentType != 4) paymentTypes[currentTransaction.paymentType]
+                else currentTransaction.paymentTypeOthers
+
+            findViewById<TextView>(R.id.tvItemTransactionType).text = paymentType
 
             // expense or income
-            val transactionState = determineTransactionType(currentTransaction.type)
+            val amountColor =
+                if (currentTransaction.type == 0) "bright_red"
+                else "green_secondary"
+
             val amountColorRes = resources.getIdentifier(
-                transactionState["color"],
+                amountColor,
                 "color",
                 context.packageName
             )
 
-            val amountText = transactionState["currency"] + String.format("%,.2f", currentTransaction.amount)
+            val amountText = "(₱" + String.format("%,.2f", currentTransaction.amount) + ")"
             findViewById<TextView>(R.id.tvItemTransactionAmount).text = amountText
             findViewById<TextView>(R.id.tvItemTransactionAmount).setTextColor(
                 ContextCompat.getColor(context, amountColorRes)
@@ -102,17 +112,5 @@ class TransactionAdapter(
     fun addTransaction(transaction: Transaction) {
         transactions.add(transaction)
         notifyItemInserted(transactions.size - 1)
-    }
-
-    private fun determineTransactionType(type: Int): Map<String, String> {
-        var currency = "-₱"
-        var color = "bright_red"
-
-        if (type == 1) {
-            currency = "₱"
-            color = "green_secondary"
-        }
-
-        return mapOf("currency" to currency, "color" to color)
     }
 }

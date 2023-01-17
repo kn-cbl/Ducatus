@@ -26,5 +26,9 @@ class ResetUserDataConfirmFragment : Fragment() {
             val action = ResetUserDataConfirmFragmentDirections.actionResetUserDataConfirmFragmentToResetUserDataDialogFragment("reset app user")
             findNavController().navigate(action)
         }
+
+        binding.btnResetUserDataCancel.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 }
